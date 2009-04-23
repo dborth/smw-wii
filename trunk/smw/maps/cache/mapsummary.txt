@@ -1,0 +1,219 @@
+0smw,0,0,0,1,1,0,0,1
+1-3,0,0,0,1,0,0,0,1
+1986,1,1,1,1,1,0,0,1
+2skyfight,0,0,0,0,1,0,0,1
+3blockforts,0,0,0,0,1,0,0,1
+4highabove,0,0,0,0,0,0,0,1
+5fall,0,0,0,0,0,0,0,1
+Above the clouds,0,0,0,0,1,0,0,1
+Abovethedomes,0,1,0,1,0,0,0,1
+Affe,0,0,0,0,0,0,0,1
+Alinos gate,0,0,0,0,0,0,0,1
+Allo,0,1,0,1,0,0,0,1
+Arcterra gate,1,0,1,1,0,0,0,1
+As seen on tv,0,1,0,1,0,0,1,1
+Asinine,0,0,0,1,0,0,0,1
+Aztec,0,0,0,1,0,0,0,1
+Ballistic Boardwalks,0,0,0,1,0,0,0,1
+Battle Creek,1,1,0,1,1,0,0,1
+Battleblockarea,0,0,0,1,0,0,0,1
+Battlefield,0,0,0,1,0,1,1,1
+Begging for sumo,1,0,0,1,0,0,0,1
+Begging for sumo again,1,0,0,1,0,0,0,1
+Bewarehouse,0,1,0,1,0,0,0,1
+Big Tree,0,0,0,1,0,0,0,1
+Block Piles,0,0,0,1,0,1,0,1
+Block! Block!,0,0,0,1,0,0,0,1
+Blockfort,0,0,0,1,0,0,0,1
+Blockswar,0,0,0,1,0,0,0,1
+Boo is Back,1,0,0,1,0,0,0,1
+Bottle,0,0,0,0,1,0,0,1
+Bounce2lava,1,0,0,1,0,0,0,1
+Bouncy Spikes,1,0,0,1,0,0,0,1
+Breakaway,0,0,0,1,1,0,0,1
+Breaker,0,0,0,1,1,0,0,1
+Bring a towel,0,1,0,1,0,0,0,1
+Bubble Bobble 2,0,0,0,0,0,0,0,0
+Buster_Beetle_s_Tower,0,0,0,1,0,1,1,1
+Cactus canyon,1,1,0,1,0,0,0,1
+Castleout,0,0,0,1,0,0,0,1
+Castor wilds,1,0,0,1,1,0,0,1
+Cave,1,0,0,1,0,1,0,1
+Chainlink,0,0,0,1,0,1,0,1
+Chomp beach,0,0,0,1,1,0,0,1
+Circuit,0,0,0,1,0,0,0,1
+Classicon,0,1,0,1,0,0,0,1
+Cliff,0,0,0,1,0,0,0,1
+Cliff tower,1,1,0,1,0,1,1,1
+Cloud Garden,0,0,1,1,1,0,0,1
+Cloud Props,0,0,0,1,0,0,0,1
+Colorpile,1,0,0,0,0,0,0,1
+Coolnights,0,1,0,1,0,0,0,1
+Crazy castle,0,0,0,0,0,0,0,1
+Crazy dungeon,0,0,1,1,0,1,1,1
+Crystal caverns,0,0,0,0,0,0,0,1
+Danger Canyon,0,0,0,0,1,0,0,1
+Dare,1,0,0,1,0,0,1,1
+Darkrock,1,1,0,1,0,0,0,1
+Death From Above,0,0,0,1,0,0,0,1
+Death Island,1,0,0,1,0,0,0,1
+Death to iggy,1,0,0,0,0,0,0,1
+Derelict,0,1,0,1,0,0,0,1
+Desert,0,0,0,1,1,0,0,1
+Divine intervention,0,1,0,0,0,0,0,1
+Dkjungle,0,0,0,1,0,0,0,1
+Dm,0,0,0,0,0,0,0,1
+Donkey Kong,1,1,0,1,0,0,0,1
+Dottedplus,0,0,0,1,0,0,1,1
+Double Sting,1,1,0,1,0,0,0,1
+Double-t,0,0,0,1,1,0,0,1
+Doubledown,0,0,0,1,1,0,0,1
+Doublevision,1,1,1,1,1,0,0,1
+Down With Donuts,0,1,0,1,1,0,0,1
+Dropouts,0,0,0,1,0,0,0,1
+Dune,0,1,0,1,0,0,0,1
+Eighth Platform,0,1,0,1,1,1,0,1
+Elevated,0,1,0,1,1,0,0,1
+Evening Fracas,1,1,0,1,0,0,1,1
+Fastlane,1,0,0,1,0,0,0,1
+Field day,0,0,0,1,1,0,0,1
+Fortress,0,1,0,1,1,0,0,1
+Fountain of Dreams,0,0,0,1,0,0,1,1
+Frozen Frenzy,0,0,1,1,0,0,0,1
+Gatekeeper,1,0,0,1,0,0,1,1
+Ghosthouse,0,0,0,1,0,0,0,1
+Ghostly madness,0,0,0,1,0,0,0,1
+GoForIt,0,1,0,1,0,1,1,1
+Gold,0,0,0,1,1,0,0,1
+Greden,0,1,0,0,1,0,0,1
+Green Hill Zone,1,0,0,0,0,0,0,1
+Green greens,0,0,0,1,0,0,0,1
+Greenhill,0,0,0,1,0,0,0,1
+Greeny,0,0,0,1,1,0,0,1
+Hanging Cactus Gardens,0,0,0,1,0,0,0,1
+Hanzou,0,0,0,1,0,0,0,1
+Hard to fly,0,0,0,0,0,0,0,1
+Haunted Temple,0,0,0,1,0,0,0,1
+Heinous Heights,0,0,0,1,1,0,0,1
+Hello world,0,0,0,1,1,0,0,1
+Hidenseek,0,1,0,1,0,0,0,1
+High flying,0,0,0,1,0,0,0,1
+Hoog,0,0,0,1,0,0,0,1
+Humanitary,0,1,1,1,0,0,0,1
+Hyrule Castle,0,0,0,1,0,0,0,1
+Icecap,0,1,1,1,0,0,0,1
+Icecube,1,1,1,0,1,0,0,1
+Iceland,1,1,1,1,0,0,0,1
+Icy hills,0,0,1,1,0,1,1,1
+Indoor,0,1,0,0,0,0,0,1
+Inebriation,0,1,1,1,0,0,0,1
+Inertia,0,0,0,0,0,0,0,1
+Iron,0,0,0,1,0,0,0,1
+Islands of Questionable Support,0,0,0,1,0,0,0,1
+Jump n Bump,1,0,1,1,0,0,0,0
+Jungle,0,0,0,1,0,0,0,1
+Jungle Japes,0,0,0,1,0,0,0,1
+King of the Hills,0,0,0,1,0,0,1,1
+King_of_the_hill,0,1,0,1,0,0,0,1
+Kongo Jungle,0,0,0,1,0,0,0,1
+Lava Island,1,0,0,1,0,0,0,0
+Lockout,0,1,0,1,1,0,0,1
+Look_above,0,0,0,1,1,0,0,1
+Low bandwidth,0,1,0,0,0,0,0,1
+Lunar,1,1,0,1,1,1,1,1
+Manic Mountain,0,0,0,1,0,0,0,1
+Manor,1,0,0,1,1,0,0,1
+Matmata,0,0,0,1,1,0,0,0
+Mbc,1,1,0,1,0,0,0,1
+Meadows,0,0,1,1,1,0,0,1
+Mishmash,1,1,0,1,0,0,0,1
+Mountain King,1,1,0,1,0,0,0,1
+Mountain waterfall,0,0,0,0,0,0,0,1
+Mountains,0,0,0,1,0,0,0,1
+Mushroom Kingdom,1,1,0,1,0,0,0,1
+Mushroomkingdom2,0,0,0,1,0,0,0,1
+Ninja Gaiden 1 - 1-1,0,0,0,1,0,0,0,1
+Not so cave,1,0,0,1,0,0,1,1
+Onett,0,0,0,1,0,0,0,1
+Peach Castle,0,0,0,1,0,0,1,1
+Peach's Castle,0,0,0,1,1,1,0,1
+Pianta village - village,0,0,0,0,0,0,0,1
+Piemont,0,1,0,1,0,0,0,1
+Pillars of glory,0,0,1,1,0,0,0,0
+Pipes at sea,1,0,0,1,1,1,0,1
+Pipestruck,0,1,0,1,0,0,0,1
+Prepare to Joust Buzzard Bait,1,1,0,0,0,0,0,1
+Pyramid,0,1,0,1,1,0,0,1
+Quarterblock,0,0,0,1,0,0,0,1
+Quzza,1,0,0,1,0,0,0,1
+Rainbowride,0,1,0,1,0,0,1,1
+Rainbowroadredux,0,1,0,1,0,0,0,1
+Rat Race,0,1,0,1,0,0,0,1
+Reznor pit,1,0,0,0,0,0,0,0
+Risk,1,1,0,1,0,0,1,1
+Rubber Room,0,0,0,1,0,0,0,1
+Salty dog,1,0,0,1,0,1,1,1
+Shipwreck,1,0,0,1,0,0,1,1
+Sidewinder,0,1,1,1,1,0,0,1
+Skull Depot,0,0,0,1,1,0,0,1
+Sky,0,0,0,0,0,0,0,1
+Sky Garden,0,0,0,1,0,0,0,0
+Sky realm,0,0,0,1,1,0,0,1
+Skyfortress,0,0,0,1,1,0,0,1
+Skyhigh,0,0,0,1,1,0,0,1
+Smb2,0,0,0,1,0,0,0,1
+Smw,0,0,0,1,0,0,0,1
+Snowball fight,0,0,0,0,0,0,0,1
+Splitting Headache,0,0,0,1,0,0,0,1
+Ssb smb2,0,0,0,1,1,0,0,1
+Ssbmjunglejapes,0,0,0,1,0,0,0,1
+Staircase,0,0,0,0,0,0,0,1
+Storage Building,0,0,0,1,0,0,0,1
+Subcon,0,0,0,0,0,0,0,1
+Subterranean,0,0,0,1,0,0,0,1
+Sunny hills,0,1,0,1,1,0,0,1
+Sunset hills,0,1,0,1,1,0,0,1
+Suspended Craziness,1,0,0,1,0,0,0,1
+Switch 'n' Squish,0,0,0,1,0,0,1,1
+Symmetrical,0,0,0,0,0,0,0,1
+Synchro,0,0,0,0,0,0,0,1
+Teal Tunnels,1,1,0,1,1,0,0,1
+The 10th,0,0,0,1,1,0,0,1
+The pit,1,0,0,1,0,1,0,0
+Thecourtyard,0,0,0,0,0,0,0,1
+Timberland,0,0,0,1,1,0,0,1
+Toadstools,0,1,0,1,0,0,0,1
+Topwar,0,0,0,0,0,0,0,1
+Torch,1,0,0,1,0,0,0,1
+Toshinden,1,0,0,1,0,0,0,1
+Traumatic Plains,1,0,0,1,0,0,0,1
+Treefort,0,0,0,1,0,0,0,1
+Tresspass,0,0,0,0,1,0,0,1
+Tunnel,0,0,0,1,0,0,0,1
+Tunnels,0,0,0,0,0,0,0,1
+Underwater,0,0,0,1,0,0,1,1
+Unfeeling,0,0,0,0,0,0,0,1
+Unsightly Dryness,0,0,0,1,0,0,0,1
+Up In The Hills,0,0,0,1,0,0,0,1
+Valley,0,0,0,1,1,0,0,1
+Van katoen,0,0,0,0,0,0,0,1
+Vanilla dome,1,0,0,1,0,0,0,1
+Vanilla sky,0,0,0,0,1,0,0,0
+Wacky Woods,0,0,0,1,0,0,0,1
+War2,0,0,0,1,1,0,0,1
+Warpzone,0,1,0,0,0,0,0,1
+What,0,1,0,1,0,0,0,1
+White ground,0,0,0,0,0,0,0,1
+WhiteSky,0,0,0,0,0,0,0,1
+Wildlife,1,0,0,1,0,0,0,1
+Wings of sand,0,0,0,1,1,0,0,0
+Wirehenge,1,0,0,1,0,0,0,1
+Wolkje,0,0,0,0,0,0,0,1
+Wonder Winterland,0,1,1,1,0,1,0,1
+Wood,0,0,0,1,0,0,0,1
+Wood Pit,0,1,0,1,1,0,0,1
+World1-2,0,0,0,1,1,0,0,1
+Yarg,0,1,0,1,0,0,0,1
+Yoshi island,0,0,0,1,0,0,0,1
+Yoshisisland,0,0,0,1,0,0,0,1
+Zelda 1 - 1st Quest Level 1,1,1,0,1,0,0,0,1
