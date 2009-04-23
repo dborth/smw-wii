@@ -1,0 +1,54 @@
+#Version
+1.7.0.5
+
+#Icon
+44
+
+#Maps
+0smw
+4highabove
+5fall
+Affe
+Allo
+Begging for sumo again
+Big Tree
+Block! Block!
+Blockfort
+Chainlink
+Death From Above
+Divine intervention
+Dm
+Field day
+Ghosthouse
+Gold
+Greeny
+Hanging Cactus Gardens
+High flying
+Hoog
+Icecap
+Icy hills
+Indoor
+Iron
+Islands of Questionable Support
+Lockout
+Mountains
+Piemont
+Pillars of glory
+Prepare to Joust Buzzard Bait
+Rubber Room
+Sky
+Sky realm
+Skyhigh
+Smw
+Staircase
+Storage Building
+Suspended Craziness
+Symmetrical
+Synchro
+The pit
+Topwar
+Vanilla sky
+Wacky Woods
+WhiteSky
+Wings of sand
+Wolkje
