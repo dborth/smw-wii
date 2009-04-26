@@ -33,7 +33,7 @@ Uint8 * colorcodes[3];
 #define NUM_SCHEMES 9
 
 //[numplayers][colorscheme][colorcomponents][numcolors]
-Uint8 * colorschemes[4][NUM_SCHEMES][3]; 
+Uint8 * colorschemes[4][NUM_SCHEMES][3];
 short numcolors = 0;
 
 extern short x_shake;
@@ -47,13 +47,13 @@ bool gfx_init(int w, int h, bool fullscreen)
 	else
 		screen = SDL_SetVideoMode(w, h, GFX_BPP, GFX_FLAGS);
 
-    if ( screen == NULL ) 
+    if ( screen == NULL )
 	{
         printf("Couldn't set video mode %dx%d: %s\n", w, h, SDL_GetError());
 		return false;
     }
 
-    printf(" running @ %dx%d %dbpp (done)\n", w, h, screen->format->BitsPerPixel);	
+    printf(" running @ %dx%d %dbpp (done)\n", w, h, screen->format->BitsPerPixel);
 
 	for(int k = 0; k < 3; k++)
 	{
@@ -85,7 +85,7 @@ bool gfx_loadpalette()
 
 	SDL_Surface * palette = IMG_Load(convertPathCP("gfx/packs/palette.bmp", gamegraphicspacklist.current_name()));
 
-	if ( palette == NULL ) 
+	if ( palette == NULL )
 	{
         printf("Couldn't load color palette: %s\n", SDL_GetError());
 		return false;
@@ -136,7 +136,7 @@ bool gfx_loadpalette()
 			counter += palette->pitch - palette->w * 3;
 		}
 	}
-	
+
     if (SDL_MUSTLOCK(palette))
         SDL_UnlockSurface(palette);
 
@@ -192,7 +192,7 @@ SDL_Surface * gfx_createskinsurface(SDL_Surface * skin, short spriteindex, Uint8
 
 	//Blit over loaded skin into player image set
 	SDL_Surface * temp = SDL_CreateRGBSurface(skin->flags, 32 * loops, 32, skin->format->BitsPerPixel, 0, 0, 0, 0);
-	
+
 	//Take the loaded skin and colorize it for each state (normal, 3 frames of invincibiliy, shielded, tagged, ztarred. got shine)
 	if(SDL_MUSTLOCK(temp))
 		SDL_LockSurface(temp);
@@ -215,7 +215,7 @@ SDL_Surface * gfx_createskinsurface(SDL_Surface * skin, short spriteindex, Uint8
 			bool fFoundColor = false;
 			for(int m = 0; m < numcolors; m++)
 			{
-				if( ((Uint8*)skin->pixels)[skincounter] == colorcodes[0][m] && 
+				if( ((Uint8*)skin->pixels)[skincounter] == colorcodes[0][m] &&
 					((Uint8*)skin->pixels)[skincounter + 1] == colorcodes[1][m] &&
 					((Uint8*)skin->pixels)[skincounter + 2] == colorcodes[2][m])
 				{
@@ -225,7 +225,7 @@ SDL_Surface * gfx_createskinsurface(SDL_Surface * skin, short spriteindex, Uint8
 						((Uint8*)temp->pixels)[tempcounter + k * 96 + reverseoffset + 1] = colorschemes[colorScheme][k][1][m];
 						((Uint8*)temp->pixels)[tempcounter + k * 96 + reverseoffset + 2] = colorschemes[colorScheme][k][2][m];
 					}
-					
+
 					fFoundColor = true;
 					break;
 				}
@@ -365,7 +365,7 @@ bool gfx_createfullskin(gfxSprite ** gSprites, const std::string& filename, Uint
 	gSprites[9]->setSurface(skinSurface);
 
 	SDL_FreeSurface(skin);
-	
+
 	return true;
 }
 
@@ -388,7 +388,7 @@ gfxSprite::gfxSprite()
 
 gfxSprite::~gfxSprite()
 {
-	//free the allocated BMP surface 
+	//free the allocated BMP surface
 	freeSurface();
 }
 
@@ -470,7 +470,7 @@ bool gfxSprite::init(const std::string& filename, Uint8 r, Uint8 g, Uint8 b, Uin
              << filename << ": " << SDL_GetError() << endl;
 		return false;
 	}
-	
+
 	SDL_Surface *temp = SDL_DisplayFormatAlpha(m_picture);
 	if(!temp)
 	{
@@ -489,7 +489,7 @@ bool gfxSprite::init(const std::string& filename, Uint8 r, Uint8 g, Uint8 b, Uin
 	return true;
 }
 
-bool gfxSprite::init(const std::string& filename) 
+bool gfxSprite::init(const std::string& filename)
 {
     cout << "loading sprite " << filename << "...";
 
@@ -787,7 +787,7 @@ void gfxFont::drawChopRight(int x, int y, int width, const char *s)
 {
 	//if(y + getHeight() < 0)
 	//	return;
-		
+
 	SFont_WriteChopRight(blitdest, m_font, x, y, width, s);
 }
 
@@ -795,7 +795,7 @@ void gfxFont::drawCentered(int x, int y, const char *text)
 {
 	//if(y + getHeight() < 0)
 	//	return;
-		
+
 	SFont_WriteCenter(blitdest, m_font, x, y, text);
 };
 
@@ -803,7 +803,7 @@ void gfxFont::drawChopCentered(int x, int y, int width, const char *text)
 {
 	//if(y + getHeight() < 0)
 	//	return;
-		
+
 	SFont_WriteChopCenter(blitdest, m_font, x, y, width, text);
 };
 
@@ -818,7 +818,7 @@ void gfxFont::drawRightJustified(int x, int y, const char *s, ...)
 
 	//if(y + getHeight() < 0)
 	//	return;
-		
+
 	SFont_WriteRight(blitdest, m_font, x, y, buffer);
 };
 

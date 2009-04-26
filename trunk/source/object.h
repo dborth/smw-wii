@@ -19,9 +19,9 @@ class CObject
 		virtual void update(){printf("CObject::update() - NO!\n");};
 		virtual bool collide(CPlayer *){printf("CObject::collide() - NO!\n"); return false;};
 		virtual void collide(IO_MovingObject *){printf("CObject::collide() - NO!\n");};
-		
+
 		virtual ObjectType getObjectType(){printf("CObject::getObjectType() - NO!\n"); return object_none;};
-		
+
 		void xf(float xf){fx = xf; ix = (short)fx;};
  		void xi(short xi){ix = xi; fx = (float)ix;};
 		void yf(float yf){fy = yf; if(fy < 0.0f) iy = (short)(fy - 1.0f); else iy = (short)fy;};
@@ -45,13 +45,13 @@ class CObject
 		short iw, ih;
 		float fx, fy;
 		float velx, vely;
-		
+
 		gfxSprite *spr;
 		short state;
 		bool dead;
 
 		short index;
-	
+
 	friend class CObjectContainer;
 	friend class CPlayer;
 	friend void RunGame();
@@ -82,7 +82,7 @@ class IO_Block : public CObject
 		virtual bool hitbottom(IO_MovingObject * object);
 		virtual bool hitright(IO_MovingObject * object);
 		virtual bool hitleft(IO_MovingObject * object);
-	
+
 		virtual void triggerBehavior() {}
 
 	protected:
@@ -251,7 +251,7 @@ class B_FlipBlock : public IO_Block
 		bool hitbottom(IO_MovingObject * object);
 		bool hitright(IO_MovingObject * object);
 		bool hitleft(IO_MovingObject * object);
-	
+
 		void triggerBehavior();
 
 	private:
@@ -356,7 +356,7 @@ class B_SwitchBlock : public IO_Block
 		bool hitright(IO_MovingObject * object);
 		bool hitleft(IO_MovingObject * object);
 
-		void FlipState() {state = 1 - state;}		
+		void FlipState() {state = 1 - state;}
 
 	private:
 		short iSrcX;
@@ -372,7 +372,7 @@ class IO_MovingObject : public CObject
 		virtual void draw();
 		virtual void update();
 		virtual bool collide(CPlayer * player);
-		
+
 		void collide(IO_MovingObject *){}
 		ObjectType getObjectType(){return objectType;}
 		MovingObjectType getMovingObjectType() {return movingObjectType;}
@@ -518,7 +518,7 @@ class PU_SledgeHammerPowerup : public MO_Powerup
 		void draw();
 		bool collide(CPlayer * player);
 		float BottomBounce();
-	
+
 	private:
 		short sparkleanimationtimer;
 		short sparkledrawframe;
@@ -747,7 +747,7 @@ class IO_OverMapObject : public CObject
 
 		ObjectType getObjectType(){return objectType;}
 		MovingObjectType getMovingObjectType() {return movingObjectType;}
-		
+
 	protected:
 
 		short iNumSprites;
@@ -787,7 +787,7 @@ class OMO_Podobo : public IO_MovingObject
 		short iPlayerID;
 
 	private:
-		
+
 		short iTeamID;
 		short iColorOffsetY;
 
@@ -842,7 +842,7 @@ class CO_Egg : public MO_CarriedObject
 		void update();
 		void draw();
 		bool collide(CPlayer * player);
-		
+
 		void MoveToOwner();
 
 		void placeEgg();
@@ -853,10 +853,10 @@ class CO_Egg : public MO_CarriedObject
 		short timer;
 		CPlayer * owner_throw;
 		short owner_throw_timer;
-		
+
 		short sparkleanimationtimer;
 		short sparkledrawframe;
-	
+
 	friend class CPlayer;
 	friend class OMO_Yoshi;
 	friend class CGM_Eggs;
@@ -906,7 +906,7 @@ class OMO_FlagBase : public IO_OverMapObject
 		void setFlag(CO_Flag * flag) {homeflag = flag;}
 
 		short GetTeamID() {return teamID;}
-	
+
 	private:
 		short teamID;
 		short iGraphicOffsetX;
@@ -981,7 +981,7 @@ class OMO_Area : public IO_OverMapObject
 		void reset();
 		short getColorID() {return colorID;}
 		void setOwner(CPlayer * player);
-	
+
 	private:
 		short playerID;
 		short colorID;
@@ -1008,7 +1008,7 @@ class OMO_KingOfTheHillZone : public IO_OverMapObject
 		void placeArea();
 		void reset();
 		short getColorID() {return colorID;}
-	
+
 	private:
 		CPlayer * playersTouching[4];
 		short playersTouchingCount[4];
@@ -1037,7 +1037,7 @@ class OMO_RaceGoal : public IO_OverMapObject
 		void reset(short teamID) {tagged[teamID] = -1;}
 		short isTagged(short teamID) {return tagged[teamID];}
 		short getGoalID() {return goalID;}
-	
+
 	private:
 		short tagged[4];
 		short goalID;
@@ -1045,7 +1045,7 @@ class OMO_RaceGoal : public IO_OverMapObject
 		float anglechange;
 		short anglechangetimer;
 		float speed;
-			
+
 	friend class CObjectContainer;
 };
 
@@ -1161,7 +1161,7 @@ class OMO_BulletBill : public IO_MovingObject
 
 		bool hittop(CPlayer * player);
 		bool hitother(CPlayer * player);
-		
+
 		void Die();
 		void HomeToNearestPlayer();
 		void SetDirectionOffset();
@@ -1170,7 +1170,7 @@ class OMO_BulletBill : public IO_MovingObject
 		short iPlayerID;
 		short iColorID;
 		short iTeamID;
-		
+
 		short iColorOffsetY;
 		short iDirectionOffsetY;
 
@@ -1202,7 +1202,7 @@ class MO_SledgeBrother : public IO_MovingObject
 		void Damage(short playerID);
 
 	protected:
-		
+
 		short iType;
 
 		short iActionState;
@@ -1219,7 +1219,7 @@ class MO_SledgeBrother : public IO_MovingObject
 		short location;
 
 		short throwing_timer;
-		
+
 		short hit_timer;
 		short hit_movement_timer;
 		short hit_offset_y;
@@ -1237,7 +1237,7 @@ class MO_SledgeBrother : public IO_MovingObject
 		bool face_right;
 
 		short iDestX;
-		
+
 		short iPlatformY;
 		short need_attack;
 };
@@ -1285,7 +1285,7 @@ class CO_Shell : public MO_CarriedObject
 		bool fKillBouncePlayer;
 
 		short iDeathTime;
-		
+
 		short iColorOffsetY;
 		short iBounceCounter;
 		short iKillCounter;
@@ -1325,7 +1325,7 @@ class CO_ThrowBlock : public MO_CarriedObject
 		void SideBounce();
 
 	private:
-		
+
 		short playerID;
 		short iDeathTime;
 		bool fSuper;
@@ -1401,9 +1401,9 @@ class CO_Bomb : public MO_CarriedObject
 
 		short playerID;
 		short teamID;
-		
+
 	protected:
-		
+
 		short iColorOffsetY;
 		short ttl;
 
@@ -1465,7 +1465,7 @@ class MysteryMushroomTempPlayer
 		bool fUsed;
 
 	private:
-		
+
 		float fx, fy;
 		float fOldX, fOldY;
 		float velx, vely;

@@ -48,7 +48,7 @@ extern short g_iAutoFilterIcons[NUM_AUTO_FILTERS];
 void Menu::WriteGameOptions()
 {
 	FILE *fp;
-	
+
 	fp = fopen("sd:/smw/options.bin", "wb");
 /*
 #ifdef _XBOX
@@ -78,7 +78,7 @@ void Menu::WriteGameOptions()
 		fwrite(&game_values.hardwarefilter, sizeof(short), 1, fp);
 		fwrite(&game_values.softfilter, sizeof(short), 1, fp);
 		fwrite(&game_values.aspectratio10x11, sizeof(bool), 1, fp);
-		
+
 		fwrite(&game_values.screenResizeX, sizeof(float), 1, fp);
 		fwrite(&game_values.screenResizeY, sizeof(float), 1, fp);
 		fwrite(&game_values.screenResizeW, sizeof(float), 1, fp);
@@ -113,7 +113,7 @@ void Menu::WriteGameOptions()
 		abyte[24] = (unsigned char) game_values.swapstyle;
 		abyte[25] = (unsigned char) gamegraphicspacklist.GetCurrentIndex();
 		abyte[26] = (unsigned char) game_values.secrets;
-		fwrite(abyte, sizeof(unsigned char), 27, fp); 
+		fwrite(abyte, sizeof(unsigned char), 27, fp);
 
 		fwrite(&game_values.spawninvincibility, sizeof(short), 1, fp);
 		fwrite(&game_values.itemrespawntime, sizeof(short), 1, fp);
@@ -182,12 +182,12 @@ void Menu::CreateMenu()
 	miSMWTitle = new MI_Image(&menu_smw, 320 - ((short)menu_smw.getWidth() >> 1), 30, 0, 0, 372, 140, 1, 1, 0);
 	miSMWVersion = new MI_Image(&menu_version, 570, 10, 0, 0, 58, 32, 1, 1, 0);
 	//miSMWVersionText = new MI_Text("RC2", 630, 45, 0, 2, 2);
-	
+
 	miMainStartButton = new MI_Button(&spr_selectfield, 120, 180, "Start", 400, 0);
 	miMainStartButton->SetCode(MENU_CODE_TO_TEAM_SELECT_MENU);
 
 	miPlayerSelect = new MI_PlayerSelect(&menu_player_select, 120, 220, "Players", 400, 140);
-	
+
 	miTournamentField = new MI_SelectField(&spr_selectfield, 120, 292, "Match", 400, 140);
 	miTournamentField->Add("Single Game", 1, "", false, false);
 	miTournamentField->Add("Tournament 2", 2, "", true, false);
@@ -225,7 +225,7 @@ void Menu::CreateMenu()
 	mMainMenu.AddControl(miOptionsButton, miTournamentField, miControlsButton, NULL, NULL);
 	mMainMenu.AddControl(miControlsButton, miOptionsButton, miExitButton, NULL, NULL);
 	mMainMenu.AddControl(miExitButton, miControlsButton, miMainStartButton, NULL, NULL);
-	
+
 	mMainMenu.SetHeadControl(miMainStartButton);
 #ifndef _XBOX
 	mMainMenu.SetCancelCode(MENU_CODE_EXIT_APPLICATION);
@@ -238,7 +238,7 @@ void Menu::CreateMenu()
 	//***********************
 	// Player Control Select Menu
 	//***********************
-	
+
 	miPlayer1ControlsButton = new MI_Button(&spr_selectfield, 120, 140, "Player 1", 400, 1);
 	miPlayer1ControlsButton->SetCode(MENU_CODE_TO_PLAYER_1_CONTROLS);
 
@@ -253,7 +253,7 @@ void Menu::CreateMenu()
 
 	miPlayerControlsBackButton = new MI_Button(&spr_selectfield, 544, 432, "Back", 80, 1);
 	miPlayerControlsBackButton->SetCode(MENU_CODE_TO_MAIN_MENU);
-	
+
 	miPlayerControlsLeftHeaderBar = new MI_Image(&menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
 	miPlayerControlsMenuRightHeaderBar = new MI_Image(&menu_plain_field, 320, 0, 192, 0, 320, 32, 1, 1, 0);
 	miPlayerControlsMenuHeaderText = new MI_Text("Player Controls Menu", 320, 5, 0, 2, 1);
@@ -267,7 +267,7 @@ void Menu::CreateMenu()
 	mPlayerControlsSelectMenu.AddNonControl(miPlayerControlsLeftHeaderBar);
 	mPlayerControlsSelectMenu.AddNonControl(miPlayerControlsMenuRightHeaderBar);
 	mPlayerControlsSelectMenu.AddNonControl(miPlayerControlsMenuHeaderText);
-	
+
 	mPlayerControlsSelectMenu.SetHeadControl(miPlayer1ControlsButton);
 	mPlayerControlsSelectMenu.SetCancelCode(MENU_CODE_TO_MAIN_MENU);
 
@@ -289,7 +289,7 @@ void Menu::CreateMenu()
 
 	miGameplayOptionsMenuButton = new MI_Button(&spr_selectfield, 120, 80, "Gameplay", 400, 1);
 	miGameplayOptionsMenuButton->SetCode(MENU_CODE_TO_GAMEPLAY_OPTIONS_MENU);
-	
+
 	miTeamOptionsMenuButton = new MI_Button(&spr_selectfield, 120, 120, "Team", 400, 1);
 	miTeamOptionsMenuButton->SetCode(MENU_CODE_TO_TEAM_OPTIONS_MENU);
 
@@ -304,9 +304,9 @@ void Menu::CreateMenu()
 
 	miGraphicsOptionsMenuButton = new MI_Button(&spr_selectfield, 120, 280, "Graphics", 400, 1);
 	miGraphicsOptionsMenuButton->SetCode(MENU_CODE_TO_GRAPHICS_OPTIONS_MENU);
-	
+
 	miSoundOptionsMenuButton = new MI_Button((game_values.soundcapable ? &spr_selectfield : &spr_selectfielddisabled), 120, 320, "Sound", 400, 1);
-	
+
 	if(game_values.soundcapable)
 		miSoundOptionsMenuButton->SetCode(MENU_CODE_TO_SOUND_OPTIONS_MENU);
 
@@ -325,7 +325,7 @@ void Menu::CreateMenu()
 	miGenerateThumbsDialogSureText = new MI_Text("Sure?", 320, 220, 0, 2, 1);
 	miGenerateThumbsDialogYesButton = new MI_Button(&spr_selectfield, 235, 250, "Yes", 80, 1);
 	miGenerateThumbsDialogNoButton = new MI_Button(&spr_selectfield, 325, 250, "No", 80, 1);
-	
+
 	miGenerateThumbsDialogYesButton->SetCode(MENU_CODE_GENERATE_THUMBS_RESET_YES);
 	miGenerateThumbsDialogNoButton->SetCode(MENU_CODE_GENERATE_THUMBS_RESET_NO);
 
@@ -345,7 +345,7 @@ void Menu::CreateMenu()
 	mOptionsMenu.AddControl(miGenerateMapThumbsButton, miSoundOptionsMenuButton, miOptionsMenuBackButton, NULL, miOptionsMenuBackButton);
 
 	mOptionsMenu.AddControl(miOptionsMenuBackButton, miGenerateMapThumbsButton, miGameplayOptionsMenuButton, miGenerateMapThumbsButton, NULL);
-	
+
 	mOptionsMenu.AddNonControl(miOptionsMenuLeftHeaderBar);
 	mOptionsMenu.AddNonControl(miOptionsMenuRightHeaderBar);
 	mOptionsMenu.AddNonControl(miOptionsMenuHeaderText);
@@ -616,7 +616,7 @@ void Menu::CreateMenu()
 	miPointSpeedField->Add("Very Fast", 5, "", false, false);
 	miPointSpeedField->SetData(&game_values.pointspeed, NULL, NULL);
 	miPointSpeedField->SetKey(game_values.pointspeed);
-	
+
 	miSecretsField = new MI_SelectField(&spr_selectfield, 120, 360, "Secrets", 400, 180);
 	miSecretsField->Add("Off", 0, "", false, false);
 	miSecretsField->Add("On", 1, "", true, false);
@@ -639,7 +639,7 @@ void Menu::CreateMenu()
 	mGameplayOptionsMenu.AddControl(miFrameLimiterField, miBotsField, miPointSpeedField, NULL, miGameplayOptionsMenuBackButton);
 	mGameplayOptionsMenu.AddControl(miPointSpeedField, miFrameLimiterField, miSecretsField, NULL, miGameplayOptionsMenuBackButton);
 	mGameplayOptionsMenu.AddControl(miSecretsField, miPointSpeedField, miGameplayOptionsMenuBackButton, NULL, miGameplayOptionsMenuBackButton);
-	
+
 	mGameplayOptionsMenu.AddControl(miGameplayOptionsMenuBackButton, miSecretsField, miRespawnField, miSecretsField, NULL);
 
 	mGameplayOptionsMenu.AddNonControl(miGameplayOptionsMenuLeftHeaderBar);
@@ -667,7 +667,7 @@ void Menu::CreateMenu()
 	miSoundVolumeField->SetKey(game_values.soundvolume);
 	miSoundVolumeField->SetNoWrap(true);
 	miSoundVolumeField->SetItemChangedCode(MENU_CODE_SOUND_VOLUME_CHANGED);
-	
+
 	miMusicVolumeField = new MI_SliderField(&spr_selectfield, &menu_slider_bar, 120, 160, "Music", 400, 150, 384);
 	miMusicVolumeField->Add("Off", 0, "", false, false);
 	miMusicVolumeField->Add("1", 16, "", false, false);
@@ -708,7 +708,7 @@ void Menu::CreateMenu()
 	mSoundOptionsMenu.AddControl(miPlaylistField, miAnnouncerField, miSoundPackField, NULL, miSoundOptionsMenuBackButton);
 	mSoundOptionsMenu.AddControl(miSoundPackField, miPlaylistField, miSoundOptionsMenuBackButton, NULL, miSoundOptionsMenuBackButton);
 	mSoundOptionsMenu.AddControl(miSoundOptionsMenuBackButton, miSoundPackField, miSoundVolumeField, miSoundPackField, NULL);
-	
+
 	mSoundOptionsMenu.AddNonControl(miSoundOptionsMenuLeftHeaderBar);
 	mSoundOptionsMenu.AddNonControl(miSoundOptionsMenuRightHeaderBar);
 	mSoundOptionsMenu.AddNonControl(miSoundOptionsMenuHeaderText);
@@ -919,10 +919,10 @@ void Menu::CreateMenu()
 
 	mProjectilesOptionsMenu.AddControl(miFireballLifeField, miProjectilesOptionsMenuBackButton, miFireballLimitField, NULL, miHammerLifeField);
 	mProjectilesOptionsMenu.AddControl(miFireballLimitField, miFireballLifeField, miFeatherJumpsField, NULL, miHammerDelayField);
-	
+
 	mProjectilesOptionsMenu.AddControl(miFeatherJumpsField, miFireballLimitField, miFeatherLimitField, NULL, miHammerLimitField);
 	mProjectilesOptionsMenu.AddControl(miFeatherLimitField, miFeatherJumpsField, miBoomerangStyleField, NULL, miShellLifeField);
-	
+
 	mProjectilesOptionsMenu.AddControl(miBoomerangStyleField, miFeatherLimitField, miBoomerangLifeField, NULL, miBlueBlockLifeField);
 	mProjectilesOptionsMenu.AddControl(miBoomerangLifeField, miBoomerangStyleField, miBoomerangLimitField, NULL, miBlueBlockLifeField);
 	mProjectilesOptionsMenu.AddControl(miBoomerangLimitField, miBoomerangLifeField, miHammerLifeField, NULL, miBlueBlockLifeField);
@@ -931,7 +931,7 @@ void Menu::CreateMenu()
 	mProjectilesOptionsMenu.AddControl(miHammerDelayField, miHammerLifeField, miHammerOneKillField, miFireballLimitField, NULL);
 	mProjectilesOptionsMenu.AddControl(miHammerOneKillField, miHammerDelayField, miHammerLimitField, miFireballLimitField, NULL);
 	mProjectilesOptionsMenu.AddControl(miHammerLimitField, miHammerOneKillField, miShellLifeField, miFeatherJumpsField, NULL);
-	
+
 	mProjectilesOptionsMenu.AddControl(miShellLifeField, miHammerLimitField, miBlueBlockLifeField, miFeatherLimitField, NULL);
 	mProjectilesOptionsMenu.AddControl(miBlueBlockLifeField, miShellLifeField, miProjectilesOptionsMenuBackButton, miBoomerangLifeField, NULL);
 
@@ -1030,16 +1030,16 @@ void Menu::CreateMenu()
 	mScreenResizeMenu.SetHeadControl(miScreenResize);
 	mScreenResizeMenu.SetCancelCode(MENU_CODE_BACK_TO_SCREEN_SETTINGS_MENU);
 #endif
-	
+
 	//***********************
 	// Game Settings
 	//***********************
-	
+
 	miSettingsStartButton = new MI_Button(&spr_selectfield, 70, 45, "Start", 500, 0);
 	miSettingsStartButton->SetCode(MENU_CODE_START_GAME);
 
 	miModeField = new MI_ImageSelectField(&spr_selectfield, &menu_mode_small, 70, 85, "Mode", 500, 120, 16, 16);
-	
+
 	for(short iGameMode = 0; iGameMode < GAMEMODE_LAST; iGameMode++)
 	{
 		miModeField->Add(gamemodes[iGameMode]->GetModeName(), iGameMode, "", false, false);
@@ -1082,7 +1082,7 @@ void Menu::CreateMenu()
 	miMapFilterScroll = new MI_MapFilterScroll(&menu_plain_field, 120, 72, 400, 9);
 	miMapFilterScroll->SetAutoModify(true);
 	miMapFilterScroll->Show(false);
-	
+
 	//Add auto map filters
 	for(short iFilter = 0; iFilter < NUM_AUTO_FILTERS; iFilter++)
 	{
@@ -1095,7 +1095,7 @@ void Menu::CreateMenu()
 		GetNameFromFileName(szTemp, filterslist.GetIndex(iFilter));
 		miMapFilterScroll->Add(szTemp, game_values.piFilterIcons[NUM_AUTO_FILTERS + iFilter]);
 	}
-	
+
 
 	miGameSettingsLeftHeaderBar = new MI_Image(&menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
 	miGameSettingsMenuRightHeaderBar = new MI_Image(&menu_plain_field, 320, 0, 192, 0, 320, 32, 1, 1, 0);
@@ -1108,7 +1108,7 @@ void Menu::CreateMenu()
 	miGameSettingsExitDialogTournamentText = new MI_Text("Tournament", 320, 220, 0, 2, 1);
 	miGameSettingsExitDialogYesButton = new MI_Button(&spr_selectfield, 235, 250, "Yes", 80, 1);
 	miGameSettingsExitDialogNoButton = new MI_Button(&spr_selectfield, 325, 250, "No", 80, 1);
-	
+
 	miGameSettingsExitDialogYesButton->SetCode(MENU_CODE_EXIT_TOURNAMENT_YES);
 	miGameSettingsExitDialogNoButton->SetCode(MENU_CODE_EXIT_TOURNAMENT_NO);
 
@@ -1117,7 +1117,7 @@ void Menu::CreateMenu()
 	miGameSettingsExitDialogExitText->Show(false);
 	miGameSettingsExitDialogYesButton->Show(false);
 	miGameSettingsExitDialogNoButton->Show(false);
-	
+
 	mGameSettingsMenu.AddControl(miSettingsStartButton, miMapThumbnailsButton, miModeField, NULL, NULL);
 	mGameSettingsMenu.AddControl(miModeField, miSettingsStartButton, miGoalField[0], NULL, NULL);
 	mGameSettingsMenu.AddControl(miGoalField[0], miModeField, miGoalField[1], NULL, miModeSettingsButton);
@@ -1143,11 +1143,11 @@ void Menu::CreateMenu()
 	mGameSettingsMenu.AddControl(miMapThumbnailsButton, miMapFiltersButton, miSettingsStartButton, NULL, NULL);
 
 	mGameSettingsMenu.AddControl(miMapFilterScroll, NULL, NULL, NULL, NULL);
-	
+
 	mGameSettingsMenu.AddNonControl(miGameSettingsLeftHeaderBar);
 	mGameSettingsMenu.AddNonControl(miGameSettingsMenuRightHeaderBar);
 	mGameSettingsMenu.AddNonControl(miGameSettingsMenuHeaderText);
-	
+
 	mGameSettingsMenu.AddNonControl(miGameSettingsExitDialogImage);
 	mGameSettingsMenu.AddNonControl(miGameSettingsExitDialogExitText);
 	mGameSettingsMenu.AddNonControl(miGameSettingsExitDialogTournamentText);
@@ -1158,7 +1158,7 @@ void Menu::CreateMenu()
 	mGameSettingsMenu.AddControl(miGameSettingsExitDialogNoButton, NULL, NULL, miGameSettingsExitDialogYesButton, NULL);
 
 	mGameSettingsMenu.SetHeadControl(miSettingsStartButton);
-	
+
 	mGameSettingsMenu.SetCancelCode(MENU_CODE_BACK_TEAM_SELECT_MENU);
 
 	//***********************
@@ -1175,16 +1175,16 @@ void Menu::CreateMenu()
 	//***********************
 	// Tour Stop
 	//***********************
-	
+
 	miTourStop = new MI_TourStop(70, 45);
-	
+
 	//Exit tour dialog box
 	miTourStopExitDialogImage = new MI_Image(&spr_dialog, 224, 176, 0, 0, 192, 128, 1, 1, 0);
 	miTourStopExitDialogExitTourText = new MI_Text("Exit Tour", 320, 205, 0, 2, 1);
 
 	miTourStopExitDialogYesButton = new MI_Button(&spr_selectfield, 235, 250, "Yes", 80, 1);
 	miTourStopExitDialogNoButton = new MI_Button(&spr_selectfield, 325, 250, "No", 80, 1);
-	
+
 	miTourStopExitDialogYesButton->SetCode(MENU_CODE_EXIT_TOUR_YES);
 	miTourStopExitDialogNoButton->SetCode(MENU_CODE_EXIT_TOUR_NO);
 
@@ -1192,7 +1192,7 @@ void Menu::CreateMenu()
 	miTourStopExitDialogExitTourText->Show(false);
 	miTourStopExitDialogYesButton->Show(false);
 	miTourStopExitDialogNoButton->Show(false);
-	
+
 	mTourStopMenu.AddControl(miTourStop, NULL, NULL, NULL, NULL);
 
 	mTourStopMenu.AddNonControl(miTourStopExitDialogImage);
@@ -1243,15 +1243,15 @@ void Menu::CreateMenu()
 	mModeSettingsMenu[3].AddControl(miJailModeTimeFreeField, miJailModeBackButton, miJailModeTagFreeField, NULL, miJailModeBackButton);
 	mModeSettingsMenu[3].AddControl(miJailModeTagFreeField, miJailModeTimeFreeField, miJailModeBackButton, NULL, miJailModeBackButton);
 	mModeSettingsMenu[3].AddControl(miJailModeBackButton, miJailModeTagFreeField, miJailModeTimeFreeField, miJailModeTagFreeField, NULL);
-	
+
 	mModeSettingsMenu[3].AddNonControl(miJailModeLeftHeaderBar);
 	mModeSettingsMenu[3].AddNonControl(miJailModeRightHeaderBar);
 	mModeSettingsMenu[3].AddNonControl(miJailModeHeaderText);
-	
+
 	mModeSettingsMenu[3].SetHeadControl(miJailModeTimeFreeField);
 	mModeSettingsMenu[3].SetCancelCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
-	
+
 	//***********************
 	// Coins Mode Settings
 	//***********************
@@ -1282,14 +1282,14 @@ void Menu::CreateMenu()
 	mModeSettingsMenu[4].AddControl(miCoinModePenaltyField, miCoinModeBackButton, miCoinModeQuantityField, NULL, miCoinModeBackButton);
 	mModeSettingsMenu[4].AddControl(miCoinModeQuantityField, miCoinModePenaltyField, miCoinModeBackButton, NULL, miCoinModeBackButton);
 	mModeSettingsMenu[4].AddControl(miCoinModeBackButton, miCoinModeQuantityField, miCoinModePenaltyField, miCoinModeQuantityField, NULL);
-	
+
 	mModeSettingsMenu[4].AddNonControl(miCoinModeLeftHeaderBar);
 	mModeSettingsMenu[4].AddNonControl(miCoinModeRightHeaderBar);
 	mModeSettingsMenu[4].AddNonControl(miCoinModeHeaderText);
-	
+
 	mModeSettingsMenu[4].SetHeadControl(miCoinModePenaltyField);
 	mModeSettingsMenu[4].SetCancelCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
-	
+
 	//***********************
 	// Flag Mode Settings
 	//***********************
@@ -1345,7 +1345,7 @@ void Menu::CreateMenu()
 	miFlagModeHomeScoreField->SetData(NULL, NULL, &game_values.gamemodesettings.flag.homescore);
 	miFlagModeHomeScoreField->SetKey(game_values.gamemodesettings.flag.homescore ? 1 : 0);
 	miFlagModeHomeScoreField->SetAutoAdvance(true);
-	
+
 	miFlagModeBackButton = new MI_Button(&spr_selectfield, 544, 432, "Back", 80, 1);
 	miFlagModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
@@ -1358,13 +1358,13 @@ void Menu::CreateMenu()
 	mModeSettingsMenu[7].AddControl(miFlagModePointMoveField, miFlagModeTouchReturnField, miFlagModeAutoReturnField, NULL, miFlagModeBackButton);
 	mModeSettingsMenu[7].AddControl(miFlagModeAutoReturnField, miFlagModePointMoveField, miFlagModeHomeScoreField, NULL, miFlagModeBackButton);
 	mModeSettingsMenu[7].AddControl(miFlagModeHomeScoreField, miFlagModeAutoReturnField, miFlagModeBackButton, NULL, miFlagModeBackButton);
-	
+
 	mModeSettingsMenu[7].AddControl(miFlagModeBackButton, miFlagModeHomeScoreField, miFlagModeSpeedField, miFlagModeHomeScoreField, NULL);
-	
+
 	mModeSettingsMenu[7].AddNonControl(miFlagModeLeftHeaderBar);
 	mModeSettingsMenu[7].AddNonControl(miFlagModeRightHeaderBar);
 	mModeSettingsMenu[7].AddNonControl(miFlagModeHeaderText);
-	
+
 	mModeSettingsMenu[7].SetHeadControl(miFlagModeSpeedField);
 	mModeSettingsMenu[7].SetCancelCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
@@ -1391,11 +1391,11 @@ void Menu::CreateMenu()
 
 	mModeSettingsMenu[8].AddControl(miChickenModeTagOnTouchField, miChickenModeBackButton, miChickenModeBackButton, NULL, miChickenModeBackButton);
 	mModeSettingsMenu[8].AddControl(miChickenModeBackButton, miChickenModeTagOnTouchField, miChickenModeTagOnTouchField, miChickenModeTagOnTouchField, NULL);
-	
+
 	mModeSettingsMenu[8].AddNonControl(miChickenModeLeftHeaderBar);
 	mModeSettingsMenu[8].AddNonControl(miChickenModeRightHeaderBar);
 	mModeSettingsMenu[8].AddNonControl(miChickenModeHeaderText);
-	
+
 	mModeSettingsMenu[8].SetHeadControl(miChickenModeTagOnTouchField);
 	mModeSettingsMenu[8].SetCancelCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
@@ -1421,11 +1421,11 @@ void Menu::CreateMenu()
 
 	mModeSettingsMenu[9].AddControl(miTagModeTagOnTouchField, miTagModeBackButton, miTagModeBackButton, NULL, miTagModeBackButton);
 	mModeSettingsMenu[9].AddControl(miTagModeBackButton, miTagModeTagOnTouchField, miTagModeTagOnTouchField, miTagModeTagOnTouchField, NULL);
-	
+
 	mModeSettingsMenu[9].AddNonControl(miTagModeLeftHeaderBar);
 	mModeSettingsMenu[9].AddNonControl(miTagModeRightHeaderBar);
 	mModeSettingsMenu[9].AddNonControl(miTagModeHeaderText);
-	
+
 	mModeSettingsMenu[9].SetHeadControl(miTagModeTagOnTouchField);
 	mModeSettingsMenu[9].SetCancelCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
@@ -1468,14 +1468,14 @@ void Menu::CreateMenu()
 	mModeSettingsMenu[10].AddControl(miStarModeTimeField, miStarModeBackButton, miStarModeShineField, NULL, miStarModeBackButton);
 	mModeSettingsMenu[10].AddControl(miStarModeShineField, miStarModeTimeField, miStarModeBackButton, NULL, miStarModeBackButton);
 	mModeSettingsMenu[10].AddControl(miStarModeBackButton, miStarModeShineField, miStarModeTimeField, miStarModeShineField, NULL);
-	
+
 	mModeSettingsMenu[10].AddNonControl(miStarModeLeftHeaderBar);
 	mModeSettingsMenu[10].AddNonControl(miStarModeRightHeaderBar);
 	mModeSettingsMenu[10].AddNonControl(miStarModeHeaderText);
-	
+
 	mModeSettingsMenu[10].SetHeadControl(miStarModeTimeField);
 	mModeSettingsMenu[10].SetCancelCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
-	
+
 
 	//***********************
 	// Domination Mode Settings
@@ -1561,14 +1561,14 @@ void Menu::CreateMenu()
 	mModeSettingsMenu[11].AddControl(miDominationModeLoseOnDeathField, miDominationModeRelocateFrequencyField, miDominationModeRelocateOnDeathField, NULL, miDominationModeBackButton);
 	mModeSettingsMenu[11].AddControl(miDominationModeRelocateOnDeathField, miDominationModeLoseOnDeathField, miDominationModeStealOnDeathField, NULL, miDominationModeBackButton);
 	mModeSettingsMenu[11].AddControl(miDominationModeStealOnDeathField, miDominationModeRelocateOnDeathField, miDominationModeBackButton, NULL, miDominationModeBackButton);
-	
+
 	mModeSettingsMenu[11].AddControl(miDominationModeBackButton, miDominationModeStealOnDeathField, miDominationModeQuantityField, miDominationModeStealOnDeathField, NULL);
-	
+
 	mModeSettingsMenu[11].AddNonControl(miDominationModeLeftHeaderBar);
 	mModeSettingsMenu[11].AddNonControl(miDominationModeRightHeaderBar);
 	mModeSettingsMenu[11].AddNonControl(miDominationModeHeaderText);
 	mModeSettingsMenu[11].AddNonControl(miDominationModeDeathText);
-	
+
 	mModeSettingsMenu[11].SetHeadControl(miDominationModeQuantityField);
 	mModeSettingsMenu[11].SetCancelCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
@@ -1611,17 +1611,17 @@ void Menu::CreateMenu()
 
 	mModeSettingsMenu[12].AddControl(miKingOfTheHillModeSizeField, miKingOfTheHillModeBackButton, miKingOfTheHillModeRelocateFrequencyField, NULL, miKingOfTheHillModeBackButton);
 	mModeSettingsMenu[12].AddControl(miKingOfTheHillModeRelocateFrequencyField, miKingOfTheHillModeSizeField, miKingOfTheHillModeBackButton, NULL, miKingOfTheHillModeBackButton);
-	
+
 	mModeSettingsMenu[12].AddControl(miKingOfTheHillModeBackButton, miKingOfTheHillModeRelocateFrequencyField, miKingOfTheHillModeSizeField, miKingOfTheHillModeRelocateFrequencyField, NULL);
-	
+
 	mModeSettingsMenu[12].AddNonControl(miKingOfTheHillModeLeftHeaderBar);
 	mModeSettingsMenu[12].AddNonControl(miKingOfTheHillModeRightHeaderBar);
 	mModeSettingsMenu[12].AddNonControl(miKingOfTheHillModeHeaderText);
-	
+
 	mModeSettingsMenu[12].SetHeadControl(miKingOfTheHillModeSizeField);
 	mModeSettingsMenu[12].SetCancelCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
-			
+
 	//***********************
 	// Race Mode Settings
 	//***********************
@@ -1652,7 +1652,7 @@ void Menu::CreateMenu()
 	miRaceModePenaltyField->Add("All Goals", 2, "", false, false);
 	miRaceModePenaltyField->SetData(&game_values.gamemodesettings.race.penalty, NULL, NULL);
 	miRaceModePenaltyField->SetKey(game_values.gamemodesettings.race.penalty);
-	
+
 	miRaceModeBackButton = new MI_Button(&spr_selectfield, 544, 432, "Back", 80, 1);
 	miRaceModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
@@ -1665,11 +1665,11 @@ void Menu::CreateMenu()
 	mModeSettingsMenu[13].AddControl(miRaceModePenaltyField, miRaceModeSpeedField, miRaceModeBackButton, NULL, miRaceModeBackButton);
 
 	mModeSettingsMenu[13].AddControl(miRaceModeBackButton, miRaceModePenaltyField, miRaceModeQuantityField, miRaceModePenaltyField, NULL);
-	
+
 	mModeSettingsMenu[13].AddNonControl(miRaceModeLeftHeaderBar);
 	mModeSettingsMenu[13].AddNonControl(miRaceModeRightHeaderBar);
 	mModeSettingsMenu[13].AddNonControl(miRaceModeHeaderText);
-	
+
 	mModeSettingsMenu[13].SetHeadControl(miRaceModeQuantityField);
 	mModeSettingsMenu[13].SetCancelCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
@@ -1716,17 +1716,17 @@ void Menu::CreateMenu()
 
 
 	mModeSettingsMenu[5].AddControl(miStompModeRateField, miStompModeBackButton, miStompModeEnemySlider[0], NULL, miStompModeBackButton);
-	
+
 	mModeSettingsMenu[5].AddControl(miStompModeEnemySlider[0], miStompModeRateField,      miStompModeEnemySlider[1], NULL, miStompModeBackButton);
 	mModeSettingsMenu[5].AddControl(miStompModeEnemySlider[1], miStompModeEnemySlider[0], miStompModeEnemySlider[2], NULL, miStompModeBackButton);
 	mModeSettingsMenu[5].AddControl(miStompModeEnemySlider[2], miStompModeEnemySlider[1], miStompModeBackButton,     NULL, miStompModeBackButton);
 
 	mModeSettingsMenu[5].AddControl(miStompModeBackButton, miStompModeEnemySlider[2], miStompModeRateField, miStompModeEnemySlider[2], NULL);
-	
+
 	mModeSettingsMenu[5].AddNonControl(miStompModeLeftHeaderBar);
 	mModeSettingsMenu[5].AddNonControl(miStompModeRightHeaderBar);
 	mModeSettingsMenu[5].AddNonControl(miStompModeHeaderText);
-	
+
 	mModeSettingsMenu[5].SetHeadControl(miStompModeRateField);
 	mModeSettingsMenu[5].SetCancelCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
@@ -1809,7 +1809,7 @@ void Menu::CreateMenu()
 	mModeSettingsMenu[15].AddControl(miFrenzyModePowerupSlider[3], miFrenzyModePowerupSlider[2], miFrenzyModePowerupSlider[4], NULL, miFrenzyModePowerupSlider[9]);
 	mModeSettingsMenu[15].AddControl(miFrenzyModePowerupSlider[4], miFrenzyModePowerupSlider[3], miFrenzyModePowerupSlider[5], NULL, miFrenzyModePowerupSlider[10]);
 	mModeSettingsMenu[15].AddControl(miFrenzyModePowerupSlider[5], miFrenzyModePowerupSlider[4], miFrenzyModePowerupSlider[6], NULL, miFrenzyModePowerupSlider[11]);
-	
+
 	mModeSettingsMenu[15].AddControl(miFrenzyModePowerupSlider[6], miFrenzyModePowerupSlider[5], miFrenzyModePowerupSlider[7], miFrenzyModePowerupSlider[0], miFrenzyModeBackButton);
 	mModeSettingsMenu[15].AddControl(miFrenzyModePowerupSlider[7], miFrenzyModePowerupSlider[6], miFrenzyModePowerupSlider[8], miFrenzyModePowerupSlider[1], miFrenzyModeBackButton);
 	mModeSettingsMenu[15].AddControl(miFrenzyModePowerupSlider[8], miFrenzyModePowerupSlider[7], miFrenzyModePowerupSlider[9], miFrenzyModePowerupSlider[2], miFrenzyModeBackButton);
@@ -1818,11 +1818,11 @@ void Menu::CreateMenu()
 	mModeSettingsMenu[15].AddControl(miFrenzyModePowerupSlider[11], miFrenzyModePowerupSlider[10], miFrenzyModeBackButton,       miFrenzyModePowerupSlider[5], miFrenzyModeBackButton);
 
 	mModeSettingsMenu[15].AddControl(miFrenzyModeBackButton, miFrenzyModePowerupSlider[11], miFrenzyModeQuantityField, miFrenzyModePowerupSlider[11], NULL);
-	
+
 	mModeSettingsMenu[15].AddNonControl(miFrenzyModeLeftHeaderBar);
 	mModeSettingsMenu[15].AddNonControl(miFrenzyModeRightHeaderBar);
 	mModeSettingsMenu[15].AddNonControl(miFrenzyModeHeaderText);
-	
+
 	mModeSettingsMenu[15].SetHeadControl(miFrenzyModeQuantityField);
 	mModeSettingsMenu[15].SetCancelCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
@@ -1867,7 +1867,7 @@ void Menu::CreateMenu()
 	miSurvivalModeSpeedField->Add("Very Fast", 8, "", false, false);
 	miSurvivalModeSpeedField->SetData(&game_values.gamemodesettings.survival.speed, NULL, NULL);
 	miSurvivalModeSpeedField->SetKey(game_values.gamemodesettings.survival.speed);
-	
+
 	miSurvivalModeShieldField = new MI_SelectField(&spr_selectfield, 120, 320, "Shield", 400, 180);
 	miSurvivalModeShieldField->Add("Off", 0, "", false, false);
 	miSurvivalModeShieldField->Add("On", 1, "", true, false);
@@ -1889,11 +1889,11 @@ void Menu::CreateMenu()
 	mModeSettingsMenu[16].AddControl(miSurvivalModeSpeedField, miSurvivalModeDensityField, miSurvivalModeShieldField, NULL, miSurvivalModeBackButton);
 	mModeSettingsMenu[16].AddControl(miSurvivalModeShieldField, miSurvivalModeSpeedField, miSurvivalModeBackButton, NULL, miSurvivalModeBackButton);
 	mModeSettingsMenu[16].AddControl(miSurvivalModeBackButton, miSurvivalModeShieldField, miSurvivalModeEnemySlider[0], miSurvivalModeShieldField, NULL);
-	
+
 	mModeSettingsMenu[16].AddNonControl(miSurvivalModeLeftHeaderBar);
 	mModeSettingsMenu[16].AddNonControl(miSurvivalModeRightHeaderBar);
 	mModeSettingsMenu[16].AddNonControl(miSurvivalModeHeaderText);
-	
+
 	mModeSettingsMenu[16].SetHeadControl(miSurvivalModeEnemySlider[0]);
 	mModeSettingsMenu[16].SetCancelCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
@@ -1901,20 +1901,20 @@ void Menu::CreateMenu()
 	//***********************
 	// Team Select Settings
 	//***********************
-	
+
 	miTeamSelect = new MI_TeamSelect(&spr_player_select_background, 112, 96);
 	miTeamSelect->SetAutoModify(true);
-		
+
 	miTeamSelectLeftHeaderBar = new MI_Image(&menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
 	miTeamSelectRightHeaderBar = new MI_Image(&menu_plain_field, 320, 0, 192, 0, 320, 32, 1, 1, 0);
 	miTeamSelectHeaderText = new MI_Text("Team and Character Selection", 320, 5, 0, 2, 1);
 
 	mTeamSelectMenu.AddControl(miTeamSelect, NULL, NULL, NULL, NULL);
-	
+
 	mTeamSelectMenu.AddNonControl(miTeamSelectLeftHeaderBar);
 	mTeamSelectMenu.AddNonControl(miTeamSelectRightHeaderBar);
 	mTeamSelectMenu.AddNonControl(miTeamSelectHeaderText);
-	
+
 	mTeamSelectMenu.SetHeadControl(miTeamSelect);
 	mTeamSelectMenu.SetCancelCode(MENU_CODE_TO_MAIN_MENU);
 
@@ -1923,7 +1923,7 @@ void Menu::CreateMenu()
 	//***********************
 
 	miTournamentScoreboard = new MI_TournamentScoreboard(&spr_tournament_background, 70, 98);
-	
+
 	miTournamentScoreboardNextButton = new MI_Button(&spr_selectfield, 220, 416, "Next", 200, 1);
 	miTournamentScoreboardNextButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU);
 
@@ -1948,7 +1948,7 @@ void Menu::CreateMenu()
 	//***********************
 	// Powerup Selection Menu
 	//***********************
-	
+
 	for(short iPowerup = 0; iPowerup < NUM_POWERUPS; iPowerup++)
 	{
 		miPowerupSlider[iPowerup] = new MI_PowerupSlider(&spr_selectfield, &menu_slider_bar, &spr_storedpoweruplarge, 50 + (iPowerupDisplayMap[iPowerup] < 10 ? 0 : 295), 44 + 38 * (iPowerupDisplayMap[iPowerup] < 10 ? iPowerupDisplayMap[iPowerup] : iPowerupDisplayMap[iPowerup] - 10), 245, iPowerup);
@@ -1970,7 +1970,7 @@ void Menu::CreateMenu()
 
 	miPowerupSelectionBackButton = new MI_Button(&spr_selectfield, 544, 432, "Back", 80, 1);
 	miPowerupSelectionBackButton->SetCode(MENU_CODE_BACK_TO_OPTIONS_MENU);
-	
+
 	miPowerupSelectionRestoreDefaultsButton = new MI_Button(&spr_selectfield, 220, 432, "Restore Defaults", 245, 1);
 	miPowerupSelectionRestoreDefaultsButton->SetCode(MENU_CODE_RESTORE_DEFAULT_POWERUP_WEIGHTS);
 
@@ -1984,7 +1984,7 @@ void Menu::CreateMenu()
 	miPowerupSelectionDialogTournamentText = new MI_Text("Sure?", 320, 220, 0, 2, 1);
 	miPowerupSelectionDialogYesButton = new MI_Button(&spr_selectfield, 235, 250, "Yes", 80, 1);
 	miPowerupSelectionDialogNoButton = new MI_Button(&spr_selectfield, 325, 250, "No", 80, 1);
-	
+
 	miPowerupSelectionDialogYesButton->SetCode(MENU_CODE_POWERUP_RESET_YES);
 	miPowerupSelectionDialogNoButton->SetCode(MENU_CODE_POWERUP_RESET_NO);
 
@@ -2004,7 +2004,7 @@ void Menu::CreateMenu()
 	mPowerupSelectionMenu.AddControl(miPowerupSlider[iPowerupPositionMap[7]], miPowerupSlider[iPowerupPositionMap[6]], miPowerupSlider[iPowerupPositionMap[8]], NULL, miPowerupSlider[iPowerupPositionMap[17]]);
 	mPowerupSelectionMenu.AddControl(miPowerupSlider[iPowerupPositionMap[8]], miPowerupSlider[iPowerupPositionMap[7]], miPowerupSlider[iPowerupPositionMap[9]], NULL, miPowerupSlider[iPowerupPositionMap[18]]);
 	mPowerupSelectionMenu.AddControl(miPowerupSlider[iPowerupPositionMap[9]], miPowerupSlider[iPowerupPositionMap[8]], miPowerupSelectionRestoreDefaultsButton, NULL, miPowerupSlider[iPowerupPositionMap[19]]);
-	
+
 	mPowerupSelectionMenu.AddControl(miPowerupSlider[iPowerupPositionMap[10]], miPowerupSelectionRestoreDefaultsButton, miPowerupSlider[iPowerupPositionMap[11]], miPowerupSlider[iPowerupPositionMap[0]], NULL);
 	mPowerupSelectionMenu.AddControl(miPowerupSlider[iPowerupPositionMap[11]], miPowerupSlider[iPowerupPositionMap[10]], miPowerupSlider[iPowerupPositionMap[12]], miPowerupSlider[iPowerupPositionMap[1]], NULL);
 	mPowerupSelectionMenu.AddControl(miPowerupSlider[iPowerupPositionMap[12]], miPowerupSlider[iPowerupPositionMap[11]], miPowerupSlider[iPowerupPositionMap[13]], miPowerupSlider[iPowerupPositionMap[2]], NULL);
@@ -2015,7 +2015,7 @@ void Menu::CreateMenu()
 	mPowerupSelectionMenu.AddControl(miPowerupSlider[iPowerupPositionMap[17]], miPowerupSlider[iPowerupPositionMap[16]], miPowerupSlider[iPowerupPositionMap[18]], miPowerupSlider[iPowerupPositionMap[7]], NULL);
 	mPowerupSelectionMenu.AddControl(miPowerupSlider[iPowerupPositionMap[18]], miPowerupSlider[iPowerupPositionMap[17]], miPowerupSlider[iPowerupPositionMap[19]], miPowerupSlider[iPowerupPositionMap[8]], NULL);
 	mPowerupSelectionMenu.AddControl(miPowerupSlider[iPowerupPositionMap[19]], miPowerupSlider[iPowerupPositionMap[18]], miPowerupSelectionBackButton, miPowerupSlider[iPowerupPositionMap[9]], NULL);
-	
+
 	mPowerupSelectionMenu.AddControl(miPowerupSelectionRestoreDefaultsButton, miPowerupSlider[iPowerupPositionMap[9]], miPowerupSlider[iPowerupPositionMap[10]], NULL, miPowerupSelectionBackButton);
 
 	mPowerupSelectionMenu.AddControl(miPowerupSelectionBackButton, miPowerupSlider[iPowerupPositionMap[19]], miPowerupSlider[iPowerupPositionMap[0]], miPowerupSelectionRestoreDefaultsButton, NULL);
@@ -2023,7 +2023,7 @@ void Menu::CreateMenu()
 	mPowerupSelectionMenu.AddNonControl(miPowerupSelectionLeftHeaderBar);
 	mPowerupSelectionMenu.AddNonControl(miPowerupSelectionMenuRightHeaderBar);
 	mPowerupSelectionMenu.AddNonControl(miPowerupSelectionMenuHeaderText);
-	
+
 	mPowerupSelectionMenu.AddNonControl(miPowerupSelectionDialogImage);
 	mPowerupSelectionMenu.AddNonControl(miPowerupSelectionDialogTournamentText);
 	mPowerupSelectionMenu.AddNonControl(miPowerupSelectionDialogExitText);
@@ -2038,7 +2038,7 @@ void Menu::CreateMenu()
 	//***********************
 	// Powerup Settings Menu
 	//***********************
-	
+
 	miStoredPowerupDelayField = new MI_SelectField(&spr_selectfield, 120, 120, "Stored Use", 400, 180);
 	miStoredPowerupDelayField->Add("Very Slow", 2, "", false, false);
 	miStoredPowerupDelayField->Add("Slow", 3, "", false, false);
@@ -2090,7 +2090,7 @@ void Menu::CreateMenu()
 
 	miPowerupSettingsMenuBackButton = new MI_Button(&spr_selectfield, 544, 432, "Back", 80, 1);
 	miPowerupSettingsMenuBackButton->SetCode(MENU_CODE_BACK_TO_OPTIONS_MENU);
-	
+
 	miPowerupSettingsMenuLeftHeaderBar = new MI_Image(&menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
 	miPowerupSettingsMenuRightHeaderBar = new MI_Image(&menu_plain_field, 320, 0, 192, 0, 320, 32, 1, 1, 0);
 	miPowerupSettingsMenuHeaderText = new MI_Text("Item Settings Menu", 320, 5, 0, 2, 1);
@@ -2101,13 +2101,13 @@ void Menu::CreateMenu()
 	mPowerupSettingsMenu.AddControl(miBonusWheelField, miSwapStyleField, miKeepPowerupField, NULL, miPowerupSettingsMenuBackButton);
 	mPowerupSettingsMenu.AddControl(miKeepPowerupField, miBonusWheelField, miStoredPowerupResetButton, NULL, miPowerupSettingsMenuBackButton);
 	mPowerupSettingsMenu.AddControl(miStoredPowerupResetButton, miKeepPowerupField, miPowerupSettingsMenuBackButton, NULL, miPowerupSettingsMenuBackButton);
-	
+
 	mPowerupSettingsMenu.AddControl(miPowerupSettingsMenuBackButton, miStoredPowerupResetButton, miStoredPowerupDelayField, miStoredPowerupResetButton, NULL);
 
 	mPowerupSettingsMenu.AddNonControl(miPowerupSettingsMenuLeftHeaderBar);
 	mPowerupSettingsMenu.AddNonControl(miPowerupSettingsMenuRightHeaderBar);
 	mPowerupSettingsMenu.AddNonControl(miPowerupSettingsMenuHeaderText);
-	
+
 	mPowerupSettingsMenu.SetHeadControl(miStoredPowerupDelayField);
 	mPowerupSettingsMenu.SetCancelCode(MENU_CODE_BACK_TO_OPTIONS_MENU);
 }
@@ -2123,7 +2123,7 @@ void Menu::RunMenu()
 
 	fNeedMenuMusicReset = false;
 
-	if(game_values.gamemode->winningteam > -1 && game_values.tournamentwinner == -1 && 
+	if(game_values.gamemode->winningteam > -1 && game_values.tournamentwinner == -1 &&
 		((!game_values.tour && game_values.bonuswheel == 2) || (game_values.tour && game_values.tourstops[game_values.tourstopcurrent - 1]->fBonusWheel)))
 	{
 		miBonusWheel->Reset(false);
@@ -2133,7 +2133,7 @@ void Menu::RunMenu()
 	{
 		mCurrentMenu = &mTournamentScoreboardMenu;
 	}
-	
+
 	if(game_values.tour)
 	{
 		miTournamentScoreboard->RefreshScores();
@@ -2264,7 +2264,7 @@ void Menu::RunMenu()
 							LoadScript("Scripts/StartMenuAutomation.txt");
 						}
 					}
-					
+
 					if(event.key.keysym.sym == SDLK_HOME)
 					{
 						g_fRecordTest = !g_fRecordTest;
@@ -2283,10 +2283,10 @@ void Menu::RunMenu()
 					{
 						AddEmtpyLineToScript();
 					}
-					
+
 #endif
 					break;
-					
+
 				}
 
 			default:
@@ -2438,7 +2438,7 @@ void Menu::RunMenu()
 
 					//Initialize tournament values
 					game_values.tournamentwinner = -1;
-					
+
 					for(int k = 0; k < 4; k++)
 					{
 						game_values.tournament_scores[k].wins = 0;
@@ -2456,14 +2456,14 @@ void Menu::RunMenu()
 						miMapField->LoadCurrentMap();
 
 						game_values.gamemode = gamemodes[miModeField->GetShortValue()];
-						
+
 						for(short iMode = 0; iMode < GAMEMODE_LAST; iMode++)
 						{
-							gamemodes[iMode]->goal = miGoalField[iMode]->GetShortValue();	
+							gamemodes[iMode]->goal = miGoalField[iMode]->GetShortValue();
 						}
 
 						miModeSettingsButton->Show(fShowSettingsButton[miModeField->GetShortValue()]);
-						
+
 						mCurrentMenu = &mGameSettingsMenu;
 						mCurrentMenu->ResetMenu();
 					}
@@ -2573,7 +2573,7 @@ void Menu::RunMenu()
 			else if(MENU_CODE_MUSIC_VOLUME_CHANGED == code)
 			{
 				sfx_setmusicvolume(game_values.musicvolume);
-				
+
 				if(game_values.musicvolume == 0)
 					backgroundmusic[2].stop();
 				else if(game_values.musicvolume > 0 && !game_values.music)
@@ -2758,7 +2758,7 @@ void Menu::RunMenu()
 			else if(MENU_CODE_MAP_FILTER_EXIT == code)
 			{
 				maplist.ApplyFilters(game_values.pfFilters);
-				
+
 				//If the filtered map list has at least 1 map in it, then allow exiting the filter menu
 				if(maplist.MapInFilteredSet())
 				{
@@ -2766,7 +2766,7 @@ void Menu::RunMenu()
 					szCurrentMapName = miMapField->GetMapName();
 
 					miMapFilterScroll->Show(false);
-				
+
 					mGameSettingsMenu.SetHeadControl(miSettingsStartButton);
 					mGameSettingsMenu.SetCancelCode(MENU_CODE_BACK_TEAM_SELECT_MENU);
 
@@ -2794,7 +2794,7 @@ void Menu::RunMenu()
 			else if(MENU_CODE_TO_MAP_FILTER_EDIT == code)
 			{
 				miMapBrowser->Reset(0);
-				
+
 				mCurrentMenu = &mMapFilterEditMenu;
 				mCurrentMenu->ResetMenu();
 			}
@@ -2863,7 +2863,7 @@ void Menu::RunMenu()
 				menu_font_large.drawCentered(320, 405, "Error Reading Tour File!");
 			else if(iDisplayError == DISPLAY_ERROR_MAP_FILTER)
 				menu_font_large.drawCentered(320, 405, "No Maps Meet All Filter Conditions!");
-			
+
 			if(--iDisplayErrorTimer == 0)
 				iDisplayError = DISPLAY_ERROR_NONE;
 		}
@@ -2919,7 +2919,7 @@ void Menu::RunMenu()
 		if(ticks == 0)
 			ticks = 1;
 
-		if(game_values.showfps) 
+		if(game_values.showfps)
 			menu_font_large.drawf(0, 480 - menu_font_large.getHeight(), "Actual:%.1f/%.1f, Flip:%.1f, Potential:%.1f", realfps, 1000.0f / (float)WAITTIME, flipfps, 1000.0f / (float)ticks);
 
 #ifdef _DEBUG
@@ -2929,7 +2929,7 @@ void Menu::RunMenu()
 	if(g_fRecordTest)
 		menu_font_small.drawRightJustified(635, 5, "Recording...");
 #endif
- 
+
 		//double buffering -> flip buffers
 		SDL_Flip(screen);
 
@@ -2941,7 +2941,7 @@ void Menu::RunMenu()
 			delay = 0;
 		else if(delay > WAITTIME)
 			delay = WAITTIME;
-		
+
 		SDL_Delay(delay);
 
 		realfps = 1000.0f / (float)ticks;
@@ -2957,7 +2957,7 @@ void Menu::RunMenu()
 			//Write out all the map thumbnails for the map browser and filter editor
 			char szThumbnail[256];
 			std::map<std::string, MapListNode*>::iterator itr = maplist.GetIteratorAt(0, false);
-		
+
 			short iMapCount = maplist.GetCount();
 			for(short iMap = 0; iMap < iMapCount; iMap++)
 			{
@@ -2965,7 +2965,7 @@ void Menu::RunMenu()
 				char * pszThumbnail = szThumbnail + strlen(szThumbnail);
 				GetNameFromFileName(pszThumbnail, (*itr).second->filename.c_str());
 
-#ifdef PNG_SAVE_FORMAT				
+#ifdef PNG_SAVE_FORMAT
 				strcat(szThumbnail, ".png");
 #else
 				strcat(szThumbnail, ".bmp");
@@ -3033,10 +3033,10 @@ bool Menu::ReadTourFile()
 		//If that map is not found
 		if(!maplist.findexact(pszMap))
 			maplist.random(false);
-		
+
 		ts->pszMapFile = maplist.currentShortmapname();
 		maplist.ResumeCurrent();
-		
+
 		//Get iterations on this operation
 		char * pszTemp = strtok(NULL, ",\n");
 
@@ -3049,14 +3049,14 @@ bool Menu::ReadTourFile()
 			ts->iMode = rand() % GAMEMODE_LAST;
 
 		pszTemp = strtok(NULL, ",\n");
-		
+
 		//This gets the closest game mode to what the tour has
 		if(pszTemp)
 		{
 			//If it is commented out, this will allow things like 33 coins, 17 kill goals, etc.
 			//ts->iGoal = gamemodes[ts->iMode]->GetClosestGoal(atoi(pszTemp));
 			ts->iGoal = atoi(pszTemp);
-			
+
 			//Default to unlimited if an invalid goal was used
 			if(ts->iGoal <= 0)
 				ts->iGoal = gamemodes[ts->iMode]->GetOptions()[rand() % (GAMEMODE_NUM_OPTIONS - 1)].iValue;
@@ -3102,12 +3102,12 @@ bool Menu::ReadTourFile()
 			ts->fBonusWheel = false;
 			sprintf(ts->szName, "Tour Stop %d", game_values.tourstoptotal + 1);
 		}
-		
+
 
 		game_values.tourstops.push_back(ts);
 		game_values.tourstoptotal++;
 	}
-	
+
 	if(game_values.tourstoptotal != 0)
 	{
 		miTourStop->Refresh(game_values.tourstopcurrent);
@@ -3165,7 +3165,7 @@ void Menu::StartGame()
 			sfx_announcer[k].reset();
 
 		FILE * announcerfile = fopen(announcerlist.current_name(), "r");
-		
+
 		char szBuffer[256];
 
 		int announcerIndex = 0;
@@ -3244,7 +3244,7 @@ void Menu::LoadScript(char * szScriptFile)
 	FILE * fp = fopen(szScriptFile, "r");
 
 	if(fp != NULL)
-	{	
+	{
 		char buffer[256];
 		while(fgets(buffer, 256, fp) != NULL)
 		{
@@ -3393,8 +3393,8 @@ void Menu::GetNextScriptOperation()
 				iScriptState = 3;
 				scoreboardnext = rand() % 200;
 			}
-			
-			return;	
+
+			return;
 		}
 		else if(mCurrentMenu == &mGameSettingsMenu)
 		{
@@ -3544,7 +3544,7 @@ void Menu::SaveScript(char * szScriptFile)
 			}
 
 			fprintf(fp, "\n");
-			
+
 			itr++;
 		}
 

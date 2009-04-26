@@ -32,7 +32,7 @@ struct STextAward
 {
 	char			*name;
 	gfxFont			*font;
-	
+
 	STextAward(char *nname, gfxFont *nfont) {name = nname; font = nfont;}
 };
 
@@ -101,7 +101,7 @@ struct STextAward
 #define BOUNCESTRENGTH  0.5f
 #define TAGGEDBOOST    1.0f
 
-#define	GRAVITATION		0.40f		
+#define	GRAVITATION		0.40f
 
 #define MAXVELY			20.0f
 
@@ -602,7 +602,7 @@ struct TourStop
 /*
 struct MenuContext
 {
-	
+
 };
 
 extern MenuContext menu_context;
@@ -615,7 +615,7 @@ struct gv
 	bool		frameadvance;
 	bool		autokill;
 	short		framelimiter;
-	
+
 	bool		sound;
 	bool		music;
 
@@ -648,16 +648,16 @@ struct gv
 
 	bool		showscoreboard;
 	float		scorepercentmove;
-	
+
 	short		tournamentgames;
 	bool		tournament;
 	short		tournamentwinner;
-	
+
 	bool		tour;
 	short		tourstopcurrent;
 	short		tourstoptotal;
 	std::vector<TourStop*> tourstops;
-	
+
 	short		slowdownon;
 	short		slowdowncounter;
 	bool		slowdownfreeze;
@@ -717,7 +717,7 @@ struct gv
 	ts			tournament_scores[4];
 
 	GameModeSettings gamemodesettings;
-	
+
 	short		fireballttl;
 	short		fireballlimit;
 

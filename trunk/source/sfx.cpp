@@ -66,7 +66,7 @@ bool sfxSound::init(const string& filename)
 
 	cout << "load " << filename << "..." << endl;
 	sfx = Mix_LoadWAV(filename.c_str());
-	
+
 	if(sfx == NULL)
 	{
 		printf(" failed!\n");
@@ -79,7 +79,7 @@ bool sfxSound::init(const string& filename)
 	instances = 0;
 
 	Mix_ChannelFinished(&soundfinished);
-	
+
 	return true;
 }
 
@@ -97,7 +97,7 @@ int sfxSound::play()
 			return channel;
 
 		starttime = ticks;
-		
+
 		if(g_PlayingSoundChannels[channel])
 			printf("Error: Sound was played on channel that was not cleared!\n");
 
@@ -132,7 +132,7 @@ void sfxSound::stop()
 void sfxSound::sfx_pause()
 {
 	paused = !paused;
-	
+
 	if(paused)
 		Mix_Pause(channel);
 	else
@@ -186,7 +186,7 @@ bool sfxMusic::load(const string& filename)
 
     cout << "load "<< filename<< "..."<< endl;
 	//music = Mix_LoadMUS(filename.c_str());
-	
+
 	if(!music)
 	{
 	    printf("Error Loading Music: %s\n", Mix_GetError());

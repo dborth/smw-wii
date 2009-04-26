@@ -37,11 +37,11 @@ MapListNode::MapListNode(std::string fullName)
 	pfFilters = new bool[NUM_AUTO_FILTERS + filterslist.GetCount()];
 	for(short iFilter = 0; iFilter < filterslist.GetCount() + NUM_AUTO_FILTERS; iFilter++)
 		pfFilters[iFilter] = false;
-	
+
 	fInCurrentFilterSet = true;
 	filename = fullName;
 	iIndex = 0;
-	
+
 	fReadFromCache = false;
 
 	fValid = true;
@@ -58,13 +58,13 @@ extern short g_iDefaultMusicCategory[MAXMUSICCATEGORY];
 ///////////// MapList ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 MapList::MapList()
 {
-	
+
 }
 
 MapList::~MapList()
 {
 	std::map<std::string, MapListNode*>::iterator iterateAll = maps.begin();
-	
+
 	while (iterateAll != maps.end())
 	{
 		delete (iterateAll->second);
@@ -100,7 +100,7 @@ bool MapList::init()
 
 	//TODO: add proper test via size
 	if(maps.empty())
-	{	
+	{
 		printf("ERROR: Empty map directory!\n");
 		sleep(5);
 		exit(0);
@@ -254,7 +254,7 @@ void MapList::next(bool fUseFilters)
 	if(fUseFilters)
 	{
 		std::map<std::string, MapListNode*>::iterator oldCurrent = current;
-		
+
 		do
 		{
 			next(false);
@@ -311,12 +311,12 @@ void MapList::WriteFilters()
 
 			fprintf(fp, "#Version\n");
 			fprintf(fp, "%d.%d.%d.%d\n\n", g_iVersion[0], g_iVersion[1], g_iVersion[2], g_iVersion[3]);
-			
+
 			fprintf(fp, "#Icon\n");
 			fprintf(fp, "%d\n\n", game_values.piFilterIcons[iFilter + NUM_AUTO_FILTERS]);
 
 			fprintf(fp, "#Maps\n");
-			
+
 			std::map<std::string, MapListNode*>::iterator itr = maps.begin();
 
 			while(itr != maps.end())
@@ -354,7 +354,7 @@ void MapList::ReadFilters()
 				for(short iFilter = 0; iFilter < NUM_AUTO_FILTERS; iFilter++)
 				{
 					char * psz = strtok(NULL, ",\n");
-					
+
 					if(psz)
 					{
 						maps[pszMapName]->pfFilters[iFilter] = strcmp(psz, "0") != 0;
@@ -464,7 +464,7 @@ void MapList::ReloadMapAutoFilters()
 void MapList::WriteMapSummaryCache()
 {
 	FILE * fp = fopen(convertPath("maps/cache/mapsummary.txt").c_str(), "w");
-	
+
 	if(!fp)
 		return;
 
@@ -636,10 +636,10 @@ SkinListNode::SkinListNode(std::string skinName, std::string skinPath)
 	sSkinPath = skinPath;
 }
 
-		
+
 SkinList::SkinList()
 {
-	
+
 }
 
 bool SkinList::init()
@@ -651,7 +651,7 @@ bool SkinList::init()
 	{
 		std::string sShortSkinName = stripCreatorAndDotMap(curname);
 		SkinListNode * node = new SkinListNode(sShortSkinName, d.fullName(curname));
-		
+
 		if(skins.empty())
 		{
 			skins.push_back(node);
@@ -722,7 +722,7 @@ bool SimpleDirectoryList::init(const std::string &path)
 ///////////// MusicList ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 MusicList::MusicList()
 {
-	
+
 }
 
 MusicList::~MusicList()
@@ -746,7 +746,7 @@ bool MusicList::init()
 		else
 			delete m;
 	}
-	
+
 	if(entries.empty())
 	{
 		printf("ERROR: Empty Music directory!\n");
@@ -793,7 +793,7 @@ void MusicList::prev()
 	else
 		currentIndex--;
 };
-		
+
 
 ///////////// MusicEntry ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 MusicEntry::MusicEntry(const std::string & musicdirectory)
@@ -807,7 +807,7 @@ MusicEntry::MusicEntry(const std::string & musicdirectory)
 	int i, k;
 
 	char * szDir = (char*)(musicdirectory.c_str());
-	
+
 	for(k = 0; k < MAXMUSICCATEGORY; k++)
 		numsongsforcategory[k] = 0;
 
@@ -904,7 +904,7 @@ MusicEntry::MusicEntry(const std::string & musicdirectory)
 			if(iAddToCategory == MAXMUSICCATEGORY || iAddToCategory == MAXMUSICCATEGORY + 1)
 			{
 				char * pszName = strtok(szBuffer, ",\n");
-				
+
 				if(!pszName)
 					continue;
 
