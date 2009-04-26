@@ -40,7 +40,7 @@ void RemovePlayersButHighestScoring()
 void SetupScoreBoard(bool fOrderMatters)
 {
 	short i, j;
-	
+
 	bool draw[4] = {false, false, false, false};
 
 	short oldmax = -1;
@@ -53,7 +53,7 @@ void SetupScoreBoard(bool fOrderMatters)
 		for(j = 0; j < score_cnt; j++)
 		{
 			if(!draw[j])
-			{	
+			{
 				//If this player's score is bigger
 				if(max == -1 || score[j]->score > score[max]->score)
 				{
@@ -95,7 +95,7 @@ void ShowScoreBoard()
 		ifsoundonstop(sfx_timewarning);
 		ifsoundonstop(sfx_slowdownmusic);
 		ifsoundonstop(sfx_bowserlaugh);
-		
+
 		backgroundmusic[1].play(true, false);
 	}
 }
@@ -134,13 +134,13 @@ void CGameMode::init()  //called once when the game is started
 	if(goal == 1000)
 		goal = 999; //Cap goal for 3 digit scoreboard
 
-	chicken = NULL; 
+	chicken = NULL;
 	tagged = NULL;
 	star = NULL;
 	frenzyowner = NULL;
 
-	winningteam = -1; 
-	gameover = false; 
+	winningteam = -1;
+	gameover = false;
 	playedwarningsound = false;
 
 	for(short iScore = 0; iScore < score_cnt; iScore++)
@@ -177,7 +177,7 @@ void CGameMode::SetupModeStrings(char * szMode, char * szGoal, short iGoalSpacin
 {
 	strcpy(szModeName, szMode);
 	strcpy(szGoalName, szGoal);
-	
+
 	for(short iMode = 0; iMode < GAMEMODE_NUM_OPTIONS; iMode++)
 	{
 		if(iMode == GAMEMODE_NUM_OPTIONS - 1)
@@ -459,7 +459,7 @@ void CGM_TimeLimit::drawtime()
 {
 	spr_timershade.draw(iScoreOffsetX, 5);
 	spr_scoretext.draw(iDigitRightDstX, 13, iDigitRightSrcX, 0, 16, 16);
-	
+
 	if(iDigitLeftSrcX > 0)
 	{
 		spr_scoretext.draw(iDigitMiddleDstX, 13, iDigitMiddleSrcX, 0, 16, 16);
@@ -476,7 +476,7 @@ void CGM_TimeLimit::SetDigitCounters()
 	short iDigits = timeleft;
 	while(iDigits > 999)
 		iDigits -= 1000;
-		
+
 	iDigitLeftSrcX = iDigits / 100 * 16;
 	iDigitMiddleSrcX = iDigits % 100 / 10 * 16;
 	iDigitRightSrcX = iDigits % 10 * 16;
@@ -675,7 +675,7 @@ void CGM_Chicken::think()
 			}
 
 			CheckWinner(*chicken);
-		}	
+		}
 	}
 }
 
@@ -720,7 +720,7 @@ bool CGM_Chicken::playerkilledplayer(CPlayer &inflictor, CPlayer &other)
 			}
 		}
 	}
-	
+
 	return false;
 }
 
@@ -831,7 +831,7 @@ void CGM_Tag::think()
 
 		if(fReverseScoring)
 			return;
-		
+
 		short countscore = 0;
 		bool playwarning = false;
 		for(short j = 0; j < score_cnt; j++)
@@ -907,7 +907,7 @@ bool CGM_Tag::playerkilledplayer(CPlayer &inflictor, CPlayer &other)
 		if(other.score->score <= 0)
 		{
 			other.score->SetScore(0);
-			
+
 			RemoveTeam(other.teamID);
 			return true;
 		}
@@ -965,7 +965,7 @@ bool CGM_Tag::playerkilledself(CPlayer &player)
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -1283,7 +1283,7 @@ void CGM_Survival::init()
 
 void CGM_Survival::think()
 {
-	if(gameover) 
+	if(gameover)
 	{
 		displayplayertext();
 	}
@@ -1294,7 +1294,7 @@ void CGM_Survival::think()
 			if(++ratetimer == 10)
 			{
 				ratetimer = 0;
-				
+
 				if(--rate < game_values.gamemodesettings.survival.density)
 					rate = game_values.gamemodesettings.survival.density;
 			}
@@ -1349,7 +1349,7 @@ CGM_Domination::CGM_Domination() : CGameMode()
 void CGM_Domination::init()
 {
 	CGameMode::init();
-	
+
 	short iNumAreas = game_values.gamemodesettings.domination.quantity;
 
 	if(iNumAreas > 18)
@@ -1395,7 +1395,7 @@ bool CGM_Domination::playerkilledplayer(CPlayer &player, CPlayer &other)
 {
 	//Update areas the dead player owned
 	objectcollisionitems.adjustPlayerAreas(&player, &other);
-	
+
 	return false;
 }
 
@@ -1470,7 +1470,7 @@ void CGM_Owned::think()
 					if(list_players[k]->ownerPlayerID == list_players[i]->globalID)
 						list_players[i]->score->AdjustScore(1);
 				}
-				
+
 				if(goal > -1)
 				{
 					if(list_players[i]->score->score >= goal)
@@ -1499,7 +1499,7 @@ bool CGM_Owned::playerkilledplayer(CPlayer &inflictor, CPlayer &other)
 	if(!gameover)
 	{
 		//Give a bonus to the killer if he already owned this player
-        if(other.ownerPlayerID == inflictor.globalID)	
+        if(other.ownerPlayerID == inflictor.globalID)
 			inflictor.score->AdjustScore(5);
 
 		//Release all players owned by the killed player
@@ -1517,7 +1517,7 @@ bool CGM_Owned::playerkilledplayer(CPlayer &inflictor, CPlayer &other)
 			other.ownerPlayerID = inflictor.globalID;
 			other.ownerColorOffsetX = inflictor.colorID * 48;
 		}
-		
+
 		return CheckWinner(inflictor);
 	}
 
@@ -1535,7 +1535,7 @@ bool CGM_Owned::playerkilledself(CPlayer &player)
 			list_players[i]->ownerPlayerID = -1;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -1552,7 +1552,7 @@ bool CGM_Owned::CheckWinner(CPlayer &player)
 {
 	if(goal == -1)
 		return false;
-	
+
 	if(player.score->score >= goal)
 	{
 		player.score->SetScore(goal);
@@ -1606,7 +1606,7 @@ bool CGM_Jail::playerkilledplayer(CPlayer &inflictor, CPlayer &other)
 			other.jailed = game_values.gamemodesettings.jail.timetofree;
 
 			short jailedteams[4];
-			
+
 			short i;
 			for(i = 0; i < score_cnt; i++)
 				jailedteams[i] = game_values.teamcounts[i];
@@ -1653,7 +1653,7 @@ bool CGM_Jail::playerkilledplayer(CPlayer &inflictor, CPlayer &other)
 
 					if(list_players[i]->jailed > 0 && list_players[i]->teamID != inflictor.teamID)
 						numjailedplayers++;
-					
+
 					list_players[i]->jailed = 0;
 				}
 
@@ -1720,7 +1720,7 @@ void CGM_Jail::playerextraguy(CPlayer &player, short iType)
 //Stomp mode:
 //Kill randomly appearing goomobas on map
 //First one to kill the limit wins
-CGM_Stomp::CGM_Stomp() : CGameMode() 
+CGM_Stomp::CGM_Stomp() : CGameMode()
 {
 	gamemode = game_mode_stomp;
 	SetupModeStrings("Stomp", "Kills", 10);
@@ -1843,7 +1843,7 @@ CGM_Race::CGM_Race() : CGameMode()
 void CGM_Race::init()
 {
 	CGameMode::init();
-	
+
 	for(short iRaceGoal = 0; iRaceGoal < game_values.gamemodesettings.race.quantity; iRaceGoal++)
 		objectsfront.add(new OMO_RaceGoal(&spr_racegoal, iRaceGoal));
 
@@ -1898,13 +1898,13 @@ void CGM_Race::playerextraguy(CPlayer &player, short iType)
 }
 
 
-void CGM_Race::setNextGoal(short teamID) 
+void CGM_Race::setNextGoal(short teamID)
 {
 	if(++nextGoal[teamID] >= game_values.gamemodesettings.race.quantity)
 	{
 		nextGoal[teamID] = 0;
 		objectsfront.removePlayerRaceGoals(teamID, -1);
-		
+
 		if(!gameover)
 		{
 			score[teamID]->AdjustScore(1);
@@ -1912,13 +1912,13 @@ void CGM_Race::setNextGoal(short teamID)
 			//Don't end the game if the goal is infinite
 			if(goal == -1)
 				return;
-	
+
 			if(score[teamID]->score >= goal)
 			{
 				score[teamID]->SetScore(goal);
 				winningteam = teamID;
 				gameover = true;
-				
+
 				RemovePlayersButTeam(winningteam);
 				SetupScoreBoard(false);
 				ShowScoreBoard();
@@ -1964,7 +1964,7 @@ void CGM_Star::init()
 	fReverseScoring = goal == -1;
 
 	star = GetHighestScorePlayer(!fReverseScoring && !game_values.gamemodesettings.star.shine);
-									
+
 	starItem = new CO_Star(&spr_star);
 	objectsplayer.add(starItem);
 
@@ -2001,7 +2001,7 @@ void CGM_Star::think()
 				ifsoundonplay(sfx_starwarning);
 		}
 	}
-	
+
 	if(timeleft == 0)
 	{		//the game ends
 		timeleft = game_values.gamemodesettings.star.time;
@@ -2041,7 +2041,7 @@ void CGM_Star::think()
 						continue;
 
 					score[iTeam]->AdjustScore(-1);
-			
+
 					if(score[iTeam]->score <= 0)
 					{
 						RemoveTeam(iTeam);
@@ -2061,7 +2061,7 @@ void CGM_Star::think()
 			else
 			{
 				star->score->AdjustScore(-1);
-				
+
 				if(star->score->score <= 0)
 				{
 					RemoveTeam(star->teamID);
@@ -2169,7 +2169,7 @@ void CGM_CaptureTheFlag::think()
 		displayplayertext();
 		return;
 	}
-	
+
 	if(goal > -1)
 	{
 		for(short i = 0; i < list_players_cnt; i++)
@@ -2213,7 +2213,7 @@ void CGM_CaptureTheFlag::playerextraguy(CPlayer &player, short iType)
 {
 	if(gameover)
 		return;
-	
+
 	player.score->AdjustScore(iType);
 
 	if(goal > -1)
@@ -2262,7 +2262,7 @@ bool CGM_KingOfTheHill::playerkilledself(CPlayer &player)
 
 //Boss Mode
 //Person to score fatal hit to boss wins!
-CGM_Boss::CGM_Boss() : CGameMode() 
+CGM_Boss::CGM_Boss() : CGameMode()
 {
 	gamemode = game_mode_boss;
 	SetupModeStrings("Boss", "Lives", 5);
@@ -2294,7 +2294,7 @@ void CGM_Boss::think()
 			ifsoundonstop(sfx_timewarning);
 			ifsoundonstop(sfx_slowdownmusic);
 			ifsoundonplay(sfx_gameover);
-			
+
 			backgroundmusic[1].stop();
 		}
 	}
@@ -2316,7 +2316,7 @@ void CGM_Boss::think()
 		}
 		else if(iBossType == 1)
 		{
-		
+
 		}
 		else if(iBossType == 2)
 		{
@@ -2356,7 +2356,7 @@ void CGM_Boss::draw()
 		else
 		{
 			game_font_large.drawCentered(320, 96, "You Failed To Defeat");
-			
+
 			if(iBossType == 0)
 				game_font_large.drawCentered(320, 118, "The Mighty Sledge Brother");
 			else if(iBossType == 1)
@@ -2450,12 +2450,12 @@ bool CGM_Boss::SetWinner(CPlayer * player)
 		ifsoundonstop(sfx_timewarning);
 		ifsoundonstop(sfx_slowdownmusic);
 		ifsoundonstop(sfx_bowserlaugh);
-		
+
 		backgroundmusic[1].play(true, false);
 	}
 
 	game_values.noexit = true;
-	
+
 	if(iBossType == 0)
 		objectcollisionitems.add(new PU_SledgeHammerPowerup(&spr_sledgehammerpowerup, 304, -32, 1, 32000, 30, 30, 1, 1));
 	else if(iBossType == 1)

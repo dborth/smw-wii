@@ -76,7 +76,7 @@ void CMap::loadTileSet(const std::string& tilesetfile, const std::string tileset
         cout << endl << " ERROR: couldn't open tileset file." << endl;
 		return;
 	}
-	
+
 	for(i = 0; i < TILESETSIZE; i++)
 	{
 		tileset[i] = (TileType)ReadInt(tsf);
@@ -86,9 +86,9 @@ void CMap::loadTileSet(const std::string& tilesetfile, const std::string tileset
 
 	fclose(tsf);
     cout << "done" << endl;
-	
+
 	//2. load tileset graphics
-    
+
 	for(short iTileSet = 0; iTileSet < 3; iTileSet++)
 	{
 		cout << "loading tile set suface from " << tilesetpng[iTileSet] << " ... ";
@@ -125,7 +125,7 @@ void CMap::loadTileSet(const std::string& tilesetfile, const std::string tileset
 	}
 }
 
-//With the new 32x30 tile set, we need to convert old maps to use the 
+//With the new 32x30 tile set, we need to convert old maps to use the
 //correct indexes into the tile set
 void CMap::convertMap()
 {
@@ -185,7 +185,7 @@ void CMap::saveTileSet(const std::string& tilesetfile)
 	{
 		WriteInt(tileset[i], mapfile);
 	}
-	
+
 
 	fclose(mapfile);
 
@@ -243,7 +243,7 @@ void CMap::clearPlatforms()
 
 		delete [] platforms;
 		platforms = NULL;
-	
+
 		iNumPlatforms = 0;
 	}
 }
@@ -255,7 +255,7 @@ void CMap::loadMap(const std::string& file, ReadType iReadType)
 
 	/*
     cout << "loading map " << file;
-	
+
 	if(iReadType == read_type_preview)
 		cout << " (preview)";
 	if(iReadType == read_type_summary)
@@ -310,10 +310,10 @@ void CMap::loadMap(const std::string& file, ReadType iReadType)
 		clearPlatforms();
 
 		cout << "loading map " << file;
-	
+
 		if(iReadType == read_type_preview)
 			cout << " (preview)";
-		
+
 		cout << " ";
 
 		cout << "[Version " << version[0] << '.' << version[1] << '.'
@@ -344,7 +344,7 @@ void CMap::loadMap(const std::string& file, ReadType iReadType)
 		{
 			//Read in background to use
 			ReadString(szBackgroundFile, 128, mapfile);
-			
+
 			for(short iBackground = 0; iBackground < 26; iBackground++)
 			{
 				char * szFindUnderscore = strstr(g_szBackgroundConversion[iBackground], "_");
@@ -395,7 +395,7 @@ void CMap::loadMap(const std::string& file, ReadType iReadType)
 				warpdata[i][j].direction = (short)ReadInt(mapfile);
 				warpdata[i][j].connection = (short)ReadInt(mapfile);
 				warpdata[i][j].id = (short)ReadInt(mapfile);
-				
+
 				for(short iType = 0; iType < NUMSPAWNAREATYPES; iType++)
 					nospawn[iType][i][j] = ReadInt(mapfile) == 0 ? false : true;
 			}
@@ -461,7 +461,7 @@ void CMap::loadMap(const std::string& file, ReadType iReadType)
 				spawnareas[i][m].width = (short)ReadInt(mapfile);
 				spawnareas[i][m].height = (short)ReadInt(mapfile);
 				spawnareas[i][m].size = (short)ReadInt(mapfile);
-			
+
 				totalspawnsize[i] += spawnareas[i][m].size;
 			}
 		}
@@ -569,7 +569,7 @@ void CMap::loadMap(const std::string& file, ReadType iReadType)
 
 		//Read in eyecandy to use
 		eyecandyID = (short)ReadInt(mapfile);
-		
+
 		maxConnection = 0;
 
 		numwarpexits = (short)ReadInt(mapfile);
@@ -622,7 +622,7 @@ void CMap::loadMap(const std::string& file, ReadType iReadType)
 			spawnareas[0][m].width = (short)ReadInt(mapfile);
 			spawnareas[0][m].height = (short)ReadInt(mapfile);
 			spawnareas[0][m].size = (short)ReadInt(mapfile);
-		
+
 			if(version[2] == 0)
 			{
 				spawnareas[0][m].width -= spawnareas[0][m].left;
@@ -631,7 +631,7 @@ void CMap::loadMap(const std::string& file, ReadType iReadType)
 
 			totalspawnsize[0] += spawnareas[0][m].size;
 		}
-		
+
 		//Then duplicate it for all the other spawn areas
 		for(short i = 1; i < NUMSPAWNAREATYPES; i++)
 		{
@@ -646,7 +646,7 @@ void CMap::loadMap(const std::string& file, ReadType iReadType)
 				spawnareas[i][m].width = spawnareas[0][m].width;
 				spawnareas[i][m].height = spawnareas[0][m].height;
 				spawnareas[i][m].size = spawnareas[0][m].size;
-			
+
 				if(version[2] == 0)
 				{
 					spawnareas[i][m].width -= spawnareas[i][m].left;
@@ -702,7 +702,7 @@ void CMap::loadMap(const std::string& file, ReadType iReadType)
 
 		//clear map (we won't be reading in all the layers so it needs to be cleared)
 		clearMap();
-		
+
 		//2. load map data
 		for(j = 0; j < MAPHEIGHT; j++)
 		{
@@ -728,7 +728,7 @@ void CMap::loadMap(const std::string& file, ReadType iReadType)
 		musicCategoryID = g_iMusicCategoryConversion[backgroundID];
 
 		strcpy(szBackgroundFile, g_szBackgroundConversion[backgroundID]);
-		
+
 		//All 1.5 maps will use cloud eyecandy
 		eyecandyID = 1;
 
@@ -766,13 +766,13 @@ void CMap::loadPlatforms(FILE * mapfile, bool fPreview)
 				tiles[iCol][iRow] = (short)ReadInt(mapfile);
 			}
 		}
-	
+
 		float fStartX = ReadFloat(mapfile);
 		float fStartY = ReadFloat(mapfile);
 		float fEndX = ReadFloat(mapfile);
 		float fEndY = ReadFloat(mapfile);
 		float fVelocity = ReadFloat(mapfile);
-		
+
 		MovingPlatformPath * path = new MovingPlatformPath(fVelocity, fStartX, fStartY, fEndX, fEndY);
 
 		platforms[iPlatform] = new MovingPlatform(tiles, iWidth, iHeight, path, true, 0, fPreview);
@@ -793,7 +793,7 @@ void CMap::saveMap(const std::string& file)
 		return;
 	}
 
-	//First write the map compatibility version number 
+	//First write the map compatibility version number
 	//(this will allow the map loader to identify if the map needs conversion)
 	WriteInt(g_iVersion[0], mapfile); //Major
 	WriteInt(g_iVersion[1], mapfile); //Minor
@@ -824,7 +824,7 @@ void CMap::saveMap(const std::string& file)
 	{
 		for(short iCol = 0; iCol < platforms[iPlatform]->iTileWidth; iCol++)
 		{
-			for(short iRow = 0; iRow < platforms[iPlatform]->iTileHeight; iRow++)	
+			for(short iRow = 0; iRow < platforms[iPlatform]->iTileHeight; iRow++)
 			{
 				int iPlatformTile = platforms[iPlatform]->iTileData[iCol][iRow];
 
@@ -864,7 +864,7 @@ void CMap::saveMap(const std::string& file)
 					}
 
 					usedtile[currentx][currenty] = true;
-					
+
 					if(numWarps < MAXWARPS)
 					{
 						warpdata[currentx][currenty].id = numWarps;
@@ -897,7 +897,7 @@ void CMap::saveMap(const std::string& file)
 
 			if(objectdata[i][j] == 0) //Breakable Block
 				iBreakableBlockCount++;
-			
+
 			if(objectdata[i][j] == 6) //Throw Block
 				iThrowBlockCount++;
 
@@ -929,7 +929,7 @@ void CMap::saveMap(const std::string& file)
 			{
 				WriteInt(mapdata[i][j][k], mapfile);
 			}
-			
+
 			WriteInt(objectdata[i][j], mapfile);
 		}
 	}
@@ -951,7 +951,7 @@ void CMap::saveMap(const std::string& file)
 
 		for(short iCol = 0; iCol < platforms[iPlatform]->iTileWidth; iCol++)
 		{
-			for(short iRow = 0; iRow < platforms[iPlatform]->iTileHeight; iRow++)	
+			for(short iRow = 0; iRow < platforms[iPlatform]->iTileHeight; iRow++)
 			{
 				WriteInt(platforms[iPlatform]->iTileData[iCol][iRow], mapfile);
 			}
@@ -998,12 +998,12 @@ void CMap::saveMap(const std::string& file)
 				}
 			}
 			*/
-			
+
 			WriteInt(mapdatatop[i][j], mapfile);
 			WriteInt(warpdata[i][j].direction, mapfile);
 			WriteInt(warpdata[i][j].connection, mapfile);
 			WriteInt(warpdata[i][j].id, mapfile);
-			
+
 			for(short iType = 0; iType < NUMSPAWNAREATYPES; iType++)
 				WriteInt((int)nospawn[iType][i][j], mapfile);
 		}
@@ -1042,7 +1042,7 @@ void CMap::saveMap(const std::string& file)
 					{
 						break;
 					}
-					
+
 					usedtile[currentx][currenty] = true;
 
 					currentx += movex;
@@ -1057,7 +1057,7 @@ void CMap::saveMap(const std::string& file)
 				WriteInt(warpdata[i][j].direction, mapfile);
 				WriteInt(warpdata[i][j].connection, mapfile);
 				WriteInt(warpdata[i][j].id, mapfile);
-				
+
 				if(warpdata[i][j].direction == 0)
 				{
 					//Write out warp exit for player
@@ -1102,7 +1102,7 @@ void CMap::saveMap(const std::string& file)
 	}
 
 	calculatespawnareas(0, false);
-	
+
 	if(numspawnareas[0] == 0)
 		calculatespawnareas(0, true);
 
@@ -1123,7 +1123,7 @@ void CMap::saveMap(const std::string& file)
 		}
 	}
 
-	
+
 	for(j = 0; j < MAPHEIGHT; j++)
 		for(i = 0; i < MAPWIDTH; i++)
 			usedtile[i][j] = false;
@@ -1198,7 +1198,7 @@ void CMap::saveMap(const std::string& file)
 								usedtile[right][down] = true;
 							}
 						}
-						
+
 						break;
 					}
 
@@ -1230,7 +1230,7 @@ void CMap::saveMap(const std::string& file)
 	char * pszSaveThumbnail = szSaveThumbnail + strlen(szSaveThumbnail);
 	GetNameFromFileName(pszSaveThumbnail, file.c_str());
 
-#ifdef PNG_SAVE_FORMAT	
+#ifdef PNG_SAVE_FORMAT
 	strcat(szSaveThumbnail, ".png");
 #else
 	strcat(szSaveThumbnail, ".bmp");
@@ -1333,7 +1333,7 @@ void CMap::calculatespawnareas(short iType, bool fUseTempBlocks)
 			{
 				fUsed = true;
 			}
-			
+
 			//If there is a block there
 			if(!fUsed)
 			{
@@ -1367,7 +1367,7 @@ void CMap::calculatespawnareas(short iType, bool fUseTempBlocks)
 							fUsed = true;
 							break;
 						}
-						
+
 						if(fUseTempBlocks)
 						{
 							if(mapdatatop[i][m] != tile_nonsolid || objectdata[i][m] != BLOCKSETSIZE)
@@ -1394,7 +1394,7 @@ void CMap::calculatespawnareas(short iType, bool fUseTempBlocks)
 								fUsed = true;
 								break;
 							}
-							
+
 							if(fUseTempBlocks)
 							{
 								if(mapdatatop[i][m] != tile_nonsolid || objectdata[i][m] != BLOCKSETSIZE)
@@ -1482,7 +1482,7 @@ void CMap::calculatespawnareas(short iType, bool fUseTempBlocks)
 								usedtile[right][down] = true;
 							}
 						}
-						
+
 						break;
 					}
 
@@ -1584,7 +1584,7 @@ void CMap::drawThumbnailPlatforms(SDL_Surface * targetSurface)
 		short iStartX = ((short)pPath->fStartX - platforms[iPlatform]->iHalfWidth) / PREVIEWTILESIZE;
 		short iStartY = ((short)pPath->fStartY - platforms[iPlatform]->iHalfHeight) / PREVIEWTILESIZE;
 		short iEndX = ((short)pPath->fEndX - platforms[iPlatform]->iHalfWidth) / PREVIEWTILESIZE;
-		
+
 		if(iStartX != iEndX)
 		{
 			short iCenterOffsetY = (platforms[iPlatform]->iHeight - 16) >> 2;
@@ -1638,7 +1638,7 @@ void CMap::preDrawPreviewWarps(SDL_Surface * targetSurface, bool fThumbnail)
 		for(int i = 0; i < MAPWIDTH; i++)
 		{
 			Warp * warp = &g_map.warpdata[i][j];
-			
+
 			if(warp->connection != -1)
 			{
 				SDL_Rect rSrc = {warp->connection * iTileSize, warp->direction * iTileSize, iTileSize, iTileSize};
@@ -1704,7 +1704,7 @@ void CMap::preDrawPreviewBackground(gfxSprite * spr_background, SDL_Surface * ta
 	}
 
 	SDL_Delay(10);  //Sleeps to help the music from skipping
-	
+
 	preDrawPreviewBackground(targetSurface, fThumbnail);
 }
 
@@ -1769,7 +1769,7 @@ void CMap::drawPreview(SDL_Surface * targetSurface, int layer, bool fThumbnail)
 				rectSrc.x = iPreviewTileX[ts];
 				rectSrc.y = iPreviewTileY[ts];
 			}
-		
+
 			if(fThumbnail)
 				SDL_BlitSurface(tilesetsurface[2], &rectSrc, targetSurface, &rectDst);
 			else
@@ -1783,7 +1783,7 @@ void CMap::drawPreview(SDL_Surface * targetSurface, int layer, bool fThumbnail)
 void CMap::drawPreviewBlocks(SDL_Surface * targetSurface, bool fThumbnail)
 {
 	int i, j, ts;
-	
+
 	short iBlockSize = PREVIEWTILESIZE;
 
 	if(fThumbnail)
@@ -1796,7 +1796,7 @@ void CMap::drawPreviewBlocks(SDL_Surface * targetSurface, bool fThumbnail)
 	SDL_Rect rectSrc;
 	rectSrc.w = iBlockSize;
 	rectSrc.h = iBlockSize;
-	
+
 	rectDst.x = 0;
 	for(i = 0; i < MAPWIDTH; i++)
 	{
@@ -1817,7 +1817,7 @@ void CMap::drawPreviewBlocks(SDL_Surface * targetSurface, bool fThumbnail)
 			if(ts >= 7 && ts <= 14)
 				if(iSwitches[(ts - 7) % 4] == 1)
 					rectSrc.y = iBlockSize * 31;
-		
+
 			if(fThumbnail)
 				SDL_BlitSurface(tilesetsurface[2], &rectSrc, targetSurface, &rectDst);
 			else
@@ -1837,7 +1837,7 @@ void CMap::predrawbackground(gfxSprite &background, gfxSprite &mapspr)
 	r.h = 480;
 
 	SDL_BlitSurface(background.getSurface(), NULL, mapspr.getSurface(), &r);
-	
+
 	draw(mapspr.getSurface(), 0, false);
 	draw(mapspr.getSurface(), 1, false);
 
@@ -1853,7 +1853,7 @@ void CMap::predrawbackground(gfxSprite &background, gfxSprite &mapspr)
 	dest.w = 32;
 	dest.h = 32;
 	short iType = 0;
-	
+
 	for(int m = 0; m < numspawnareas[iType]; m++)  //use [1] for item spawn areas
 	{
 		dest.x = spawnareas[iType][m].left * TILESIZE;
@@ -2090,7 +2090,7 @@ void CMap::findspawnpoint(short iType, short * x, short * y, short width, short 
 		for(short iPlatform = 0; iPlatform < iNumPlatforms; iPlatform++)
 		{
 			fDone = !platforms[iPlatform]->IsInNoSpawnZone(*x, *y, width, height);
-			
+
 			if(!fDone)
 				break;
 		}
@@ -2160,10 +2160,10 @@ void CMap::ReadIntChunk(int * mem, size_t iQuantity, FILE * inFile)
 
 		int t = mem[i];
 
-		((char*)&mem[i])[0] = ((char*)&t)[3]; 
-		((char*)&mem[i])[1] = ((char*)&t)[2]; 
-		((char*)&mem[i])[2] = ((char*)&t)[1]; 
-		((char*)&mem[i])[3] = ((char*)&t)[0]; 
+		((char*)&mem[i])[0] = ((char*)&t)[3];
+		((char*)&mem[i])[1] = ((char*)&t)[2];
+		((char*)&mem[i])[2] = ((char*)&t)[1];
+		((char*)&mem[i])[3] = ((char*)&t)[0];
 	}
 }
 #else

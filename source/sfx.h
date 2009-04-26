@@ -30,7 +30,7 @@ class sfxSound
 		int isplaying();
 
 		void clearchannel();
-		
+
 	private:
 		Mix_Chunk *sfx;
 		int channel;

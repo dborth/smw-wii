@@ -59,7 +59,7 @@ class CPlayerAI
 		void SetPlayer(CPlayer * player) {pPlayer = player;}
 
 		virtual void Think(COutputControl * playerKeys);
-		
+
 		void GetNearestObjects();
 		void DistanceToObject(CObject * object, CObject ** target, int * nearest, bool * wrap);
 		void DistanceToObjectCenter(CObject * object, CObject ** target, int * nearest, bool * wrap);
@@ -75,7 +75,7 @@ class CPlayerAI
 
 
 /**************************************************
-* Inherit from the CPlayerAI class and create your own! 
+* Inherit from the CPlayerAI class and create your own!
 ***************************************************/
 class CSimpleAI : public CPlayerAI
 {

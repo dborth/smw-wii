@@ -16,10 +16,10 @@ struct SModeOption
 class CGameMode
 {
 	public:
-		
+
 		CGameMode();
         virtual ~CGameMode();
-		
+
 		virtual void init();  //called once when the game is started
 		virtual void think() {}	//called once a frame
 		virtual void draw() {}
@@ -49,7 +49,7 @@ class CGameMode
 		char * GetModeName() {return szModeName;}
 		char * GetGoalName() {return szGoalName;}
 		SModeOption * GetOptions() {return modeOptions;}
-		
+
 		bool playedwarningsound;
 		short goal;
 
@@ -59,7 +59,7 @@ class CGameMode
 #ifdef _DEBUG
 		virtual void setdebuggoal() {};
 #endif
-		
+
 	protected:
 		char szModeName[64];
 		char szGoalName[64];
@@ -80,7 +80,7 @@ class CGM_Frag : public CGameMode
 	public:
         CGM_Frag();
 		virtual ~CGM_Frag() {;};
-		
+
 		virtual void think();
 		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
 		bool playerkilledself(CPlayer &player);
@@ -91,7 +91,7 @@ class CGM_Frag : public CGameMode
 #ifdef _DEBUG
 		void setdebuggoal() {goal = 5;}
 #endif
-		
+
 };
 
 
@@ -101,7 +101,7 @@ class CGM_TimeLimit : public CGameMode
 	public:
         CGM_TimeLimit();
 		virtual ~CGM_TimeLimit() {;};
-		
+
 		void init();
 		void think();
 		void draw();
@@ -136,7 +136,7 @@ class CGM_Classic : public CGameMode
 	public:
         CGM_Classic();
 		virtual ~CGM_Classic() {;};
-		
+
 		void init();
 		virtual void think();
 		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
@@ -156,7 +156,7 @@ class CGM_Chicken : public CGameMode
 	public:
         CGM_Chicken();
 		virtual ~CGM_Chicken() {;};
-	
+
 		void think();
 		void draw();
 		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
@@ -175,7 +175,7 @@ class CGM_Tag : public CGameMode
 	public:
         CGM_Tag();
 		virtual ~CGM_Tag() {;};
-		
+
 		void init();
 		void think();
 		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
@@ -193,7 +193,7 @@ class CGM_Coins : public CGameMode
 		public:
         CGM_Coins();
 		virtual ~CGM_Coins() {;};
-		
+
 		virtual void init();
 		virtual void think();
 		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
@@ -211,7 +211,7 @@ class CGM_Eggs : public CGameMode
 	public:
         CGM_Eggs();
 		virtual ~CGM_Eggs() {;};
-		
+
 		void init();
 		void think();
 		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
@@ -230,7 +230,7 @@ class CGM_Frenzy : public CGM_Frag
 	public:
         CGM_Frenzy();
 		virtual ~CGM_Frenzy() {;};
-		
+
 		void init();
 		void think();
 		char *getMenuString(char *buffer64);
@@ -246,7 +246,7 @@ class CGM_Survival : public CGM_Classic
 	public:
         CGM_Survival();
 		virtual ~CGM_Survival() {;};
-		
+
 		void init();
 		void think();
 		char *getMenuString(char *buffer64);
@@ -266,7 +266,7 @@ class CGM_Domination : public CGameMode
 	public:
         CGM_Domination();
 		virtual ~CGM_Domination() {;};
-		
+
 		void init();
 		void think();
 		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
@@ -284,7 +284,7 @@ class CGM_Owned : public CGameMode
 	public:
         CGM_Owned();
 		virtual ~CGM_Owned() {;};
-		
+
 		void think();
 		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
 		bool playerkilledself(CPlayer &player);
@@ -310,7 +310,7 @@ class CGM_Jail : public CGM_Frag
 	public:
         CGM_Jail();
 		virtual ~CGM_Jail() {;};
-		
+
 		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
 		void playerextraguy(CPlayer &player, short iType);
 		char *getMenuString(char *buffer64);
@@ -322,7 +322,7 @@ class CGM_Stomp : public CGameMode
 	public:
         CGM_Stomp();
 		virtual ~CGM_Stomp() {;};
-		
+
 		void init();
 		void think();
 
@@ -374,7 +374,7 @@ class CGM_Star : public CGM_TimeLimit
 	public:
         CGM_Star();
 		virtual ~CGM_Star() {;};
-		
+
 		void init();
 		void think();
 		void draw();
@@ -399,7 +399,7 @@ class CGM_CaptureTheFlag : public CGameMode
 	public:
         CGM_CaptureTheFlag();
 		virtual ~CGM_CaptureTheFlag() {;};
-		
+
 		void init();
 		void think();
 		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
@@ -418,7 +418,7 @@ class CGM_KingOfTheHill : public CGM_Domination
 	public:
         CGM_KingOfTheHill();
 		virtual ~CGM_KingOfTheHill() {;};
-		
+
 		void init();
 		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
 		bool playerkilledself(CPlayer &player);
@@ -434,7 +434,7 @@ class CGM_Boss : public CGameMode
 	public:
         CGM_Boss();
 		virtual ~CGM_Boss() {;};
-		
+
 		void init();
 		void think();
 		void draw();
@@ -450,7 +450,7 @@ class CGM_Boss : public CGameMode
 		short GetBossType() {return iBossType;}
 
 	private:
-		
+
 		short enemytimer, poweruptimer;
 		short iBossType;
 };

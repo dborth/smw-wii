@@ -37,7 +37,7 @@ MI_IPField::MI_IPField(gfxSprite * nspr, short x, short y) :
 	UI_Control(x, y)
 {
 	spr = nspr;
-	
+
 	iSelectedDigit = 0;
 
 	for(short k = 0; k < 12; k++)
@@ -70,7 +70,7 @@ MI_IPField::~MI_IPField()
 
 char * MI_IPField::GetValue()
 {
-	sprintf(szValue, "%d%d%d.%d%d%d.%d%d%d.%d%d%d", 
+	sprintf(szValue, "%d%d%d.%d%d%d.%d%d%d.%d%d%d",
 		values[0], values[1], values[2],
 		values[3], values[4], values[5],
 		values[6], values[7], values[8],
@@ -97,7 +97,7 @@ MenuCodeEnum MI_IPField::SendInput(CPlayerInput * playerInput)
 
 			MoveImage();
 		}
-		
+
 		if(playerInput->outputControls[iPlayer].menu_left.fPressed)
 		{
 			if(--iSelectedDigit < 0)
@@ -178,7 +178,7 @@ void MI_IPField::Draw()
 
 		if(values[iSection] != 0 || values[iSection + 1] != 0)
 			menu_font_large.drawf(ix + iDigitPosition[iSection + 1], iy + 12, "%i", values[iSection + 1]);
-		
+
 		menu_font_large.drawf(ix + iDigitPosition[iSection + 2], iy + 12, "%i", values[iSection + 2]);
 	}
 }
@@ -368,7 +368,7 @@ MenuCodeEnum MI_SelectField::SendInput(CPlayerInput * playerInput)
 			if(MoveNext())
 				return mcItemChangedCode;
 		}
-		
+
 		if(playerInput->outputControls[iPlayer].menu_left.fPressed || playerInput->outputControls[iPlayer].menu_up.fPressed)
 		{
 			if(MovePrev())
@@ -478,7 +478,7 @@ bool MI_SelectField::MoveNext()
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -577,7 +577,7 @@ bool MI_SelectField::MoveRandom()
 			return true;
 		}
 	}
-	
+
 	SetValues();
 	return true;
 }
@@ -873,7 +873,7 @@ MenuCodeEnum MI_InputControlField::SendInput(CPlayerInput *)
 			}
 		}
 	}
-	
+
 	game_values.playerInput.CheckIfMouseUsed();
 
 	//Need to clear down keys when coming into this (we'll ignore key up events in here)
@@ -897,7 +897,7 @@ void MI_InputControlField::SetKey(short * iSetKey, short key, short device)
 		{
 			if(iKey == iKeyIndex && iPlayer == iPlayerIndex)
 				continue;
-		
+
 			if(game_values.playerInput.inputControls[iPlayer]->inputGameControls[iType].keys[iKey] == key)
 			{
 				fNeedSwap = true;
@@ -962,7 +962,7 @@ MI_InputControlContainer::MI_InputControlContainer(gfxSprite * spr_button, short
 	miDeviceSelectField = new MI_SelectField(spr_button, x + 16, y + 38, "Device", 420, 150);
 	miDeviceSelectField->SetItemChangedCode(MENU_CODE_INPUT_DEVICE_CHANGED);
 	miDeviceSelectField->Add("Keyboard", -1, "", false, false);
-#ifdef _XBOX	
+#ifdef _XBOX
 	miDeviceSelectField->Disable(true);
 
 	for(int iJoystick = 0; iJoystick < 4; iJoystick++)
@@ -1039,7 +1039,7 @@ MI_InputControlContainer::MI_InputControlContainer(gfxSprite * spr_button, short
 	mInputMenu->AddControl(miMenuInputControlFields[7], miMenuInputControlFields[6], miBackButton, NULL, miBackButton);
 
 	mInputMenu->AddControl(miBackButton, miMenuInputControlFields[7], miDeviceSelectField, miDeviceSelectField, NULL);
-		
+
 	mInputMenu->SetHeadControl(miDeviceSelectField);
 
 	SetVisibleInputFields();
@@ -1056,7 +1056,7 @@ void MI_InputControlContainer::Update()
 {
 	mInputMenu->Update();
 }
-		
+
 void MI_InputControlContainer::Draw()
 {
 	if(!fShow)
@@ -1102,7 +1102,7 @@ MenuCodeEnum MI_InputControlContainer::SendInput(CPlayerInput * playerInput)
 
 		return MENU_CODE_NONE;
 	}
-	
+
 	return ret;
 }
 
@@ -1187,7 +1187,7 @@ void MI_InputControlContainer::UpdateDeviceKeys(short iDevice)
 		miMenuInputControlFields[iKey]->SetDevice(iDevice);
 		miMenuInputControlFields[iKey]->SetKey(&game_values.playerInput.inputControls[iPlayerID]->inputGameControls[1].keys[iKey]);
 	}
-	
+
 	SetVisibleInputFields();
 }
 
@@ -1200,7 +1200,7 @@ MI_TeamSelect::MI_TeamSelect(gfxSprite * spr_background, short x, short y) :
 {
 	spr = spr_background;
 	miImage = new MI_Image(spr_background, ix, iy, 0, 0, 416, 256, 1, 1, 0);
-	
+
 	for(short iTeam = 0; iTeam < 4; iTeam++)
 	{
 		iTeamCounts[iTeam] = game_values.teamcounts[iTeam];
@@ -1245,7 +1245,7 @@ void MI_TeamSelect::Draw()
 	miImage->Draw();
 
 	short iPlayerCount = 0;
-	
+
 	for(short iPlayer = 0; iPlayer < 4; iPlayer++)
 	{
 		if(game_values.playercontrol[iPlayer] > 0)
@@ -1269,7 +1269,7 @@ void MI_TeamSelect::Draw()
 		if(game_values.playercontrol[iTeam] > 0)
 		{
 			spr_player_select_ready.draw(iTeam * 160 + 16, 368, 0, 0, 128, 96);
-			
+
 			spr_menu_boxed_numbers.draw(iTeam * 160 + 32, 388, iTeam * 16, game_values.colorids[iTeam] * 16, 16, 16);
 			menu_font_small.drawChopRight(iTeam * 160 + 52, 404 - menu_font_small.getHeight(), 80, game_values.randomskin[iTeam] ? "Random" : skinlist.GetSkinName(game_values.skinids[iTeam]));
 
@@ -1300,7 +1300,7 @@ MenuCodeEnum MI_TeamSelect::SendInput(CPlayerInput * playerInput)
 				else
 					FindNewTeam(iPlayer, -1);
 			}
-			
+
 			if(playerKeys->menu_right.fPressed)
 			{
 				if(playerKeys->menu_left.fDown)
@@ -1339,7 +1339,7 @@ MenuCodeEnum MI_TeamSelect::SendInput(CPlayerInput * playerInput)
 						if(++game_values.skinids[iPlayer] >= skinlist.GetCount())
 							game_values.skinids[iPlayer] = 0;
 					}
-				}								
+				}
 				while(!LoadMenuSkin(iPlayer, game_values.skinids[iPlayer], game_values.colorids[iPlayer]));
 			}
 
@@ -1354,7 +1354,7 @@ MenuCodeEnum MI_TeamSelect::SendInput(CPlayerInput * playerInput)
 					do
 					{
 						game_values.skinids[iPlayer] = rand() % skinlist.GetCount();
-					}								
+					}
 					while(!LoadMenuSkin(iPlayer, game_values.skinids[iPlayer], game_values.colorids[iPlayer]));
 				}
 			}
@@ -1420,10 +1420,10 @@ void MI_TeamSelect::FindNewTeam(short iPlayerID, short iDirection)
 
 				for(int iMovePlayer = iTeamItem; iMovePlayer < iTeamCounts[iTeam]; iMovePlayer++)
                     iTeamIDs[iTeam][iMovePlayer] = iTeamIDs[iTeam][iMovePlayer + 1];
-				
+
 				short iNewTeam = iTeam;
 				bool fOnlyTeam = true;
-				
+
 				do
 				{
 					iNewTeam += iDirection;
@@ -1454,7 +1454,7 @@ void MI_TeamSelect::FindNewTeam(short iPlayerID, short iDirection)
 				if(game_values.teamcolors)
 				{
 					game_values.colorids[iPlayerID] = iNewTeam;
-					
+
 					//Skip skins that are invalid
 					while(!LoadMenuSkin(iPlayerID, game_values.skinids[iPlayerID], iNewTeam))
 					{
@@ -1513,7 +1513,7 @@ void MI_TeamSelect::Reset()
 			if(game_values.playercontrol[iPlayer] > 0)
 			{
 				short iLookForNewTeam = iPlayer;
-				
+
 				while(iTeamCounts[iLookForNewTeam] >= 3)
 				{
 					if(++iLookForNewTeam >= 4)
@@ -1522,7 +1522,7 @@ void MI_TeamSelect::Reset()
 
 				iTeamIDs[iLookForNewTeam][iTeamCounts[iLookForNewTeam]] = iPlayer;
 				iTeamCounts[iLookForNewTeam]++;
-				
+
 				if(game_values.teamcolors)
 					game_values.colorids[iPlayer] = iLookForNewTeam;
 			}
@@ -1530,7 +1530,7 @@ void MI_TeamSelect::Reset()
 	}
 
 	//Check to see if there is only one team and if so, split them up
-	
+
 	short iCountTeams = 0;
 	short iLastTeam = 0;
 	for(short iTeamID = 0; iTeamID < 4; iTeamID++)
@@ -1547,7 +1547,7 @@ void MI_TeamSelect::Reset()
 		short iLookForNewTeam = iLastTeam;
 		if(++iLookForNewTeam >= 4)
 			iLookForNewTeam = 0;
-		
+
 		iTeamCounts[iLastTeam]--;
 		short iPlayer = iTeamIDs[iLastTeam][iTeamCounts[iLastTeam]];
 		iTeamIDs[iLookForNewTeam][iTeamCounts[iLookForNewTeam]] = iPlayer;
@@ -1582,7 +1582,7 @@ void MI_TeamSelect::Reset()
 
 		if(game_values.playercontrol[iPlayer] == 0)
 			continue;
-		
+
 		if(game_values.teamcolors)
 			game_values.colorids[iPlayer] = GetTeam(iPlayer);
 		else
@@ -1594,7 +1594,7 @@ void MI_TeamSelect::Reset()
 			if(++game_values.skinids[iPlayer] >= skinlist.GetCount())
 				game_values.skinids[iPlayer] = 0;
 		}
-	}	
+	}
 }
 
 short MI_TeamSelect::OrganizeTeams()
@@ -1679,7 +1679,7 @@ MenuCodeEnum MI_PlayerSelect::SendInput(CPlayerInput * playerInput)
 
 			SetImagePosition();
 		}
-		
+
 		if(playerInput->outputControls[iPlayer].menu_left.fPressed)
 		{
 			if(--iSelectedPlayer < 0)
@@ -1759,7 +1759,7 @@ void MI_PlayerSelect::Draw()
 	menu_font_large.drawChopRight(ix + 16, iy + 20, iIndent - 8, szName);
 
 	miModifyImage->Draw();
-	
+
 	for(short iPlayer = 0; iPlayer < 4; iPlayer++)
 	{
 		spr->draw(ix + iPlayerPosition[iPlayer], iy + 16, game_values.playercontrol[iPlayer] * 34 + 32, 206, 34, 32);
@@ -1919,7 +1919,7 @@ MI_MapField::MI_MapField(gfxSprite * nspr, short x, short y, char * name, short 
 	surfaceMapBackground = SDL_CreateRGBSurface(0, 320, 240, 16, 0, 0, 0, 0);
 	surfaceMapForeground = SDL_CreateRGBSurface(0, 320, 240, 16, 0, 0, 0, 0);
 	LoadCurrentMap();
-	
+
 	rectDst.x = x + 16;
 	rectDst.y = y + 44;
 	rectDst.w = 320;
@@ -1964,13 +1964,13 @@ MenuCodeEnum MI_MapField::SendInput(CPlayerInput * playerInput)
 		{
 			short iOldIndex = maplist.GetCurrent()->second->iIndex;
 			maplist.startswith((char)playerInput->iPressedKey);
-			
+
 			if(iOldIndex != maplist.GetCurrent()->second->iIndex)
 			{
 				LoadCurrentMap();
 				return MENU_CODE_MAP_CHANGED;
 			}
-			
+
 			return MENU_CODE_NONE;
 		}
 		/*
@@ -1978,7 +1978,7 @@ MenuCodeEnum MI_MapField::SendInput(CPlayerInput * playerInput)
 		{
 			short iOldIndex = maplist.GetCurrent()->second->iIndex;
 			maplist.prev(true);
-			
+
 			if(iOldIndex != maplist.GetCurrent()->second->iIndex)
 			{
 				LoadCurrentMap();
@@ -2023,7 +2023,7 @@ MenuCodeEnum MI_MapField::SendInput(CPlayerInput * playerInput)
 
 			return MENU_CODE_NONE;
 		}
-		
+
 		if(playerInput->outputControls[iPlayer].menu_left.fPressed || playerInput->outputControls[iPlayer].menu_up.fPressed)
 		{
 			int numadvance = 1;
@@ -2047,7 +2047,7 @@ MenuCodeEnum MI_MapField::SendInput(CPlayerInput * playerInput)
 		{
 			short iOldIndex = maplist.GetCurrent()->second->iIndex;
 			maplist.random(true);
-			
+
 			if(iOldIndex != maplist.GetCurrent()->second->iIndex)
 			{
 				LoadCurrentMap();
@@ -2061,7 +2061,7 @@ MenuCodeEnum MI_MapField::SendInput(CPlayerInput * playerInput)
 		{
 			miModifyImageLeft->Show(false);
 			miModifyImageRight->Show(false);
-			
+
 			fModifying = false;
 			return MENU_CODE_UNSELECT_ITEM;
 		}
@@ -2070,7 +2070,7 @@ MenuCodeEnum MI_MapField::SendInput(CPlayerInput * playerInput)
 		{
 			miModifyImageLeft->Show(false);
 			miModifyImageRight->Show(false);
-			
+
 			fModifying = false;
 
 			return MENU_CODE_UNSELECT_ITEM;
@@ -2131,10 +2131,10 @@ void MI_MapField::Draw()
 
 	SDL_BlitSurface(surfaceMapBackground, NULL, blitdest, &rectDst);
 	g_map.drawPlatforms(rectDst.x, rectDst.y);
-	
+
 	if(game_values.toplayer)
 		SDL_BlitSurface(surfaceMapForeground, NULL, blitdest, &rectDst);
-	
+
 	miModifyImageLeft->Draw();
 	miModifyImageRight->Draw();
 }
@@ -2145,7 +2145,7 @@ void MI_MapField::LoadCurrentMap()
 
 	g_map.loadMap(maplist.currentFilename(), read_type_preview);
 	SDL_Delay(10);  //Sleeps to help the music from skipping
-	
+
 	char filename[128];
 	sprintf(filename, "gfx/packs/backgrounds/%s", g_map.szBackgroundFile);
 	std::string path = convertPath(filename, gamegraphicspacklist.current_name());
@@ -2217,7 +2217,7 @@ MenuCodeEnum MI_AnnouncerField::SendInput(CPlayerInput * playerInput)
 			UpdateName();
 			return MENU_CODE_NONE;
 		}
-		
+
 		if(playerInput->outputControls[iPlayer].menu_left.fPressed || playerInput->outputControls[iPlayer].menu_up.fPressed)
 		{
 			list->prev();
@@ -2304,7 +2304,7 @@ MenuCodeEnum MI_PacksField::SendInput(CPlayerInput * playerInput)
 	{
 		if(playerInput->outputControls[iPlayer].menu_right.fPressed || playerInput->outputControls[iPlayer].menu_down.fPressed)
 			return returnCode;
-		
+
 		if(playerInput->outputControls[iPlayer].menu_left.fPressed || playerInput->outputControls[iPlayer].menu_up.fPressed)
 			return returnCode;
 
@@ -2358,19 +2358,19 @@ MenuCodeEnum MI_PlaylistField::SendInput(CPlayerInput * playerInput)
 			musiclist.next();
 			backgroundmusic[2].stop();
 			backgroundmusic[2].load(musiclist.GetMusic(1));
-			
+
 			if(game_values.music)
 				backgroundmusic[2].play(false, false);
 
 			return MENU_CODE_NONE;
 		}
-		
+
 		if(playerInput->outputControls[iPlayer].menu_left.fPressed || playerInput->outputControls[iPlayer].menu_up.fPressed)
 		{
 			musiclist.prev();
 			backgroundmusic[2].stop();
 			backgroundmusic[2].load(musiclist.GetMusic(1));
-			
+
 			if(game_values.music)
 				backgroundmusic[2].play(false, false);
 
@@ -2382,7 +2382,7 @@ MenuCodeEnum MI_PlaylistField::SendInput(CPlayerInput * playerInput)
             musiclist.random();
 			backgroundmusic[2].stop();
 			backgroundmusic[2].load(musiclist.GetMusic(1));
-			
+
 			if(game_values.music)
 				backgroundmusic[2].play(false, false);
 
@@ -2474,7 +2474,7 @@ void MI_Button::Draw()
 	if(0 == iTextJustified)
 	{
 		menu_font_large.drawChopRight(ix + 16 + (iImageW > 0 ? iImageW + 2 : 0), iy + 5, iWidth - 32, szName);
-		
+
 		if(sprImage)
 			sprImage->draw(ix + 16, iy + 16 - (iImageH >> 1), iImageSrcX, iImageSrcY, iImageW, iImageH);
 	}
@@ -2496,7 +2496,7 @@ void MI_Button::Draw()
 
 void MI_Button::SetName(char * name)
 {
-	szName = name; 
+	szName = name;
 	iTextW = (short)menu_font_large.getWidth(name);
 }
 
@@ -2560,7 +2560,7 @@ MI_TourStop::MI_TourStop(short x, short y) :
 
 	miModeField = new MI_ImageSelectField(&spr_selectfielddisabled, &menu_mode_small, 70, 85, "Mode", 500, 120, 16, 16);
 	miModeField->Disable(true);
-	
+
 	miGoalField = new MI_SelectField(&spr_selectfielddisabled, 70, 125, "Goal", 246, 120);
 	miGoalField->Disable(true);
 
@@ -2602,7 +2602,7 @@ void MI_TourStop::Update()
 	miTourStopMenuRightHeaderBar->Update();
 	miTourStopMenuHeaderText->Update();
 }
-		
+
 void MI_TourStop::Draw()
 {
 	miStartButton->Draw();
@@ -2714,7 +2714,7 @@ void MI_TournamentScoreboard::FreeScoreboard()
 		delete miTourPointBar;
 		miTourPointBar = NULL;
 	}
-	
+
 
 	delete [] miPlayerImages;
 	delete [] miIconImages;
@@ -2725,7 +2725,7 @@ void MI_TournamentScoreboard::Update()
 	for(short iTeam = 0; iTeam < iNumTeams; iTeam++)
 	{
 		miTeamImages[iTeam]->Update();
-	
+
 		for(short iGame = 0; iGame < iNumGames; iGame++)
 		{
 			miIconImages[iTeam][iGame]->Update();
@@ -2756,7 +2756,7 @@ void MI_TournamentScoreboard::Update()
 
 				ifsoundonplay(sfx_cannon);
 
-				float dAngle = 0.0f; 
+				float dAngle = 0.0f;
 				short iRandX = (short)(rand() % 440 + 100);
 				short iRandY = (short)(rand() % 280 + 100);
 
@@ -2765,7 +2765,7 @@ void MI_TournamentScoreboard::Update()
 					float dVel = 7.0f + ((iBlock % 2) * 5.0f);
 					float dVelX = dVel * cos(dAngle);
 					float dVelY = dVel * sin(dAngle);
-					
+
 					short iRandomColor = (short)(rand() % iTeamCounts[iTournamentWinner]);
 					uiMenu->AddEyeCandy(new EC_FallingObject(&spr_bonus, iRandX, iRandY, dVelX, dVelY, 4, 2, 0, game_values.colorids[iTeamIDs[iTournamentWinner][iRandomColor]] * 16, 16, 16));
 					dAngle -= (float)PI / 14;
@@ -2793,7 +2793,7 @@ void MI_TournamentScoreboard::Update()
 		}
 	}
 }
-		
+
 void MI_TournamentScoreboard::Draw()
 {
 	if(!fShow)
@@ -2854,7 +2854,7 @@ void MI_TournamentScoreboard::CreateScoreboard(short numTeams, short numGames, g
 			iTeamIDs[iTeam][iTeamSpot] = game_values.teamids[iTeam][iTeamSpot];
 		}
 	}
-	
+
 	iTournamentWinner = -1;
 	iGameWinner = -1;
 
@@ -2866,11 +2866,11 @@ void MI_TournamentScoreboard::CreateScoreboard(short numTeams, short numGames, g
 
 	iNumTeams = numTeams;
 	iNumGames = numGames;
-	
+
 	miTeamImages = new MI_Image * [iNumTeams];
 	miIconImages = new MI_Image ** [iNumTeams];
 	miPlayerImages = new MI_Image ** [iNumTeams];
-	
+
 	for(short iTeam = 0; iTeam < iNumTeams; iTeam++)
 	{
 		short iTeamY = GetYFromPlace(iTeam);
@@ -2962,12 +2962,12 @@ void MI_TournamentScoreboard::RefreshScores()
 		for(short iTeam = 0; iTeam < iNumWinningTeams; iTeam++)
 			miTeamImages[iWinningTeams[iTeam]]->SetAnimationSpeed(20);
 	}
-	
+
 
 	for(short iTeam = 0; iTeam < iNumTeams; iTeam++)
 	{
 		short iTeamY = GetYFromPlace(game_values.tournament_scores[iTeam].wins);
-		
+
 		if(fTour)
 			iTeamY += 28; //shift down 18 pxls for extra tour points bar
 
@@ -3024,10 +3024,10 @@ void MI_TournamentScoreboard::RefreshScores(short gameWinner)
 			{
 				iSwirlIconTeam = iTeam;
 				iSwirlIconGame = iGame;
-				
+
 				miIconImages[iTeam][iGame]->SetSwirl(true, 250.0f, (float)(rand() % 1000) * TWO_PI / 1000.0f, 3.0f, 0.1f);
 			}
-				
+
 			miIconImages[iTeam][iGame]->SetPulse(false);
 			miIconImages[iTeam][iGame]->Show(true);
 		}
@@ -3079,7 +3079,7 @@ MI_BonusWheel::~MI_BonusWheel()
 	{
 		for(int iImage = 0; iImage < NUM_POWERUPS - 1; iImage++)
 			delete miBonusImages[iImage];
-		
+
 		delete [] miBonusImages;
 	}
 
@@ -3087,7 +3087,7 @@ MI_BonusWheel::~MI_BonusWheel()
 	{
 		for(int iPlayer = 0; iPlayer < iNumPlayers; iPlayer++)
 			delete miPlayerImages[iPlayer];
-		
+
 		delete [] miPlayerImages;
 	}
 }
@@ -3117,7 +3117,7 @@ void MI_BonusWheel::Update()
 	if(++iSelectorAnimationCounter > 8)
 	{
 		iSelectorAnimationCounter = 0;
-		
+
 		if(++iSelectorAnimation > 1)
 			iSelectorAnimation = 0;
 	}
@@ -3127,7 +3127,7 @@ void MI_BonusWheel::Update()
 	if(dSelectionSpeed <= 0.0f)
 	{
 		dSelectionSpeed = 0.0f;
-		
+
 		if(!fPowerupSelectionDone)
 		{
 			fPowerupSelectionDone = true;
@@ -3151,7 +3151,7 @@ void MI_BonusWheel::Update()
 
 	dSelectionAngle += dSelectionSpeed;
 }
-		
+
 void MI_BonusWheel::Draw()
 {
 	if(!fShow)
@@ -3209,7 +3209,7 @@ void MI_BonusWheel::Reset(bool fTournament)
 
 		miBonusImages[iChoosePowerup]->SetPosition(iPowerupX, iPowerupY);
 	}
-	
+
 	//Delete the old winner images
 	if(miPlayerImages)
 	{
@@ -3250,7 +3250,7 @@ void MI_BonusWheel::Reset(bool fTournament)
 	iSelectorAnimationCounter = 0;
 	dSelectionSpeed = 0.0f;
 	dSelectionAngle = (float)(iPowerupOrder[iSelectedPowerup - 1]) * TWO_PI / (float)(NUM_POWERUPS - 1);
-	
+
 	//wind back the selection angle
 	int iRandomWindBack = rand() % 50 + 250;
 	for(int iWindback = 0; iWindback < iRandomWindBack; iWindback++)
@@ -3320,7 +3320,7 @@ MenuCodeEnum MI_ScreenResize::SendInput(CPlayerInput * playerInput)
 				}
 				else if (playerInput->outputControls[iPlayer].menu_random.fPressed)
 				{
-					if(dPreset * 4.0f == game_values.screenResizeX && dPreset * 3.0f == game_values.screenResizeY && 
+					if(dPreset * 4.0f == game_values.screenResizeX && dPreset * 3.0f == game_values.screenResizeY &&
 						dPreset * -8.0f == game_values.screenResizeW && dPreset * -6.0f == game_values.screenResizeH)
 					{
 						dPreset += 1.0f;
@@ -3350,7 +3350,7 @@ MenuCodeEnum MI_ScreenResize::SendInput(CPlayerInput * playerInput)
 					iLastJoy2Y = event.jaxis.value;
 			}
 		}
-		
+
 		if(iLastJoy1X > JOYSTICK_DEAD_ZONE || iLastJoy1X < -JOYSTICK_DEAD_ZONE)
 		{
 			game_values.screenResizeX += (float)iLastJoy1X / 50000.0f;
@@ -3374,7 +3374,7 @@ MenuCodeEnum MI_ScreenResize::SendInput(CPlayerInput * playerInput)
 			game_values.screenResizeH += (float)iLastJoy2Y / 50000.0f;
 			resized = true;
 		}
-		
+
 		if(resized)
 		{
 			resized = false;
@@ -3414,14 +3414,14 @@ MI_Image::MI_Image(gfxSprite * nspr, short x, short y, short srcx, short srcy, s
 	iNumXFrames = numxframes;
 	iNumYFrames = numyframes;
 	iSpeed = speed;
-	
+
 	iTimer = 0;
 	iXFrame = srcx;
 	iYFrame = srcy;
 
 	fPulse = false;
 	iPulseValue = 0;
-	fPulseOut = true; 
+	fPulseOut = true;
 	iPulseDelay = 0;
 
 	fSwirl = false;
@@ -3448,7 +3448,7 @@ void MI_Image::Update()
 		{
 			iXFrame = isrcx;
 			iYFrame += ih;
-		
+
 			if(iYFrame >= iNumYFrames * ih + isrcy)
 			{
 				iYFrame = isrcy;
@@ -3527,7 +3527,7 @@ MI_Text::MI_Text(char * text, short x, short y, short w, short size, short justi
 
 	iw = w;
 	iJustified = justified;
-	
+
 	if(size == 0)
 		font = &menu_font_small;
 	else
@@ -3541,7 +3541,7 @@ void MI_Text::SetText(char * text)
 {
 	delete [] szText;
 	szText = new char[strlen(text) + 1];
-	strcpy(szText, text);	
+	strcpy(szText, text);
 }
 
 void MI_Text::Draw()
@@ -3567,7 +3567,7 @@ MI_ScoreText::MI_ScoreText(short x, short y) :
 	UI_Control(x, y)
 {
 	iScore = 0;
-	
+
 	iDigitLeftSrcX = 0;
 	iDigitMiddleSrcX = 0;
 	iDigitRightSrcX = 0;
@@ -3580,7 +3580,7 @@ MI_ScoreText::MI_ScoreText(short x, short y) :
 void MI_ScoreText::Draw()
 {
 	spr_scoretext.draw(iDigitRightDstX, iy, iDigitRightSrcX, 0, 16, 16);
-	
+
 	if(iDigitLeftSrcX > 0)
 	{
 		spr_scoretext.draw(iDigitMiddleDstX, iy, iDigitMiddleSrcX, 0, 16, 16);
@@ -3597,7 +3597,7 @@ void MI_ScoreText::SetScore(short iScore)
 	short iDigits = iScore;
 	while(iDigits > 999)
 		iDigits -= 1000;
-		
+
 	iDigitLeftSrcX = iDigits / 100 * 16;
 	iDigitMiddleSrcX = iDigits % 100 / 10 * 16;
 	iDigitRightSrcX = iDigits % 10 * 16;
@@ -3674,7 +3674,7 @@ MenuCodeEnum MI_MapFilterScroll::SendInput(CPlayerInput * playerInput)
 			MoveNext();
             return MENU_CODE_NONE;
 		}
-		
+
 		if(playerInput->outputControls[iPlayer].menu_up.fPressed)
 		{
 			MovePrev();
@@ -3814,7 +3814,7 @@ bool MI_MapFilterScroll::MovePrev()
  * MI_MapBrowser Class
  **************************************/
 
-MI_MapBrowser::MI_MapBrowser() : 
+MI_MapBrowser::MI_MapBrowser() :
 	UI_Control(0, 0)
 {
 	for(short iSurface = 0; iSurface < 9; iSurface++)
@@ -3850,7 +3850,7 @@ void MI_MapBrowser::Update()
 	if(++iFilterTagAnimationTimer > 8)
 	{
 		iFilterTagAnimationTimer = 0;
-		
+
 		iFilterTagAnimationFrame += 24;
 		if(iFilterTagAnimationFrame > 24)
 			iFilterTagAnimationFrame = 0;
@@ -3928,10 +3928,10 @@ MenuCodeEnum MI_MapBrowser::SendInput(CPlayerInput * playerInput)
 				iSkipRows = 3;
 
 			iSelectedIndex = (iSelectedRow + iSkipRows) * 3 + iSelectedCol + iPage * 9;
-			
+
 			if(iSelectedIndex >= iMapCount)
 				iSelectedIndex = iMapCount - 1;
-			
+
 			iSelectedRow = (iSelectedIndex / 3) % 3;
 			iSelectedCol = iSelectedIndex % 3;
 
@@ -3943,7 +3943,7 @@ MenuCodeEnum MI_MapBrowser::SendInput(CPlayerInput * playerInput)
 
             return MENU_CODE_NONE;
 		}
-		
+
 		if(playerInput->outputControls[iPlayer].menu_up.fPressed)
 		{
 			short iSkipRows = 1;
@@ -3951,7 +3951,7 @@ MenuCodeEnum MI_MapBrowser::SendInput(CPlayerInput * playerInput)
 				iSkipRows = 3;
 
 			iSelectedIndex = (iSelectedRow - iSkipRows) * 3 + iSelectedCol + iPage * 9;
-			
+
 			if(iSelectedIndex < 0)
 				iSelectedIndex = 0;
 
@@ -3970,16 +3970,16 @@ MenuCodeEnum MI_MapBrowser::SendInput(CPlayerInput * playerInput)
 		if(playerInput->outputControls[iPlayer].menu_left.fPressed)
 		{
 			short iNextIndex = iSelectedRow * 3 + iSelectedCol - 1 + iPage * 9;
-			
+
 			if(iNextIndex < 0)
 				return MENU_CODE_NONE;
 
 			iSelectedIndex = iNextIndex;
-			
+
 			if(--iSelectedCol < 0)
 			{
 				iSelectedCol = 2;
-				
+
 				if(--iSelectedRow < 0)
 				{
 					iSelectedRow = 2;
@@ -3993,12 +3993,12 @@ MenuCodeEnum MI_MapBrowser::SendInput(CPlayerInput * playerInput)
 		if(playerInput->outputControls[iPlayer].menu_right.fPressed)
 		{
 			short iNextIndex = iSelectedRow * 3 + iSelectedCol + 1 + iPage * 9;
-			
+
 			if(iNextIndex >= iMapCount)
 				return MENU_CODE_NONE;
 
 			iSelectedIndex = iNextIndex;
-			
+
 			if(++iSelectedCol > 2)
 			{
 				iSelectedCol = 0;
@@ -4074,7 +4074,7 @@ void MI_MapBrowser::LoadPage(short page, bool fUseFilters)
 			return;
 
 		std::map<std::string, MapListNode*>::iterator itr = maplist.GetIteratorAt(iIndex, fUseFilters);
-		
+
 		//See if we already have a thumbnail saved for this map
 
 		char szThumbnail[256];
@@ -4097,7 +4097,7 @@ void MI_MapBrowser::LoadPage(short page, bool fUseFilters)
 			g_map.saveThumbnail(sConvertedPath, false);
 			SDL_Delay(10);
 		}
-		
+
 		mapSurfaces[iMap] = IMG_Load(sConvertedPath.c_str());
 
 		mapListNodes[iMap] = (*itr).second;

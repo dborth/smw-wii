@@ -6,7 +6,7 @@
 /* To use this class, inherit it, add members representing your options, and be
  * sure to implement Trasnfer() and Defaults(). You can optionally implement
  * Check();
- 
+
   * It would probably be more effective to implement this functionality as a
   * metaprogram, however I'm not about to write that in C or C++, and I'm not
   * about to add Python as a building dependency, unfortunately */

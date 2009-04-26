@@ -15,10 +15,10 @@ class CEyecandy
 
 		virtual void draw(){printf("CEyecandy::draw() - NO!\n");};
 		virtual void update(){printf("CEyecandy::update() - NO!\n");};
-	
+
 	protected:
 		bool dead;
-	
+
 	friend class CEyecandyContainer;
 };
 
@@ -115,7 +115,7 @@ class EC_FallingObject : public CEyecandy
 		float fx, fy;
 		short iw, ih;
 		float vely, velx;
-		
+
 		short iSrcOffsetX;
 		short iSrcOffsetY;
 
@@ -148,7 +148,7 @@ class EC_LoopingAnimation : public CEyecandy
 		EC_LoopingAnimation(gfxSprite *nspr, short x, short y, short iframes, short irate, short iloops, short ioffsetx, short ioffsety, short istartoffsetx, short iwidth, short iheight);
 		void update();
 		void draw();
-	
+
 	private:
 		gfxSprite *spr;
 		short ix, iy;
@@ -269,7 +269,7 @@ class EC_Door : public CEyecandy
 		EC_Door(gfxSprite *nspr, gfxSprite *mario, short nx, short ny, short irate, short iOffsetX);
 		virtual void draw();
 		virtual void update();
-	
+
 	protected:
 		gfxSprite *spr;
 		gfxSprite *mariospr;

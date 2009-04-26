@@ -73,7 +73,7 @@ class CScore
 			short iDigits = score;
 			while(iDigits > 999)
 				iDigits -= 1000;
-				
+
 			iDigitLeft = iDigits / 100 * 16;
 			iDigitMiddle = iDigits % 100 / 10 * 16;
 			iDigitRight = iDigits % 10 * 16;
@@ -117,7 +117,7 @@ class CPlayer
 
 		short GetWarpPlane() {return warpplane;}
 		bool IsPlayerFacingRight();
-		
+
 		bool IsAcceptingItem() {return fAcceptingItem;}
 		bool PressedAcceptItemKey() {return fPressedAcceptItem;}
 		bool AcceptItem(MO_CarriedObject * item);
@@ -141,7 +141,7 @@ class CPlayer
  		void xi(short xi){ix = xi; fx = (float)ix;};
 		void yf(float yf){fy = yf; iy = (short)fy;};
 		void yi(short yi){iy = yi; fy = (float)iy;};
-		
+
 		void FindSpawnPoint();
 		void collision_detection_map();
 		bool collision_detection_checktop();
@@ -158,12 +158,12 @@ class CPlayer
 		void addrocketawards();
 
 		void KillPlayerMapHazard();
-		
+
         void enterwarp(Warp * warp);
 		void chooseWarpExit();
 		void increasewarpcounter(short iGoal);
 		void decreasewarpcounter();
-		
+
 		COutputControl * playerKeys;
 		short playerDevice;
 
@@ -206,7 +206,7 @@ class CPlayer
 
 		short iNewPowerupX, iNewPowerupY;  //For moving powerups around during player swap effect
 		short iOldPowerupX, iOldPowerupY;
-		
+
 		bool inair;			//true... player is in the air, false... player is on the ground
 							//inair is set in CPlayer::collision_detection_map()
 		bool onice;			//on ice... friction goes way down
@@ -271,7 +271,7 @@ class CPlayer
 
 		short superjumptimer;		//this is true when a player is able to do a super jump off a note block
 		short hammertimer;		//Only allow the player to throw powerful hammers so fast
-		
+
 		short frictionslidetimer;  //this controls how much friction smoke is generated when sliding
 		short bobombsmoketimer;   //timer for the bobomb smoke animation
 
@@ -283,7 +283,7 @@ class CPlayer
 
 		short spr;
 		short sprswitch;
-	
+
 		bool invincible;
 		short invincibletimer;
 
@@ -363,7 +363,7 @@ class CPlayer
 		friend void CleanDeadPlayers();
 		friend short CountAliveTeams(short * lastteam);
 		friend void RunGame();
-		
+
 		friend class CObjectContainer;
 
 		friend class CGameMode;
@@ -385,7 +385,7 @@ class CPlayer
 		friend class CGM_CaptureTheFlag;
 		friend class CGM_Stomp;
 		friend class CGM_Boss;
-		
+
 		friend class MI_InputDevice;
 		friend class MI_InputLeft;
 		friend class MI_InputRight;

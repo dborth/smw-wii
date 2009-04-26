@@ -1,10 +1,10 @@
 #include "global.h"
 #include "ai.h"
 
-/* 
+/*
 Controlling the Player
 ----------------------
-If a player is AI controlled, then the Think() method is called once every 4 game frames 
+If a player is AI controlled, then the Think() method is called once every 4 game frames
 (62 avg. fps / 4 = 15 times/sec)
 The method is called with a reference to the player's COutputControl struct, which is what is
 used to send input to the player.  This is the same struct that the gamepad/keyboard fills out.
@@ -15,7 +15,7 @@ you should probably clear out the values and set everything to false.  The contr
 
 playerKeys->game_left -> Move the player left
 playerKeys->game_right -> Move right (setting both right and left is like setting neither)
-playerKeys->game_jump -> Make the player jump (player's jump will be cut short if jump is set false before 
+playerKeys->game_jump -> Make the player jump (player's jump will be cut short if jump is set false before
 						 the maximum jump height is achieved)
 playerKeys->game_down -> Set true and jump to true if you want player to fall through a solid on top tile
 playerKeys->game_turbo -> Make the player run faster or shoot a projectile or hold it down to pick up an item
@@ -23,11 +23,11 @@ playerKeys->game_powerup -> Use a stored powerup item
 
 Each of the 6 inputs above have an fPressed and fDown member.  The game code uses only the fDown (input
 held down).  The menu uses the fPressed events so your AI will not use those here.  You'll notice in the
-current AI that we're only setting the fDown member.  
+current AI that we're only setting the fDown member.
 
 Current AI
 ----------
-The way the current AI works is, first we call GetNearestObjects().  This fills out the nearestObjects 
+The way the current AI works is, first we call GetNearestObjects().  This fills out the nearestObjects
 class with the nearest player, goal (can be powerups, mode goals like coins, pretty much anything good
 to collect), threat (shells, fireballs, etc), teammate (for freeing from jail), and stomp goal (for
 figuring out things to jump on in stomp mode).
@@ -56,12 +56,12 @@ Accessing The Map
 There are some things that will probably be useful when creating your own AI that the current code doesn't use.
 First is the map tiles.  This will tell you what tiles are in the map to help you write path finding.  Use:
 
-TileType tile = g_map.map(column, row); 
+TileType tile = g_map.map(column, row);
 
 to get the tile at that column and row.  There are 20 columns and 15 rows.  To convert object position to map
 col and row, use:
 
-TileType tile = g_map.map(object->x / TILESIZE, object->y / TILESIZE); 
+TileType tile = g_map.map(object->x / TILESIZE, object->y / TILESIZE);
 
 TileType is an enum of all the types of tiles like solid, solid-on-top, death-on-top, nonsolid, etc.
 
@@ -116,8 +116,8 @@ Substitute "B_FlipBlock" for "B_SwitchBlock" to do switch blocks.
 Player Object
 -------------
 You also have access to the player object that you are controlling.  You must be careful not to set
-any of the settings of this player object and use them read only.  There are a lot of assumptions in the 
-player code that these values will not be modified by the AI.  Here are some members you will probably 
+any of the settings of this player object and use them read only.  There are a lot of assumptions in the
+player code that these values will not be modified by the AI.  Here are some members you will probably
 find useful:
 
 1. Player is in the air
@@ -190,7 +190,7 @@ Using Your New AI
 --------------------
 When you create your own AI class, look for where we create the CPlayer objects at the beginning of the
 RunGame() function in main.cpp.  You'll see we create a new CPlayerAI() for every player that has
-game_values.playercontrol[iPlayer] set to 2 (AI controlled).  Simply replace: 
+game_values.playercontrol[iPlayer] set to 2 (AI controlled).  Simply replace:
 
 ai = new CPlayerAI();
 
@@ -266,12 +266,12 @@ void CPlayerAI::Think(COutputControl * playerKeys)
 	{
 		actionType = 0;
 	}
-	
+
 	/***************************************************
 	* 3. Deal with closest item
 	***************************************************/
 	//return if no players, goals, or threats available
-	if((actionType != 0 || nearestObjects.player) && (actionType != 1 || nearestObjects.goal) && (actionType != 2 || nearestObjects.threat) && 
+	if((actionType != 0 || nearestObjects.player) && (actionType != 1 || nearestObjects.goal) && (actionType != 2 || nearestObjects.threat) &&
 		(actionType != 3 || nearestObjects.teammate) && (actionType != 4 || nearestObjects.stomp) && iFallDanger == 0)
 	{
 		//Use turbo
@@ -301,7 +301,7 @@ void CPlayerAI::Think(COutputControl * playerKeys)
 			CPlayer * player = nearestObjects.player;
 			bool * moveToward;
 			bool * moveAway;
-			
+
 			if((player->ix > ix && nearestObjects.playerwrap) || (player->ix < ix && !nearestObjects.playerwrap))
 			{
 				moveToward = &playerKeys->game_left.fDown;
@@ -369,7 +369,7 @@ void CPlayerAI::Think(COutputControl * playerKeys)
 				*moveToward = true;
 			}
 			else if(player->iy >= iy && !player->invincible && !player->bobomb)
-			{					
+			{
 				*moveToward = true;
 			}
 			else
@@ -377,7 +377,7 @@ void CPlayerAI::Think(COutputControl * playerKeys)
 				if(nearestObjects.playerdistance < 8100)	//else if player is near but higher, run away (left)
 					*moveAway = true;
 			}
-			
+
 
 			if (player->iy <= iy &&					//jump if player is higher or at the same level and
 				player->ix - ix < 45 &&				//player is very near
@@ -386,7 +386,7 @@ void CPlayerAI::Think(COutputControl * playerKeys)
 				playerKeys->game_jump.fDown = true;
 			}
 			else if (player->iy > iy &&			//try to down jump if player is below us
-				player->ix - ix < 45 &&				
+				player->ix - ix < 45 &&
 				player->ix - ix > -45 && rand() % 2)
 			{				//or if player is high
 				playerKeys->game_jump.fDown = true;
@@ -405,7 +405,7 @@ void CPlayerAI::Think(COutputControl * playerKeys)
 		else if(actionType == 1)  //Go for goal
 		{
 			CObject * goal = nearestObjects.goal;
-			
+
 			if((goal->ix > ix && nearestObjects.goalwrap) || (goal->ix < ix && !nearestObjects.goalwrap))
 				playerKeys->game_left.fDown = true;
 			else
@@ -503,7 +503,7 @@ void CPlayerAI::Think(COutputControl * playerKeys)
 			CObject * stomp = nearestObjects.stomp;
 			bool * moveToward;
 			bool * moveAway;
-			
+
 			if((stomp->ix > ix && nearestObjects.stompwrap) || (stomp->ix < ix && !nearestObjects.stompwrap))
 			{
 				moveToward = &playerKeys->game_left.fDown;
@@ -515,7 +515,7 @@ void CPlayerAI::Think(COutputControl * playerKeys)
 				moveAway = &playerKeys->game_left.fDown;
 			}
 
-			if(stomp->iy > iy + PH || pPlayer->invincible || 
+			if(stomp->iy > iy + PH || pPlayer->invincible ||
 				(carriedItem && (carriedItem->getMovingObjectType() == movingobject_shell || carriedItem->getMovingObjectType() == movingobject_throwblock)))
 			{	//if true stomp target is lower or at the same level, run toward
 				*moveToward = true;
@@ -584,12 +584,12 @@ void CPlayerAI::Think(COutputControl * playerKeys)
 	short iDeathY = iy / TILESIZE;
 	short iDeathX1 = ix / TILESIZE;
 	short iDeathX2;
-	
+
 	if(ix + PW >= 640)
 		iDeathX2 = (ix + PW - 640) / TILESIZE;
 	else
 		iDeathX2 = (ix + PW) / TILESIZE;
-	
+
 	if(iDeathY < 0)
 		iDeathY = 0;
 
@@ -640,7 +640,7 @@ void CPlayerAI::Think(COutputControl * playerKeys)
 
 	if(iDeathY < 0)
 		iDeathY = 0;
-	
+
 	short heightlimit = 3;
 	while(iDeathY >= 0 && heightlimit > 0)
 	{
@@ -672,16 +672,16 @@ void CPlayerAI::Think(COutputControl * playerKeys)
 	{
 		//use 1up, clock, pow, bulletbill, mod right away
 		if(iStoredPowerup == 1  || iStoredPowerup == 2 || iStoredPowerup == 3 || iStoredPowerup == 4 ||
-			iStoredPowerup == 7 || iStoredPowerup == 9 || iStoredPowerup == 10 || iStoredPowerup == 16 || 
+			iStoredPowerup == 7 || iStoredPowerup == 9 || iStoredPowerup == 10 || iStoredPowerup == 16 ||
 			iStoredPowerup == 22)
 		{
 			playerKeys->game_powerup.fDown = true;
 		}
-		else if(((iStoredPowerup == 5 || iStoredPowerup == 11 || iStoredPowerup == 17 || iStoredPowerup == 19 || iStoredPowerup == 21 || iStoredPowerup == 23) && 
+		else if(((iStoredPowerup == 5 || iStoredPowerup == 11 || iStoredPowerup == 17 || iStoredPowerup == 19 || iStoredPowerup == 21 || iStoredPowerup == 23) &&
 				pPlayer->powerup == 0) || //Use fireflower, hammer, feather, boomerang
 				(iStoredPowerup == 6 && !pPlayer->invincible) || //Use star
 				(iStoredPowerup == 8 && !pPlayer->bobomb) || //use bob-omb
-				(iStoredPowerup >= 12 && iStoredPowerup <= 15 && !carriedItem)) //Use shell 
+				(iStoredPowerup >= 12 && iStoredPowerup <= 15 && !carriedItem)) //Use shell
 		{
 			playerKeys->game_powerup.fDown = true;
 		}
@@ -721,19 +721,19 @@ void CPlayerAI::GetNearestObjects()
 			{
 				IO_MovingObject * movingobject = (IO_MovingObject*)objectsplayer.list[i];
 				MovingObjectType movingtype = movingobject->getMovingObjectType();
-				
+
 				if(movingobject_shell == movingtype)
 				{
 					if(carriedItem == movingobject)
 						continue;
 
 					CO_Shell * shell = (CO_Shell*)movingobject;
-					
+
 					if(shell->IsThreat())
 					{
 						if(fInvincible)
 							continue;
-	
+
 						DistanceToObject(objectsplayer.list[i], &nearestObjects.threat, &nearestObjects.threatdistance, &nearestObjects.threatwrap);
 					}
 					else if(carriedItem)
@@ -752,7 +752,7 @@ void CPlayerAI::GetNearestObjects()
 
 					if(fInvincible)
 						continue;
-	
+
 					DistanceToObject(objectsplayer.list[i], &nearestObjects.threat, &nearestObjects.threatdistance, &nearestObjects.threatwrap);
 				}
 				break;
@@ -766,14 +766,14 @@ void CPlayerAI::GetNearestObjects()
 			case object_flag:
 			{
 				CO_Flag * flag = (CO_Flag*)objectsplayer.list[i];
-				
+
 				if(flag->GetInBase() && flag->GetTeamID() == iTeamID)
 					continue;
 
 				if(carriedItem && carriedItem->getObjectType() == object_flag)
 					continue;
 
-				DistanceToObject(objectsplayer.list[i], &nearestObjects.goal, &nearestObjects.goaldistance, &nearestObjects.goalwrap);			
+				DistanceToObject(objectsplayer.list[i], &nearestObjects.goal, &nearestObjects.goaldistance, &nearestObjects.goalwrap);
 				break;
 			}
 
@@ -823,7 +823,7 @@ void CPlayerAI::GetNearestObjects()
 				DistanceToObject(objectsplayer.list[i], &nearestObjects.goal, &nearestObjects.goaldistance, &nearestObjects.goalwrap);
 				break;
 			}
-		
+
 		}
 	}
 
@@ -837,7 +837,7 @@ void CPlayerAI::GetNearestObjects()
 			{
 				IO_MovingObject * movingobject = (IO_MovingObject*)objectcollisionitems.list[i];
 				MovingObjectType movingtype = movingobject->getMovingObjectType();
-				
+
 				if(movingobject_powerup == movingtype)
 				{
 					DistanceToObject(objectcollisionitems.list[i], &nearestObjects.goal, &nearestObjects.goaldistance, &nearestObjects.goalwrap);
@@ -868,7 +868,7 @@ void CPlayerAI::GetNearestObjects()
 			{
 				if(((OMO_Area*)objectcollisionitems.list[i])->getColorID() == pPlayer->colorID)
 					continue;
-			
+
 				DistanceToObject(objectcollisionitems.list[i], &nearestObjects.goal, &nearestObjects.goaldistance, &nearestObjects.goalwrap);
 				break;
 			}
@@ -882,7 +882,7 @@ void CPlayerAI::GetNearestObjects()
 			case object_flagbase:
 			{
 				OMO_FlagBase * flagbase = (OMO_FlagBase*)objectcollisionitems.list[i];
-				
+
 				if(!carriedItem || carriedItem->getObjectType() != object_flag || flagbase->GetTeamID() != iTeamID)
 					continue;
 
@@ -908,7 +908,7 @@ void CPlayerAI::GetNearestObjects()
 			{
 				IO_MovingObject * movingobject = (IO_MovingObject*)objectsfront.list[i];
 				MovingObjectType movingtype = movingobject->getMovingObjectType();
-				
+
 				if(movingobject_cheepcheep == movingtype)
 				{
 					DistanceToObject(objectsfront.list[i], &nearestObjects.stomp, &nearestObjects.stompdistance, &nearestObjects.stompwrap);
@@ -984,11 +984,11 @@ void CPlayerAI::GetNearestObjects()
 
 				if(racegoal->getGoalID() != ((CGM_Race*)game_values.gamemode)->getNextGoal(iTeamID))
 					continue;
-			
+
 				DistanceToObject(objectsfront.list[i], &nearestObjects.goal, &nearestObjects.goaldistance, &nearestObjects.goalwrap);
 				break;
 			}
-			
+
 
 			default:
 			{
@@ -1033,7 +1033,7 @@ void CPlayerAI::DistanceToObject(CObject * object, CObject ** target, int * near
 	short tx = object->ix - pPlayer->ix;
 	short ty = object->iy - pPlayer->iy;
 	bool fScreenWrap = false;
-	
+
 	//See if it is a shorter distance wrapping around the screen
 	if(tx > 320)
 	{
@@ -1062,7 +1062,7 @@ void CPlayerAI::DistanceToObjectCenter(CObject * object, CObject ** target, int 
 	short tx = object->ix + (object->collisionWidth >> 1) - pPlayer->ix - HALFPW;
 	short ty = object->iy + (object->collisionHeight >> 1) - pPlayer->iy - HALFPH;
 	bool fScreenWrap = false;
-	
+
 	if(tx > 320)
 	{
 		tx = 640 - tx;
@@ -1091,7 +1091,7 @@ void CPlayerAI::DistanceToPlayer(CPlayer * player, CPlayer ** target, int * near
 	short tx = player->ix - pPlayer->ix;
 	short ty = player->iy - pPlayer->iy;
 	bool fScreenWrap = false;
-	
+
 	if(tx > 320)
 	{
 		tx = 640 - tx;
@@ -1122,7 +1122,7 @@ void CSimpleAI::Think(COutputControl * playerKeys)
 {
 	playerKeys->game_left.fDown = false;
 	playerKeys->game_right.fDown = false;
-	
+
 	playerKeys->game_down.fDown = false;
 	playerKeys->game_turbo.fDown = false;
 	playerKeys->game_powerup.fDown = false;

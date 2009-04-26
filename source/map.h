@@ -19,12 +19,12 @@ struct WarpExit
 	short direction;
 	short connection;
 	short id;
-	
+
 	short x; //Player location where player warps out of
-	short y; 
+	short y;
 
 	short lockx;  //Location to display lock icon
-	short locky;  
+	short locky;
 
 	short warpx;  //map grid location for first block in warp
 	short warpy;
@@ -67,7 +67,7 @@ class CMap
 
 		void predrawbackground(gfxSprite &background, gfxSprite &mapspr);
 		void predrawforeground(gfxSprite &foregroundspr);
-		
+
 		void preDrawPreviewBackground(SDL_Surface * targetSurface, bool fThumbnail);
 		void preDrawPreviewBackground(gfxSprite * spr_background, SDL_Surface * targetSurface, bool fThumbnail);
 		void preDrawPreviewForeground(SDL_Surface * targetSurface, bool fThumbnail);
@@ -146,9 +146,9 @@ class CMap
 		void ReadString(char * szString, short size, FILE * outFile);
 
 	private:
-		
+
 		void calculatespawnareas(short iType, bool fUseTempBlocks);
-		
+
 		short		mapdata[MAPWIDTH][MAPHEIGHT][MAPLAYERS];		//0 to TILESETSIZE-1: tiles, TILESETSIZE: no tile
 		TileType	mapdatatop[MAPWIDTH][MAPHEIGHT];
 		short		objectdata[MAPWIDTH][MAPHEIGHT];
@@ -182,13 +182,13 @@ class CMap
 		std::list<IO_Block*> switchBlocks[8];
 
 		short		iThumbTileX[TILESETSIZE]; //Optimization for drawing preview map
-		short		iThumbTileY[TILESETSIZE]; 
+		short		iThumbTileY[TILESETSIZE];
 
 		short		iPreviewTileX[TILESETSIZE]; //Optimization for drawing preview map
-		short		iPreviewTileY[TILESETSIZE]; 
+		short		iPreviewTileY[TILESETSIZE];
 
 		short		iGameTileX[TILESETSIZE]; //Optimization for drawing real map on load
-		short		iGameTileY[TILESETSIZE]; 
+		short		iGameTileY[TILESETSIZE];
 
 		bool		fAutoFilter[NUM_AUTO_FILTERS];
 
@@ -221,7 +221,7 @@ class CMap
 		friend void insert_platforms_into_map();
 		friend void loadcurrentmap();
 		friend void loadmap(char * szMapFile);
-		
+
 		friend class B_BreakableBlock;
 		friend class B_DonutBlock;
 		friend class B_ThrowBlock;

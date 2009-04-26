@@ -22,7 +22,7 @@ const std::string getFileFromPath(const std::string &path);
 
 //#undef convertPathC
 //#define convertPathC(s) s
-//#define convertPath(s) s 
+//#define convertPath(s) s
 
 #ifdef __MACOSX__
     void Initialize_Paths();

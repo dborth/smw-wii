@@ -26,7 +26,7 @@ void EC_Cloud::draw()
 void EC_Cloud::update()
 {
 	x += velx;
-	
+
 	if( x > 639.0f)
 		x -= 639.0f;
 	else if( x < 0.0f)
@@ -128,7 +128,7 @@ void EC_Corpse::update()
 		if(nexty >= 0)
 		{
 			short ty = nexty / TILESIZE;
-			
+
 			if(g_map.map(tx, ty) == tile_solid_on_top || g_map.map(tx2, ty) == tile_solid_on_top)
 			{	//on ground on tile solid_on_top
 				if((y + 32.0f - vely) / TILESIZE < ty)
@@ -150,7 +150,7 @@ void EC_Corpse::update()
 				return;
 			}
 		}
-		
+
 		//falling (in air)
 		y		+= vely;
 		vely	= CapFallingVelocity(GRAVITATION + vely);
@@ -177,9 +177,9 @@ EC_GravText::EC_GravText(gfxFont *nfont, short nx, short ny, const char *ntext, 
 	x = (float)(nx - (font->getWidth(ntext) / 2));
 	y = (float)ny;
 	w = (short)font->getWidth(ntext);
-	
+
 	text = new char[strlen(ntext)+1];	//someone should test if we got the memory...
-	
+
 	if(text)
 		strcpy(text, ntext);
 	else
@@ -207,7 +207,7 @@ void EC_GravText::draw()
 		font->draw((short)x + 640, (short)y, text);
 	else if(x + w > 639)
 		font->draw((short)x - 640, (short)y, text);
-	
+
 }
 
 
@@ -230,7 +230,7 @@ EC_FallingObject::EC_FallingObject(gfxSprite *nspr, short x, short y, float nvel
 	fy = (float)y;
 	vely = nvely;
 	velx = nvelx;
-	
+
 	iSrcOffsetX = srcOffsetX;
 	iSrcOffsetY = srcOffsetY;
 
@@ -241,7 +241,7 @@ EC_FallingObject::EC_FallingObject(gfxSprite *nspr, short x, short y, float nvel
 	ih = h;
 	if(ih == 0)
 		ih = (short)spr->getHeight();
-	
+
 	iNumSprites = numSprites;
 	iAnimationRate = animationRate;
 	iDrawFrame = iSrcOffsetX;
@@ -257,10 +257,10 @@ EC_FallingObject::EC_FallingObject(gfxSprite *nspr, short x, short y, float nvel
 	fy = (float)y;
 	vely = nvely;
 	velx = 0.0f;
-	
+
 	iSrcOffsetX = srcOffsetX;
 	iSrcOffsetY = srcOffsetY;
-	
+
 	iw = w;
 	if(iw == 0)
 		iw = (short)spr->getWidth();
@@ -280,7 +280,7 @@ void EC_FallingObject::update()
 {
 	fy += vely;
 	fx += velx;
-	
+
 	if(fy >= 480.0f)
 	{
 		dead = true;
@@ -305,7 +305,7 @@ void EC_FallingObject::update()
 
 void EC_FallingObject::draw()
 {
-	spr->draw((short)fx, (short)fy, iDrawFrame, iSrcOffsetY, iw, ih);	
+	spr->draw((short)fx, (short)fy, iDrawFrame, iSrcOffsetY, iw, ih);
 }
 
 //------------------------------------------------------------------------------
@@ -381,7 +381,7 @@ void EC_LoopingAnimation::update()
 	if(++counter > rate)
 	{
 		counter = 0;
-		
+
 		frame += iw;
 		if(frame >= iAnimationWidth)
 		{
@@ -442,7 +442,7 @@ EC_ExplodingAward::EC_ExplodingAward(gfxSprite *nspr, short nx, short ny, float 
 	velx = nvelx;
 	timer = 0;
 	ttl = timetolive;
-	
+
 	w = 16;
 	h = 16;
 
@@ -454,7 +454,7 @@ void EC_ExplodingAward::update()
 {
 	y += vely;
 	x += velx;
-	
+
 	if(++timer > ttl)
 	{
 		dead = true;
@@ -495,13 +495,13 @@ void EC_SwirlingAward::update()
 {
 	angle += vel;
 	radius += 3.0f;
-	
+
 	if(++timer > ttl)
 	{
 		short awardx = x + (short)(radius * cos(angle)) + (w >> 1) - 16;
 		short awardy = y + (short)(radius * sin(angle)) + (h >> 1) - 16;
 		eyecandyfront.add(new EC_SingleAnimation(&spr_fireballexplosion, awardx, awardy, 3, 8));
-		
+
 		dead = true;
 	}
 }
@@ -511,7 +511,7 @@ void EC_SwirlingAward::draw()
 {
 	short awardx = x + (short)(radius * cos(angle));
 	short awardy = y + (short)(radius * sin(angle));
-		
+
 	spr->draw(awardx, awardy, id, 0, w, h);
 }
 
@@ -531,7 +531,7 @@ EC_RocketAward::EC_RocketAward(gfxSprite *nspr, short nx, short ny, float nvelx,
 
 	timer = 0;
 	ttl = timetolive;
-	
+
 	w = (short)spr->getWidth() / numAwards;
 	h = (short)spr->getHeight();
 
@@ -611,7 +611,7 @@ EC_SoulsAward::EC_SoulsAward(gfxSprite *nspr, gfxSprite *nspr2, short nx, short 
 
 	x = nx;
 	y = ny;
-	
+
 	ttl = timetolive;
 	numSouls = nSouls;
 
@@ -652,13 +652,13 @@ void EC_SoulsAward::update()
 
 		float addangle = QUARTER_PI / 20.0f;
 		float startangle = -HALF_PI;
-	
+
 		float angle = (float)(rand()%21 - 10) * addangle + startangle;
 		float velx = speed * cos(angle);
 		float vely = speed * sin(angle);
 
 		eyecandyfront.add(new EC_RocketAward(&spr_awardsouls, x - 8, y - 8, velx, vely, ttl, id[count], 12));
-		
+
 		if(++count >= numSouls)
 		{
 			endmode = true;
@@ -675,7 +675,7 @@ void EC_SoulsAward::update()
 		if(!endmode && frame >= 4)
 			frame = 0;
 		else if(endmode && frame >= 7)
-			dead = true; 
+			dead = true;
 	}
 }
 
@@ -727,7 +727,7 @@ void EC_Door::update()
 				offsety = 0;
 			}
 
-			frame = 1;	
+			frame = 1;
 		}
 		else if(state == 1)
 		{
@@ -755,7 +755,7 @@ void EC_Door::update()
 				offsety = 32;
 			}
 
-			frame = 1;	
+			frame = 1;
 		}
 	}
 }
@@ -873,7 +873,7 @@ short CEyecandyContainer::add(CEyecandy *ec)
 
 
 void CEyecandyContainer::remove(short i)
-{	
+{
 	delete list[i];
 	list_end--;
 

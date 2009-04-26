@@ -160,7 +160,7 @@ bool LoadStartGraphics()
 
 	loadok &= menu_font_small.init(convertPath("gfx/packs/menu/menu_font_small.png", graphicspack));
 	loadok &= menu_font_large.init(convertPath("gfx/packs/menu/menu_font_large.png", graphicspack));
-	
+
 	if(!loadok)
 	{
 		_load_drawmsg("ERROR: error loading the fonts!\n");
@@ -182,7 +182,7 @@ bool LoadMenuGraphics()
 	_load_gfx(menu_shade, convertPath("gfx/packs/menu/menu_shade.png", graphicspack));
 	menu_shade.setalpha(GetScreenBackgroundFade());
 
-	_load_gfxck(menu_plain_field, convertPath("gfx/packs/menu/menu_plain_field.png", graphicspack));	
+	_load_gfxck(menu_plain_field, convertPath("gfx/packs/menu/menu_plain_field.png", graphicspack));
 	_load_gfxck(spr_scoreboard, convertPath("gfx/packs/menu/scoreboard.png", graphicspack));
 	_load_gfxck(menu_slider_bar, convertPath("gfx/packs/menu/menu_slider_bar.png", graphicspack));
 	_load_gfxck(menu_player_select, convertPath("gfx/packs/menu/menu_player_select.png", graphicspack));
@@ -202,7 +202,7 @@ bool LoadMenuGraphics()
 	_load_gfxck(spr_selectfield, convertPath("gfx/packs/menu/menu_selectfield.png", graphicspack));
 	_load_gfxck(spr_selectfielddisabled, convertPath("gfx/packs/menu/menu_selectfield_disabled.png", graphicspack));
 	_load_gfxck(spr_map_filter_icons, convertPath("gfx/packs/menu/menu_map_flags.png", graphicspack));
-	_load_gfxck(spr_tour_markers, convertPath("gfx/packs/menu/tour_markers.png", graphicspack)); 
+	_load_gfxck(spr_tour_markers, convertPath("gfx/packs/menu/tour_markers.png", graphicspack));
 	_load_gfxck(spr_menu_boxed_numbers, convertPath("gfx/packs/menu/menu_boxed_numbers.png", graphicspack));
 	_load_gfxa(spr_thumbnail_platformarrows, convertPath("gfx/packs/menu/menu_platform_arrows.png", graphicspack), 128);
 	_load_gfxck(spr_thumbnail_warps[0], convertPath("gfx/packs/menu/menu_warp_preview.png", graphicspack));
@@ -218,7 +218,7 @@ bool LoadGameGraphics()
 	bool loadok = true;
 	loadok &= game_font_small.init(convertPath("gfx/packs/fonts/font_small.png", graphicspack));
 	loadok &= game_font_large.init(convertPath("gfx/packs/fonts/font_large.png", graphicspack));
-	
+
 	if(!loadok)
 	{
 		_load_drawmsg("ERROR: error loading the fonts!\n");
@@ -342,7 +342,7 @@ bool LoadGameGraphics()
 	spr_star.SetWrap(true);
 	spr_flags.SetWrap(true);
 	spr_frenzycards.SetWrap(true);
-	
+
 	_load_gfxck(spr_yoshi, convertPath("gfx/packs/modeobjects/yoshi.png", graphicspack));
 	_load_gfxck(spr_coin, convertPath("gfx/packs/modeobjects/coin.png", graphicspack));
 	_load_gfxck(spr_thwomp, convertPath("gfx/packs/modeobjects/thwomp.png", graphicspack));
@@ -378,7 +378,7 @@ bool LoadGameGraphics()
 	spr_cheepcheep.SetWrap(true);
 	spr_cheepcheepdead.SetWrap(true);
 	spr_chicken.SetWrap(true);
-	
+
 	_load_gfxck(spr_fireball, convertPath("gfx/packs/projectiles/fireball.png", graphicspack));
 	_load_gfxck(spr_superfireball, convertPath("gfx/packs/projectiles/superfire.png", graphicspack));
 	_load_gfxck(spr_hammer, convertPath("gfx/packs/projectiles/hammer.png", graphicspack));
@@ -397,7 +397,7 @@ bool LoadGameGraphics()
 	spr_shelldead.SetWrap(true);
 	spr_blueblock.SetWrap(true);
 	spr_bomb.SetWrap(true);
-	
+
 	_load_gfxa(spr_fireballexplosion, convertPath("gfx/packs/eyecandy/fireballexplosion.png", graphicspack), 160);
 	_load_gfxa(spr_frictionsmoke, convertPath("gfx/packs/eyecandy/frictionsmoke.png", graphicspack), 160);
 	_load_gfxa(spr_bobombsmoke, convertPath("gfx/packs/eyecandy/bobombsmoke.png", graphicspack), 160);
@@ -486,7 +486,7 @@ bool LoadGameSounds()
 #ifndef _XBOX  //xbox has sound capabilities
 	int frequency, channels;
 	Uint16 format;
-	
+
 	if(0 == Mix_QuerySpec(&frequency, &format, &channels))
 		return false;
 #endif
@@ -559,7 +559,7 @@ bool LoadAndSplashScreen()
 	char * contributors[] = {
 	"no_shorty", "redfalcon", "no_human", "dschingis", "funvill",
 	"matsche", "aeroflare", "Tymoe", "David Olofson", "scoti",
-	"affeOHNEwaffe", "mademan", "mario piuk", "yvoo", "DNightmare", 
+	"affeOHNEwaffe", "mademan", "mario piuk", "yvoo", "DNightmare",
 	"Armen", "vvill", "zio tiok", "Donny Viszneki","alex-rus07", "JacobTheHero",
 	"Stephan Peijnik", "ventuz", "Stefan Schury", "riahc3",
 	"jinkies.uk", "devguy", "Alexis Morrissette", "Bidbood", "Quinn Storm",
@@ -659,7 +659,7 @@ bool LoadAndSplashScreen()
 
 		for(int iPlayer = 0; iPlayer < 4; iPlayer++)
 		{
-			if(game_values.playerInput.outputControls[iPlayer].menu_select.fPressed || 
+			if(game_values.playerInput.outputControls[iPlayer].menu_select.fPressed ||
 				game_values.playerInput.outputControls[iPlayer].menu_cancel.fPressed ||
 				game_values.playerInput.outputControls[iPlayer].menu_random.fPressed)
 			{

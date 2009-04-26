@@ -20,7 +20,7 @@ bool Options :: Ropen()
 {
     // Set whether we are reading or writing
     Writing = false;
-    
+
     // Open the file
     File.open(FileName, ios::binary | ios::read);
 
@@ -67,7 +67,7 @@ bool Options :: Opened()
     //return File.is_open()
 }
 
-// Read or write strings of data. 
+// Read or write strings of data.
 bool Options :: Wread(void *n, size_t m)
 {
     /*if (Writing)
@@ -98,7 +98,7 @@ bool Options :: Do32(int *n)
             ((char*)&m)[1] = ((char*)n)[2];
             ((char*)&m)[2] = ((char*)n)[1];
             ((char*)&m)[3] = ((char*)n)[0];
-            
+
             File.write(&m, 4);
         }
 
@@ -138,7 +138,7 @@ bool Options :: Do16(short *n)
             short m;
             ((char*)&m)[0] = ((char*)n)[1];
             ((char*)&m)[1] = ((char*)n)[0];
-            
+
             File.write(&m, 2);
         }
 

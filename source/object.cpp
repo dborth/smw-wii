@@ -55,7 +55,7 @@ void removeifprojectile(IO_MovingObject * object, bool playsound, bool forcedead
 			object->dead = true;
 			eyecandyfront.add(new EC_SingleAnimation(&spr_fireballexplosion, object->ix + (object->iw >> 1) - 16, object->iy + (object->ih >> 1) - 16, 3, 4));
 		}
-		
+
 		if(playsound)
 			ifsoundonplay(sfx_hit);
 	}
@@ -67,7 +67,7 @@ void removeifprojectile(IO_MovingObject * object, bool playsound, bool forcedead
 CObject::CObject(gfxSprite *nspr1, short x, short y)
 {
 	dead = false;
-	
+
 	spr = nspr1;
 	xi(x);
 	yi(y);
@@ -77,7 +77,7 @@ CObject::CObject(gfxSprite *nspr1, short x, short y)
 
 	velx = 0.0f;
 	vely = 0.0f;
-	
+
 	state = 0;
 
 	collisionWidth = iw;
@@ -172,7 +172,7 @@ bool IO_Block::hitbottom(CPlayer * player, bool useBehavior)
 {
 	if(useBehavior)
 	{
-		//Player bounces off 
+		//Player bounces off
 		player->vely = CapFallingVelocity(-player->vely * BOUNCESTRENGTH);
 		player->yf((float)(iposy + ih) + 0.2f);
 	}
@@ -186,7 +186,7 @@ bool IO_Block::hitright(CPlayer * player, bool useBehavior)
 	{
 		player->xf((float)(iposx + iw) + 0.2f);
 		player->fOldX = player->fx;
-		
+
 		if(player->velx < 0.0f)
 			player->velx = 0.0f;
 	}
@@ -200,7 +200,7 @@ bool IO_Block::hitleft(CPlayer * player, bool useBehavior)
 	{
 		player->xf((float)(iposx - PW) - 0.2f);
 		player->fOldX = player->fx;
-		
+
 		if(player->velx > 0.0f)
 			player->velx = 0.0f;
 	}
@@ -251,7 +251,7 @@ bool IO_Block::hitleft(IO_MovingObject * object)
 {
 	object->xf((float)(iposx - object->collisionWidth) - 0.2f);
 	object->fOldX = object->fx;
-	
+
 	if(object->velx > 0.0f)
 		object->velx = -object->velx;
 
@@ -265,7 +265,7 @@ void IO_Block::BounceMovingObject(IO_MovingObject * object)
 	{
 		ifsoundonplay(sfx_kicksound);
 		killstyle style = kill_style_goomba;
-		
+
 		if(type == movingobject_goomba)
 		{
 			((MO_Goomba*)object)->Die();
@@ -322,7 +322,7 @@ void B_PowerupBlock::update()
 	if(state > 0)
 	{
 		yf(fy + vely);
-		
+
 		if(state == 1 && fabsf(fposy - fy) > 10.0f)
 		{
 			vely = -vely;
@@ -337,7 +337,7 @@ void B_PowerupBlock::update()
 
 			short iSelectedPowerup = SelectPowerup();
 
-            if (-1 == iSelectedPowerup) 
+            if (-1 == iSelectedPowerup)
 				objectcollisionitems.add(new PU_Tanooki(ix + 1, iy + 1));
             else if(0 == iSelectedPowerup)
 				objectcollisionitems.add(new PU_PoisonPowerup(&spr_poisonpowerup, ix + 1, iy - 1, 1, side, 32000, 30, 30, 1, 1));
@@ -379,7 +379,7 @@ void B_PowerupBlock::update()
 				objectcollisionitems.add(new PU_MysteryMushroomPowerup(&spr_mysterymushroompowerup, ix + 1, iy - 1, 1, side, 32000, 30, 30, 1, 1));
 			else if(19 == iSelectedPowerup)
 				objectcollisionitems.add(new PU_BoomerangPowerup(&spr_boomerangpowerup, ix + 1, iy - 1, 1, side, 32000, 30, 26, 1, 5));
-			
+
 			ifsoundonplay(sfx_sprout);
 		}
 		else if(state == 3)
@@ -427,7 +427,7 @@ bool B_PowerupBlock::hitbottom(CPlayer * player, bool useBehavior)
 {
 	if(useBehavior)
 	{
-		//Player bounces off 
+		//Player bounces off
 		player->vely = CapFallingVelocity(-player->vely * BOUNCESTRENGTH);
 		player->yf((float)(iposy + ih) + 0.2f);
 
@@ -449,7 +449,7 @@ bool B_PowerupBlock::hittop(IO_MovingObject * object)
 {
 	object->yf((float)(iposy - object->collisionHeight) - 0.2f);
 	object->fOldY = object->fy;
-	
+
 	if(state == 1 && object->bounce == GRAVITATION)
 	{
 		BounceMovingObject(object);
@@ -546,9 +546,9 @@ void B_PowerupBlock::triggerBehavior()
 
 short B_PowerupBlock::SelectPowerup()
 {
-	if (g_tanookiFlag) 
+	if (g_tanookiFlag)
 	{
-		g_tanookiFlag--; 
+		g_tanookiFlag--;
 		return -1;
 	}
 
@@ -702,7 +702,7 @@ bool B_BreakableBlock::hitbottom(CPlayer * player, bool useBehavior)
 	if(useBehavior && state == 0)
 	{
 		triggerBehavior();
-		
+
 		//When breaking a block, you smash through with a small velocity, but this allows for breaking two blocks at once
 		/*
 		if(player->vely < -VELMAXBREAKBLOCK)
@@ -710,7 +710,7 @@ bool B_BreakableBlock::hitbottom(CPlayer * player, bool useBehavior)
 		*/
 		player->vely = CapFallingVelocity(-player->vely * BOUNCESTRENGTH);
 		player->yf((float)(iposy + ih) + 0.2f);
-		
+
 		bumpPlayer = player;
 	}
 
@@ -721,7 +721,7 @@ bool B_BreakableBlock::hittop(IO_MovingObject * object)
 {
 	object->yf((float)(iposy - object->collisionHeight) - 0.2f);
 	object->fOldY = object->fy;
-	
+
 	if((state == 1  || state == 2) && object->bounce == GRAVITATION)
 	{
 		BounceMovingObject(object);
@@ -769,7 +769,7 @@ bool B_BreakableBlock::hitleft(IO_MovingObject * object)
 	{
 		object->xf((float)(iposx - object->collisionWidth) - 0.2f);
 		object->fOldX = object->fx;
-		
+
 		if(object->velx > 0.0f)
 			object->velx = -object->velx;
 
@@ -783,7 +783,7 @@ bool B_BreakableBlock::hitleft(IO_MovingObject * object)
 			}
 
 			triggerBehavior();
-			
+
 			return true;
 		}
 	}
@@ -878,7 +878,7 @@ bool B_NoteBlock::hittop(CPlayer * player, bool useBehavior)
 	{
 		player->superjumptimer = 4;
 		player->vely = -VELNOTEBLOCKREPEL;
-	
+
 		if(state == 0)
 		{
 			vely = VELNOTEBLOCKBOUNCE;
@@ -887,7 +887,7 @@ bool B_NoteBlock::hittop(CPlayer * player, bool useBehavior)
 
 		ifsoundonplay(sfx_bump);
 	}
-	
+
 	return false;
 }
 
@@ -955,7 +955,7 @@ bool B_NoteBlock::hittop(IO_MovingObject * object)
 {
 	object->yf((float)(iposy - object->collisionHeight) - 0.2f);
 	object->fOldY = object->fy;
-	
+
 	if(state == 3 && object->bounce == GRAVITATION)
 	{
 		BounceMovingObject(object);
@@ -1023,7 +1023,7 @@ bool B_DonutBlock::hittop(CPlayer * player, bool useBehavior)
 
 	if(useBehavior)
 		state = 1;
-	
+
 	return false;
 }
 
@@ -1043,9 +1043,9 @@ void B_DonutBlock::triggerBehavior()
 //
 // And you hit both of them from the bottom, then keep jumping so that the bottom one
 // stops to support you, and then the top one stops spinning, you can "hide" under the
-// top block.  I was thinking about fixing this, but I don't know what the correct 
+// top block.  I was thinking about fixing this, but I don't know what the correct
 // behavior should be if you're in a flip block when it stops spinning.  Plus, it is kind
-// of cool to hide under these blocks.  You are somewhat invincible, but someone can come 
+// of cool to hide under these blocks.  You are somewhat invincible, but someone can come
 // along and hit your support out from under you and you'll fall out and if they have star
 // power, you're dead.  Plus fireballs have a large enough collision box that you can be hit
 // with them too.
@@ -1128,7 +1128,7 @@ bool B_FlipBlock::hitbottom(CPlayer * player, bool useBehavior)
 	{
 		player->vely = CapFallingVelocity(-player->vely * BOUNCESTRENGTH);
 		player->yf((float)(iposy + ih) + 0.2f);
-		
+
 		triggerBehavior();
 		return false;
 	}
@@ -1148,7 +1148,7 @@ bool B_FlipBlock::hitright(CPlayer * player, bool useBehavior)
 
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -1187,7 +1187,7 @@ bool B_FlipBlock::hitbottom(IO_MovingObject * object)
 		object->yf((float)(iposy + ih) + 0.2f);
 		object->vely = -object->vely;
 	}
-	
+
 	return true;
 }
 
@@ -1231,7 +1231,7 @@ bool B_FlipBlock::hitleft(IO_MovingObject * object)
 	{
 		object->xf((float)(iposx - object->collisionWidth) - 0.2f);
 		object->fOldX = object->fx;
-		
+
 		if(object->velx > 0.0f)
 			object->velx = -object->velx;
 
@@ -1248,7 +1248,7 @@ bool B_FlipBlock::hitleft(IO_MovingObject * object)
 			eyecandyfront.add(new EC_FallingObject(&spr_brokenflipblock, ix + 16, iy, 2.2f, -10.0f, 4, 2, 0, 0, 0, 0));
 			eyecandyfront.add(new EC_FallingObject(&spr_brokenflipblock, ix, iy + 16, -2.2f, -5.5f, 4, 2, 0, 0, 0, 0));
 			eyecandyfront.add(new EC_FallingObject(&spr_brokenflipblock, ix + 16, iy + 16, 2.2f, -5.5f, 4, 2, 0, 0, 0, 0));
-			
+
 			ifsoundonplay(sfx_breakblock);
 
 			dead = true;
@@ -1332,7 +1332,7 @@ bool B_OnOffSwitchBlock::hittop(CPlayer * player, bool useBehavior)
 
 bool B_OnOffSwitchBlock::hitbottom(CPlayer * player, bool useBehavior)
 {
-	//Player bounces off 
+	//Player bounces off
 	if(useBehavior)
 	{
 		player->vely = CapFallingVelocity(-player->vely * BOUNCESTRENGTH);
@@ -1341,7 +1341,7 @@ bool B_OnOffSwitchBlock::hitbottom(CPlayer * player, bool useBehavior)
 		if(state == 0 || state == 3)
 		{
 			bumpPlayer = player;
-			
+
 			triggerBehavior();
 		}
 		else
@@ -1357,7 +1357,7 @@ bool B_OnOffSwitchBlock::hittop(IO_MovingObject * object)
 {
 	object->yf((float)(iposy - object->collisionHeight) - 0.2f);
 	object->fOldY = object->fy;
-	
+
 	if((state == 1 || state == 4) && object->bounce == GRAVITATION)
 	{
 		BounceMovingObject(object);
@@ -1445,9 +1445,9 @@ void B_OnOffSwitchBlock::triggerBehavior()
 	{
 		ifsoundonplay(sfx_switchpress);
 		vely = -VELBLOCKBOUNCE;
-		
+
 		state++;
-		
+
 		//Switch all the switch blocks and all the on/off blocks of the same color
 		std::list<IO_Block*>::iterator iterateSwitches = g_map.switchBlocks[iColorID].begin();
 
@@ -1562,7 +1562,7 @@ bool B_SwitchBlock::hitbottom(IO_MovingObject * object)
 		object->yf((float)(iposy + ih) + 0.2f);
 		object->vely = -object->vely;
 	}
-	
+
 	return true;
 }
 
@@ -1584,7 +1584,7 @@ bool B_SwitchBlock::hitleft(IO_MovingObject * object)
 	if(state == 0)
 	{
 		object->xf((float)(iposx - object->collisionWidth) - 0.2f);
-		
+
 		if(object->velx > 0.0f)
 			object->velx = -object->velx;
 	}
@@ -1641,7 +1641,7 @@ bool B_BounceBlock::hittop(CPlayer * player, bool useBehavior)
 
 bool B_BounceBlock::hitbottom(CPlayer * player, bool useBehavior)
 {
-	//Player bounces off 
+	//Player bounces off
 	if(useBehavior)
 	{
 		player->vely = CapFallingVelocity(-player->vely * BOUNCESTRENGTH);
@@ -1660,7 +1660,7 @@ bool B_BounceBlock::hittop(IO_MovingObject * object)
 {
 	object->yf((float)(iposy - object->collisionHeight) - 0.2f);
 	object->fOldY = object->fy;
-	
+
 	if(state == 1 && object->bounce == GRAVITATION)
 	{
 		BounceMovingObject(object);
@@ -1763,7 +1763,7 @@ bool B_ThrowBlock::hitright(CPlayer * player, bool useBehavior)
 			return false;
 		}
 	}
-	
+
 	return true;
 }
 
@@ -1787,7 +1787,7 @@ bool B_ThrowBlock::hitleft(CPlayer * player, bool useBehavior)
 			return false;
 		}
 	}
-	
+
 	return true;
 }
 
@@ -1816,7 +1816,7 @@ void B_ThrowBlock::triggerBehavior()
 	eyecandyfront.add(new EC_FallingObject(&spr_brokenblueblock, ix + 16, iy, 1.5f, -7.0f, 6, 2, 0, fSuper ? 16 : 0, 16, 16));
 	eyecandyfront.add(new EC_FallingObject(&spr_brokenblueblock, ix, iy + 16, -1.5f, -4.0f, 6, 2, 0, fSuper ? 16 : 0, 16, 16));
 	eyecandyfront.add(new EC_FallingObject(&spr_brokenblueblock, ix + 16, iy + 16, 1.5f, -4.0f, 6, 2, 0, fSuper ? 16 : 0, 16, 16));
-	
+
 	ifsoundonplay(sfx_breakblock);
 }
 
@@ -1848,7 +1848,7 @@ IO_MovingObject::IO_MovingObject(gfxSprite *nspr, short x, short y, short iNumSp
 	fOldY = fy - ih;
 
 	animationspeed = aniSpeed;
-	
+
 	objectType = object_moving;
 	movingObjectType = movingobject_none;
 
@@ -1901,11 +1901,11 @@ void IO_MovingObject::update()
 	fOldY = fy;
 
 	collision_detection_map();
-	
+
 	if(++animationtimer == animationspeed)
 	{
 		animationtimer = 0;
-		
+
 		drawframe += iw;
 		if(drawframe >= animationWidth)
 			drawframe = animationOffsetX;
@@ -1938,12 +1938,12 @@ void IO_MovingObject::collision_detection_map()
 			xf(fx + fPlatformVelX);
 			flipsidesifneeded();
 		}
-		
+
 		fPlatformVelY = platform->fVelY;
 
 		if(platform->fOldVelY < 0.0f)
 			fy += platform->fOldVelY;
-		
+
 		fPrecalculatedY += platform->fOldVelY;
 	}
 
@@ -1958,7 +1958,7 @@ void IO_MovingObject::collision_detection_map()
 	{				// on top outside of the screen
 		yf(fPrecalculatedY);
 		vely = CapFallingVelocity(GRAVITATION + vely);
-		
+
 		if(!platform)
 		{
 			inair = true;
@@ -1979,7 +1979,7 @@ void IO_MovingObject::collision_detection_map()
 	short ty = (short)fy / TILESIZE;
 	short ty2 = ((short)fy + collisionHeight) / TILESIZE;
 	short tx = -1;
-	
+
 
 	//-----------------------------------------------------------------
 	//  x axis first (--)
@@ -1999,12 +1999,12 @@ void IO_MovingObject::collision_detection_map()
 			IO_Block * topblock = g_map.block(tx, ty);
 			IO_Block * bottomblock = g_map.block(tx, ty2);
 
-			if((topblock && !topblock->isTransparent()) || 
+			if((topblock && !topblock->isTransparent()) ||
 				(bottomblock && !bottomblock->isTransparent()))
 			{
 				bool processOtherBlock = true;
 				if(topblock && !topblock->isTransparent()) //collide with top block
-				{	
+				{
 					if(iHorizontalPlatformCollision == 3)
 					{
 						KillObjectMapHazard();
@@ -2019,9 +2019,9 @@ void IO_MovingObject::collision_detection_map()
 
 					SideBounce();
 				}
-				
+
 				if(processOtherBlock && bottomblock && !bottomblock->isTransparent()) //then bottom
-				{	
+				{
 					if(iHorizontalPlatformCollision == 3)
 					{
 						KillObjectMapHazard();
@@ -2046,7 +2046,7 @@ void IO_MovingObject::collision_detection_map()
 
 				xf((float)(tx * TILESIZE - collisionWidth) - 0.2f); //move to the edge of the tile (tile on the right -> mind the object width)
 				fOldX = fx;
-				
+
 				if(velx > 0.0f)
 					velx = -velx;
 
@@ -2067,12 +2067,12 @@ void IO_MovingObject::collision_detection_map()
 			IO_Block * topblock = g_map.block(tx, ty);
 			IO_Block * bottomblock = g_map.block(tx, ty2);
 
-			if((topblock && !topblock->isTransparent()) || 
+			if((topblock && !topblock->isTransparent()) ||
 				(bottomblock && !bottomblock->isTransparent()))
 			{
 				bool processOtherBlock = true;
 				if(topblock && !topblock->isTransparent()) //collide with top block
-				{	
+				{
 					if(iHorizontalPlatformCollision == 1)
 					{
 						KillObjectMapHazard();
@@ -2087,9 +2087,9 @@ void IO_MovingObject::collision_detection_map()
 
 					SideBounce();
 				}
-				
+
 				if(processOtherBlock && bottomblock && !bottomblock->isTransparent()) //then bottom
-				{	
+				{
 					if(iHorizontalPlatformCollision == 1)
 					{
 						KillObjectMapHazard();
@@ -2148,18 +2148,18 @@ void IO_MovingObject::collision_detection_map()
 
 		IO_Block * leftblock = g_map.block(txl, ty);
 		IO_Block * rightblock = g_map.block(txr, ty);
-		
+
 		if(leftblock && !leftblock->isTransparent()) //then left
-		{	
+		{
 			if(iVerticalPlatformCollision == 2)
 				KillObjectMapHazard();
 
 			leftblock->collide(this, 0);
 			return;
 		}
-		
+
 		if(rightblock && !rightblock->isTransparent()) //then right
-		{	
+		{
 			if(iVerticalPlatformCollision == 2)
 				KillObjectMapHazard();
 
@@ -2174,9 +2174,9 @@ void IO_MovingObject::collision_detection_map()
 
 			yf((float)(ty * TILESIZE + TILESIZE) + 0.2f);
 			fOldY = fy - 1.0f;
-			
+
 			if(vely < 0.0f)
-				vely = -vely;	
+				vely = -vely;
 		}
 		else
 		{
@@ -2197,12 +2197,12 @@ void IO_MovingObject::collision_detection_map()
 		IO_Block * leftblock = g_map.block(txl, ty);
 		IO_Block * rightblock = g_map.block(txr, ty);
 
-		if((leftblock && !leftblock->isTransparent()) || 
+		if((leftblock && !leftblock->isTransparent()) ||
 			(rightblock && !rightblock->isTransparent()))
 		{
 			bool processOtherBlock = true;
 			if(leftblock && !leftblock->isTransparent()) //collide with left block
-			{	
+			{
 				processOtherBlock = leftblock->collide(this, 2);
 
 				if(!platform)
@@ -2211,18 +2211,18 @@ void IO_MovingObject::collision_detection_map()
 					onice = false;
 				}
 			}
-			
+
 			if(processOtherBlock && rightblock && !rightblock->isTransparent()) //then right
-			{	
+			{
 				rightblock->collide(this, 2);
-				
+
 				if(!platform)
 				{
 					inair = false;
 					onice = false;
 				}
 			}
-			
+
 			if(iVerticalPlatformCollision == 0)
 				KillObjectMapHazard();
 
@@ -2239,7 +2239,7 @@ void IO_MovingObject::collision_detection_map()
 				vely = BottomBounce();
 				yf((float)(ty * TILESIZE - collisionHeight) - 0.2f);
 				fOldY = fy - GRAVITATION;
-				
+
 				if(!platform)
 				{
 					inair = false;
@@ -2256,7 +2256,7 @@ void IO_MovingObject::collision_detection_map()
 		}
 
 		if((leftTile & 0x05) > 0 || (rightTile & 0x05) > 0)
-		{	
+		{
 			vely = BottomBounce();
 			yf((float)(ty * TILESIZE - collisionHeight) - 0.2f);
 			fOldY = fy;
@@ -2268,10 +2268,10 @@ void IO_MovingObject::collision_detection_map()
 				if((leftTile == tile_ice && (rightTile == tile_ice || rightTile == tile_nonsolid)) ||
 					(rightTile == tile_ice && (leftTile == tile_ice || leftTile == tile_nonsolid)))
 					onice = true;
-				else 
+				else
 					onice = false;
 			}
-			
+
 			platform = NULL;
 
 			if(iVerticalPlatformCollision == 0)
@@ -2281,7 +2281,7 @@ void IO_MovingObject::collision_detection_map()
 		{
 			yf(fPrecalculatedY);
 			vely = CapFallingVelocity(GRAVITATION + vely);
-			
+
 			if(!platform)
 				inair = true;
 		}
@@ -2370,7 +2370,7 @@ bool IO_MovingObject::collision_detection_checksides()
 		case 0:
 			return false;
 			break;
-		
+
 		//[X][ ]
 		//[ ][ ]
 		case 1:
@@ -2663,11 +2663,11 @@ void MO_Powerup::update()
 
 		collision_detection_map();
 	}
-	
+
 	if(++animationtimer == animationspeed)
 	{
 		animationtimer = 0;
-		
+
 		drawframe += iw;
 		if(drawframe >= animationWidth)
 			drawframe = 0;
@@ -2757,7 +2757,7 @@ bool PU_ExtraGuyPowerup::collide(CPlayer * player)
 	ifsoundonplay(sfx_extraguysound);
 
 	eyecandyfront.add(new EC_FloatingObject(&spr_extralife, player->ix + HALFPW - 19, player->iy - 16, 0.0f, -1.5f, 62, player->colorID * 38, (iType == 5 ? 3 : iType - 1) * 16, 38, 16));
-	
+
 	dead = true;
 	return false;
 }
@@ -2788,10 +2788,10 @@ bool PU_PoisonPowerup::collide(CPlayer * player)
 		return false;
 
 	player->DeathAwards();
-	
+
 	if(!game_values.gamemode->playerkilledself(*player))
 		player->die(0, false);
-	
+
 	ifsoundonplay(sfx_deathsound);
 
 	dead = true;
@@ -2822,7 +2822,7 @@ bool PU_MysteryMushroomPowerup::collide(CPlayer * player)
 		eyecandyfront.add(new EC_SingleAnimation(&spr_fireballexplosion, player->ix + (HALFPW) - 16, player->iy + (HALFPH) - 16, 3, 8));
 		ifsoundonplay(sfx_spit);
 	}
-	
+
 	return false;
 }
 
@@ -2856,7 +2856,7 @@ bool PU_HammerPowerup::collide(CPlayer * player)
 	player->SetPowerup(2);
 	dead = true;
 	return false;
-}	
+}
 
 //------------------------------------------------------------------------------
 // class sledge hammer powerup
@@ -3118,7 +3118,7 @@ void PU_FeatherPowerup::update()
 		fOldY = fy;
 
 		yf(fy - 4.0f);
-		
+
 		if(fy <= desty - 128.0f)
 		{
 			state = 2;
@@ -3181,7 +3181,7 @@ bool PU_BoomerangPowerup::collide(CPlayer * player)
 	player->SetPowerup(4);
 	dead = true;
 	return false;
-}	
+}
 
 //------------------------------------------------------------------------------
 // class fireball
@@ -3230,7 +3230,7 @@ bool MO_Fireball::collide(CPlayer * player)
 			{
 				//Find the player that shot this fireball so we can attribute a kill
 				CPlayer * killer = GetPlayerFromGlobalID(playerID);
-				
+
 				if(killer)
 				{
 					PlayerKilledPlayer(*killer, *player, death_style_jump, kill_style_fireball);
@@ -3275,7 +3275,7 @@ MO_SuperFireball::MO_SuperFireball(gfxSprite *nspr, short x, short y, short iNum
 	velx = fVelyX;
 	vely = fVelyY;
 	ttl = rand() % 30 + 60;
-	
+
 	drawframe = 0;
 }
 
@@ -3284,7 +3284,7 @@ void MO_SuperFireball::update()
 	if(++animationtimer == animationspeed)
 	{
 		animationtimer = 0;
-		
+
 		drawframe += iw;
 		if(drawframe >= animationWidth)
 			drawframe = 0;
@@ -3292,12 +3292,12 @@ void MO_SuperFireball::update()
 
 	xf(fx + velx);
 	yf(fy + vely);
-	
+
 	if(ix < 0)
 		xi(ix + 640);
 	else if(ix > 639)
 		xi(ix - 640);
-	
+
 	if(iy > 480 || iy < -ih || --ttl <= 0)
 		removeifprojectile(this, false, true);
 }
@@ -3373,7 +3373,7 @@ void MO_Hammer::update()
 	if(++animationtimer == animationspeed)
 	{
 		animationtimer = 0;
-		
+
 		if(velx > 0)
 		{
 			drawframe += iw;
@@ -3390,7 +3390,7 @@ void MO_Hammer::update()
 
 	xf(fx + velx);
 	yf(fy + vely);
-	
+
 	if(!fSuper)
 		vely += GRAVITATION;
 
@@ -3398,7 +3398,7 @@ void MO_Hammer::update()
 		xi(ix + 640);
 	else if(ix > 639)
 		xi(ix - 640);
-	
+
 	if(iy > 480 || --ttl <= 0 || (fSuper && iy < -ih))
 		removeifprojectile(this, false, true);
 }
@@ -3472,7 +3472,7 @@ void MO_SledgeHammer::update()
 	if(++animationtimer == animationspeed)
 	{
 		animationtimer = 0;
-		
+
 		if(velx > 0)
 		{
 			drawframe += iw;
@@ -3489,14 +3489,14 @@ void MO_SledgeHammer::update()
 
 	xf(fx + velx);
 	yf(fy + vely);
-	
+
 	vely += GRAVITATION;
 
 	if(ix < 0)
 		xi(ix + 640);
 	else if(ix > 639)
 		xi(ix - 640);
-	
+
 	if(iy >= 480)
 		removeifprojectile(this, false, true);
 }
@@ -3508,7 +3508,7 @@ bool MO_SledgeHammer::collide(CPlayer * player)
 		if(!player->spawninvincible)
 		{
 			removeifprojectile(this, false, false);
-			
+
 			if(!player->invincible)
 			{
 				//Find the player that shot this hammer so we can attribute a kill
@@ -3589,7 +3589,7 @@ MO_Boomerang::MO_Boomerang(gfxSprite *nspr, short x, short y, short iNumSpr, boo
 	colorOffset = iColorID * 64;
 	movingObjectType = movingobject_boomerang;
 	state = 1;
-	
+
 	fMoveToRight = moveToRight;
 
 	if(moveToRight)
@@ -3623,7 +3623,7 @@ void MO_Boomerang::update()
 	if(++animationtimer == animationspeed)
 	{
 		animationtimer = 0;
-		
+
 		drawframe += iw;
 		if(drawframe >= animationWidth)
 			drawframe = 0;
@@ -3773,7 +3773,7 @@ void MO_Boomerang::update()
 			{
 				state = 2;
 				fFlipped = true;
-				
+
 				/*
 				CPlayer * player = GetPlayerFromGlobalID(playerID);
 
@@ -3799,7 +3799,7 @@ void MO_Boomerang::update()
 
 			//Follow the player zelda style
 			CPlayer * player = GetPlayerFromGlobalID(playerID);
-			
+
 			if(player)
 			{
 				bool fWrap = false;
@@ -3810,11 +3810,11 @@ void MO_Boomerang::update()
 				//if(player->ix < ix)  //No Wrap Boomerang
 				{
 					velx -= 0.2f;
-					
+
 					if(velx < -5.0f)
 						velx = -5.0f;
 				}
-				else 
+				else
 				{
 					velx += 0.2f;
 
@@ -3825,11 +3825,11 @@ void MO_Boomerang::update()
 				if(player->iy < iy)
 				{
 					vely -= 0.2f;
-					
+
 					if(vely < -3.0f)
 						vely = -3.0f;
 				}
-				else 
+				else
 				{
 					vely += 0.2f;
 
@@ -3837,7 +3837,7 @@ void MO_Boomerang::update()
 						vely = 3.0f;
 				}
 			}
-			else 
+			else
 			{
 				//Remove boomerang if player was removed from game
 				forcedead();
@@ -3948,7 +3948,7 @@ CO_Bomb::CO_Bomb(gfxSprite *nspr, short x, short y, float fVelX, float fVelY, sh
 	playerID = iGlobalID;
 	teamID = iTeamID;
 	iColorOffsetY = (iColorID + 1) * 38;
-	
+
 	movingObjectType = movingobject_bomb;
 	state = 1;
 
@@ -3977,7 +3977,7 @@ bool CO_Bomb::collide(CPlayer * player)
 			}
 		}
 	}
-	
+
 	return false;
 }
 
@@ -4031,7 +4031,7 @@ void CO_Bomb::update()
 	if(++animationtimer == animationspeed)
 	{
 		animationtimer = 0;
-		
+
 		drawframe += iw;
 		if(drawframe >= animationWidth)
 		{
@@ -4153,7 +4153,7 @@ void MO_Coin::draw()
 void MO_Coin::placeCoin()
 {
 	timer = 0;
-	
+
 	short tries = 0;
 	short x = 0, y = 0;
 	do
@@ -4234,7 +4234,7 @@ bool OMO_Thwomp::collide(CPlayer * player)
 	if(!player->invincible && !player->spawninvincible && (player->score->score > 0 || game_values.gamemode->goal == -1))
 	{
 		player->DeathAwards();
-		
+
 		if(!game_values.gamemode->playerkilledself(*player))
 			player->die(0, false);
 
@@ -4424,7 +4424,7 @@ OMO_BulletBill::OMO_BulletBill(gfxSprite *nspr, short y, float nspeed, short pla
 
 	ih = (short)nspr->getHeight() >> 3;
 	//collisionHeight = ih;
-	
+
 	if(velx < 0)
 		xi(640 + iw);
 	else
@@ -4469,7 +4469,7 @@ void OMO_BulletBill::update()
 	if(++animationtimer == animationspeed)
 	{
 		animationtimer = 0;
-		
+
 		drawframe += iw;
 		if(drawframe >= animationWidth)
 			drawframe = 0;
@@ -4490,7 +4490,7 @@ bool OMO_BulletBill::collide(CPlayer * player)
 	{
 		AddAwardKill(player, NULL, kill_style_bulletbill);
 		ifsoundonplay(sfx_kicksound);
-		
+
 		Die();
 	}
 	else
@@ -4511,11 +4511,11 @@ bool OMO_BulletBill::hittop(CPlayer * player)
 	player->bouncejump();
 	player->collision_detection_checktop();
 	player->platform = NULL;
-	
+
 	AddAwardKill(player, NULL, kill_style_bulletbill);
 
 	ifsoundonplay(sfx_mip);
-	
+
 	Die();
 
 	return false;
@@ -4545,7 +4545,7 @@ bool OMO_BulletBill::hitother(CPlayer * player)
 
 		ifsoundonplay(sfx_deathsound);
 	}
-	
+
 	return true;
 }
 
@@ -4633,7 +4633,7 @@ void OMO_BulletBill::HomeToNearestPlayer()
 	if(pHomingPlayer)
 	{
 		float fSlope = (float)(pHomingPlayer->ix - ix) / (float)(pHomingPlayer->iy - iy);
-		
+
 		if(pHomingPlayer->ix > ix)
 			fGoalVelX = fMaxVel;
 		else
@@ -4668,7 +4668,7 @@ MO_CarriedObject::MO_CarriedObject(gfxSprite *nspr, short x, short y, short iNum
 MO_CarriedObject::MO_CarriedObject(gfxSprite *nspr, short x, short y, short iNumSpr, short aniSpeed, short iCollisionWidth, short iCollisionHeight, short iCollisionOffsetX, short iCollisionOffsetY, short iAnimationOffsetX, short iAnimationOffsetY, short iAnimationHeight, short iAnimationWidth) :
 	IO_MovingObject(nspr, x, y, iNumSpr, aniSpeed, iCollisionWidth, iCollisionHeight, iCollisionOffsetX, iCollisionOffsetY, iAnimationOffsetX, iAnimationOffsetY, iAnimationHeight, iAnimationWidth)
 {
-	owner = NULL;	
+	owner = NULL;
 	fSmoking = false;
 }
 
@@ -4692,7 +4692,7 @@ CO_Egg::CO_Egg(gfxSprite *nspr) :
 
 	sparkleanimationtimer = 0;
 	sparkledrawframe = 0;
-	
+
 	placeEgg();
 }
 
@@ -4857,7 +4857,7 @@ CO_Star::CO_Star(gfxSprite *nspr) :
 	bounce = GRAVITATION;
 	objectType = object_star;
 	movingObjectType = movingobject_star;
-	
+
 	iOffsetY = game_values.gamemodesettings.star.shine ? 32 : 0;
 
 	sparkleanimationtimer = 0;
@@ -4895,7 +4895,7 @@ bool CO_Star::collide(CPlayer * player)
 	}
 
 	game_values.gamemode->star = player;
-	
+
 	if(game_values.gamemodesettings.star.shine)
 		eyecandyfront.add(new EC_GravText(&game_font_large, player->ix + HALFPW, player->iy + PH, "Shine Get!", -VELJUMP*1.5));
 	else
@@ -4945,7 +4945,7 @@ void CO_Star::update()
 			if(velx > 0.0f)
 				velx = 0.0f;
 		}
-		
+
 		//Collision detect map
 		IO_MovingObject::update();
 	}
@@ -5045,7 +5045,7 @@ OMO_FlagBase::OMO_FlagBase(gfxSprite *nspr, short iTeamID, short iColorID) :
 	objectType = object_flagbase;
 	teamID = iTeamID;
 	iGraphicOffsetX = iColorID * 48;
-	
+
 	angle = (float)(rand()%1000 * 0.00628f);
 	anglechange = (float)(rand()%100 * 0.0002f);
 	anglechangetimer = (short)(rand() % 50 + 100);
@@ -5084,12 +5084,12 @@ void OMO_FlagBase::update()
 		anglechange = (float)((rand()%101 - 50) * 0.0002f);
 		anglechangetimer = (short)(rand() % 50 + 100);
 	}
-	
+
 	angle += anglechange;
 
 	velx = speed * sin(angle);
 	vely = speed * cos(angle);
-	
+
 	IO_OverMapObject::update();
 
 	ix = (short)fx;
@@ -5111,7 +5111,7 @@ void OMO_FlagBase::update()
 
 		angle = atan2(velx, vely);
 	}
-	
+
 	if(iy < 0)
 	{
 		vely = -vely;
@@ -5177,7 +5177,7 @@ void OMO_FlagBase::scoreFlag(CO_Flag * flag, CPlayer * player)
 		flag->placeFlag();
 		if(!game_values.gamemode->gameover)
 			player->score->AdjustScore(1);
-		
+
 		ifsoundonplay(sfx_racesound);
 
 		if(game_values.gamemodesettings.flag.pointmove)
@@ -5204,7 +5204,7 @@ CO_Flag::CO_Flag(gfxSprite *nspr, OMO_FlagBase * base, short iTeamID, short iCol
 	fLastFlagDirection = false;
 	owner_throw = NULL;
 	owner_throw_timer = 0;
-	
+
 	placeFlag();
 }
 
@@ -5224,7 +5224,7 @@ bool CO_Flag::collide(CPlayer * player)
 			flagbase->setFlag(NULL);
 		}
 	}
-	
+
 	return false;
 }
 
@@ -5293,7 +5293,7 @@ void CO_Flag::update()
 	if(++animationtimer == animationspeed)
 	{
 		animationtimer = 0;
-		
+
 		drawframe += iw;
 		if(drawframe >= animationWidth)
 			drawframe = animationOffsetX;
@@ -5336,7 +5336,7 @@ void CO_Flag::placeFlag()
 		fLastFlagDirection = false;
 		flagbase->setFlag(this);
 	}
-	
+
 	owner_throw = NULL;
 	owner_throw_timer = 0;
 
@@ -5381,7 +5381,7 @@ bool OMO_Yoshi::collide(CPlayer * player)
 	{
 		if(!game_values.gamemode->gameover)
 			player->score->AdjustScore(1);
-	
+
 		placeYoshi();
 
 		CO_Egg * egg = (CO_Egg*)player->carriedItem;
@@ -5431,7 +5431,7 @@ void OMO_Yoshi::placeYoshi()
 			short iDeathY = (iy+ih)/TILESIZE;
 			short iDeathX1 = ix/TILESIZE;
 			short iDeathX2 = (ix+iw)/TILESIZE;
-			
+
 			while(iDeathY < MAPHEIGHT)
 			{
 				TileType ttLeftTile = g_map.map(iDeathX1, iDeathY);
@@ -5442,8 +5442,8 @@ void OMO_Yoshi::placeYoshi()
 					g_map.block(iDeathX1, iDeathY) || g_map.block(iDeathX2, iDeathY))
 				{
 					short top = (iDeathY * TILESIZE - ih) / TILESIZE;
-					
-					if(g_map.spawn(1, iDeathX1, top) && g_map.spawn(1, iDeathX2, top) && 
+
+					if(g_map.spawn(1, iDeathX1, top) && g_map.spawn(1, iDeathX2, top) &&
 						g_map.spawn(1, iDeathX1, iDeathY - 1) && g_map.spawn(1, iDeathX2, iDeathY - 1))
 					{
 						xi(ix);
@@ -5509,7 +5509,7 @@ OMO_Area::OMO_Area(gfxSprite *nspr, short iNumAreas) :
 	numareas = iNumAreas;
 	totalTouchingPlayers = 0;
 	touchingPlayer = NULL;
-	
+
 	placeArea();
 }
 
@@ -5627,7 +5627,7 @@ void OMO_Area::setOwner(CPlayer * player)
 				if(!game_values.gamemode->gameover && game_values.bosspeeking == -1)
 				{
 					eyecandyfront.add(new EC_BossPeeker(&spr_sledgebrothers, rand()%90 + 90, 1));
-					
+
 					backgroundmusic[0].stop();
 					ifsoundonstop(sfx_invinciblemusic);
 					ifsoundonstop(sfx_timewarning);
@@ -5657,7 +5657,7 @@ OMO_KingOfTheHillZone::OMO_KingOfTheHillZone(gfxSprite *nspr) :
 	frame = 0;
 	relocatetimer = 0;
 	playerID = -1;
-	
+
 	for(short iPlayer = 0; iPlayer < 4; iPlayer++)
 	{
 		playersTouching[iPlayer] = NULL;
@@ -5700,12 +5700,12 @@ void OMO_KingOfTheHillZone::draw()
 
 			spr->draw(ix + iCol * TILESIZE, iy + iRow * TILESIZE, iXPiece + frame, iYPiece, TILESIZE, TILESIZE);
 		}
-	}	
+	}
 }
 
 void OMO_KingOfTheHillZone::update()
 {
-	short iMax = 0; 
+	short iMax = 0;
 	short iMaxTeam = -1;
 
 	for(short iTeam = 0; iTeam < 4; iTeam++)
@@ -5811,7 +5811,7 @@ void OMO_KingOfTheHillZone::placeArea()
 			continue;
 
 		y = iFindY - size;
-	
+
 		//Now verify that the area is not completely covered with solid tiles
 		short iCountSolidTiles = 0;
 		for(short iRow = 0; iRow < size; iRow++)
@@ -5824,7 +5824,7 @@ void OMO_KingOfTheHillZone::placeArea()
 					iCountSolidTiles++;
 
 					//Be more picky in the first few loops, but allow solid tiles to be in
-					if((iLoop < 16 && iCountSolidTiles > iKingOfTheHillZoneLimits[size - 2][0]) || (iLoop < 32 && iCountSolidTiles > iKingOfTheHillZoneLimits[size - 2][1]) || 
+					if((iLoop < 16 && iCountSolidTiles > iKingOfTheHillZoneLimits[size - 2][0]) || (iLoop < 32 && iCountSolidTiles > iKingOfTheHillZoneLimits[size - 2][1]) ||
 						(iLoop < 48 && iCountSolidTiles > iKingOfTheHillZoneLimits[size - 2][2]) || (iLoop < 63 && iCountSolidTiles > iKingOfTheHillZoneLimits[size - 2][3]))
 					{
 						fTryAgain = true;
@@ -5901,11 +5901,11 @@ bool OMO_RaceGoal::collide(CPlayer * player)
 	if(game_values.gamemode->getgamemode() == game_mode_race && player->statue_timer == 0)
 	{
 		CGM_Race * gamemode = (CGM_Race*)game_values.gamemode;
-	
+
 		if(tagged[player->teamID] != player->colorID && gamemode->getNextGoal(player->teamID) >= goalID)
 		{
 			tagged[player->teamID] = player->colorID;
-			
+
 			if(goalID == game_values.gamemodesettings.race.quantity - 1)
                 ifsoundonplay(sfx_racesound);
 			else
@@ -5922,11 +5922,11 @@ void OMO_RaceGoal::draw()
 {
 	if(goalID == game_values.gamemodesettings.race.quantity - 1)
 	{
-		spr->draw(ix - collisionOffsetX, iy - collisionOffsetY, drawframe, 54, iw, ih);	
+		spr->draw(ix - collisionOffsetX, iy - collisionOffsetY, drawframe, 54, iw, ih);
 	}
 	else
 	{
-		spr->draw(ix - collisionOffsetX, iy - collisionOffsetY, drawframe, 0, iw, ih);	
+		spr->draw(ix - collisionOffsetX, iy - collisionOffsetY, drawframe, 0, iw, ih);
 
 		for(short k = 0; k < score_cnt; k++)
 		{
@@ -5945,12 +5945,12 @@ void OMO_RaceGoal::update()
 		anglechange = (float)((rand()%101 - 50) * 0.0002f);
 		anglechangetimer = (short)(rand() % 50 + 100);
 	}
-	
+
 	angle += anglechange;
 
 	velx = speed * sin(angle);
 	vely = speed * cos(angle);
-	
+
 	IO_OverMapObject::update();
 
 	ix = (short)fx;
@@ -5972,7 +5972,7 @@ void OMO_RaceGoal::update()
 
 		angle = atan2(velx, vely);
 	}
-	
+
 	if(iy < 0)
 	{
 		vely = -vely;
@@ -6018,7 +6018,7 @@ MO_FrenzyCard::MO_FrenzyCard(gfxSprite *nspr, short iNumSpr, short aniSpeed, sho
 	state = 1;
 	objectType = object_frenzycard;
 	type = iType;
-	
+
 	sparkleanimationtimer = 0;
 	sparkledrawframe = 0;
 
@@ -6042,7 +6042,7 @@ bool MO_FrenzyCard::collide(CPlayer * player)
 		{
 			case 8:
 			{
-				CO_Shell * shell = new CO_Shell(0, 0, 0, true, true, true, false); 
+				CO_Shell * shell = new CO_Shell(0, 0, 0, true, true, true, false);
 				objectsplayer.add(shell);
 				shell->UsedAsStoredPowerup(player);
 				break;
@@ -6056,14 +6056,14 @@ bool MO_FrenzyCard::collide(CPlayer * player)
 			}
 			case 10:
 			{
-				CO_Shell * shell = new CO_Shell(2, 0, 0, false, false, true, true); 
+				CO_Shell * shell = new CO_Shell(2, 0, 0, false, false, true, true);
 				objectsplayer.add(shell);
 				shell->UsedAsStoredPowerup(player);
 				break;
 			}
 			case 11:
 			{
-				CO_Shell * shell = new CO_Shell(3, 0, 0, false, true, false, false); 
+				CO_Shell * shell = new CO_Shell(3, 0, 0, false, true, false, false);
 				objectsplayer.add(shell);
 				shell->UsedAsStoredPowerup(player);
 				break;
@@ -6080,7 +6080,7 @@ void MO_FrenzyCard::update()
 	if(++animationtimer == animationspeed)
 	{
 		animationtimer = 0;
-		
+
 		drawframe += iw;
 		if(drawframe >= animationWidth)
 			drawframe = 0;
@@ -6101,7 +6101,7 @@ void MO_FrenzyCard::update()
 void MO_FrenzyCard::draw()
 {
 	IO_MovingObject::draw();
-	
+
 	//Draw sparkles
 	spr_shinesparkle.draw(ix - collisionOffsetX, iy - collisionOffsetY, sparkledrawframe, 0, 32, 32);
 }
@@ -6184,8 +6184,8 @@ void OMO_Explosion::collide(IO_MovingObject * object)
 	if(type == movingobject_goomba || type == movingobject_koopa || type == movingobject_cheepcheep || type == movingobject_bulletbill || type == movingobject_shell || type == movingobject_throwblock)
 	{
 		object->dead = true;
-		
-		if(game_values.gamemode->gamemode == game_mode_stomp && 
+
+		if(game_values.gamemode->gamemode == game_mode_stomp &&
 			(type == movingobject_goomba || type == movingobject_koopa || type == movingobject_cheepcheep)
 			&& !game_values.gamemode->gameover)
 		{
@@ -6205,7 +6205,7 @@ void OMO_Explosion::collide(IO_MovingObject * object)
 			}
 		}
 
-		
+
 		if(type == movingobject_goomba)
 		{
 			ifsoundonplay(sfx_kicksound);
@@ -6257,7 +6257,7 @@ MO_Goomba::MO_Goomba(gfxSprite *nspr, short iNumSpr, short aniSpeed, bool moveTo
 
 	movingObjectType = movingobject_goomba;
 	bounce = GRAVITATION;
-	
+
 	spawnradius = 100.0f;
 	spawnangle = (float)(rand()%1000 * 0.00628f);
 	inair = true;
@@ -6284,7 +6284,7 @@ void MO_Goomba::draw()
 			short spawnY = iy + (collisionHeight >> 1) - 8 + (short)(spawnradius * sin(displayangle));
 
 			displayangle += addangle;
-		
+
 			spr_awardsouls.draw(spawnX, spawnY, iSpawnIconOffset, 0, 16, 16);
 		}
 	}
@@ -6325,7 +6325,7 @@ void MO_Goomba::update()
 		burnuptimer = 0;
 	}
 }
-	
+
 
 bool MO_Goomba::collide(CPlayer * player)
 {
@@ -6469,7 +6469,7 @@ void MO_Goomba::collide(IO_MovingObject * object)
 
 			ifsoundonplay(sfx_kicksound);
 			Die();
-		
+
 			if(type == movingobject_shell)
 			{
 				CO_Shell * shell = (CO_Shell*)object;
@@ -6543,17 +6543,17 @@ bool MO_Koopa::hittop(CPlayer * player)
 
 	//Give the shell a state 2 so it is already spawned but sitting
 	CO_Shell * shell;
-	
+
 	if(fRed)
 		shell = new CO_Shell(1, ix - 1, iy + 8, false, true, true, false);
 	else
 		shell = new CO_Shell(0, ix - 1, iy + 8, true, true, true, false);
-	
+
 	shell->state = 2;
 	shell->yi(iy + 8);
 
 	objectsplayer.add(shell);
-	
+
 	return false;
 }
 
@@ -6572,11 +6572,11 @@ OMO_CheepCheep::OMO_CheepCheep(gfxSprite *nspr) :
 {
 	ih = 32;
 	xi((short)(rand() % 608));
-	
+
 	velx = 0.0f;
 	while(velx == 0.0f)
 		velx = float(rand() % 19 - 9) / 2.0f;
-	
+
 	//Cheep cheep up velocity is between 9.0 and 13.0 in 0.5 increments
 	vely = -(float(rand() % 11) / 2.0f) - 9.0f;
 
@@ -6584,7 +6584,7 @@ OMO_CheepCheep::OMO_CheepCheep(gfxSprite *nspr) :
 	state = 1;
 
 	iColorOffsetY = (short)(rand() % 3) * 64;
-	
+
 	if(velx > 0.0f)
 		iColorOffsetY += 32;
 }
@@ -6603,7 +6603,7 @@ void OMO_CheepCheep::update()
 	if(++animationtimer == animationspeed)
 	{
 		animationtimer = 0;
-		
+
 		drawframe += iw;
 		if(drawframe >= animationWidth)
 			drawframe = 0;
@@ -6628,7 +6628,7 @@ bool OMO_CheepCheep::collide(CPlayer * player)
 
 		if(game_values.gamemode->gamemode == game_mode_stomp && !game_values.gamemode->gameover)
 			player->score->AdjustScore(1);
-		
+
 		Die();
 		game_values.enemyhammerkills = 0;
 	}
@@ -6650,14 +6650,14 @@ bool OMO_CheepCheep::hittop(CPlayer * player)
 	player->bouncejump();
 	player->collision_detection_checktop();
 	player->platform = NULL;
-	
+
 	AddAwardKill(player, NULL, kill_style_cheepcheep);
 
 	if(game_values.gamemode->gamemode == game_mode_stomp && !game_values.gamemode->gameover)
 		player->score->AdjustScore(1);
 
 	ifsoundonplay(sfx_mip);
-	
+
 	Die();
 	game_values.enemyhammerkills = 0;
 
@@ -6757,7 +6757,7 @@ void OMO_CheepCheep::collide(IO_MovingObject * object)
 
 			ifsoundonplay(sfx_kicksound);
 			Die();
-		
+
 			if(type == movingobject_shell)
 			{
 				CO_Shell * shell = (CO_Shell*)object;
@@ -6796,11 +6796,11 @@ MO_SledgeBrother::MO_SledgeBrother(gfxSprite *nspr, short platformY, short type)
 
 	movingObjectType = movingobject_sledgebrother;
 	bounce = GRAVITATION;
-	
+
 	inair = true;
 
 	throwing_timer = 0;
-	
+
 	hit_timer = 0;
 	hit_movement_timer = 0;
 	hit_offset_y = iType * 64;
@@ -6820,7 +6820,7 @@ MO_SledgeBrother::MO_SledgeBrother(gfxSprite *nspr, short platformY, short type)
 
 	vely = 0.0f;
 	velx = 0.0f;
-	
+
 	iPlatformY = platformY - collisionHeight;
 	yi(iPlatformY);
 
@@ -6857,7 +6857,7 @@ void MO_SledgeBrother::update()
 		if(iy >= iPlatformY)
 		{
 			iActionState = 0;
-			
+
 			if(iType == 0)
 			{
 				//Shake screen and kill players
@@ -6944,7 +6944,7 @@ void MO_SledgeBrother::update()
 		if(++leg_movement_timer == 8)
 		{
 			leg_movement_timer = 0;
-			
+
 			if(leg_offset_x == 0)
 				leg_offset_x = 48;
 			else
@@ -6963,7 +6963,7 @@ void MO_SledgeBrother::update()
 		if(++arm_movement_timer == 8)
 		{
 			arm_movement_timer = 0;
-			
+
 			if(arm_offset_x == 0)
 				arm_offset_x = 96;
 			else
@@ -6973,7 +6973,7 @@ void MO_SledgeBrother::update()
 		if(++leg_movement_timer == 6)
 		{
 			leg_movement_timer = 0;
-			
+
 			if(leg_offset_x == 0)
 				leg_offset_x = 48;
 			else
@@ -6993,7 +6993,7 @@ void MO_SledgeBrother::update()
 			if(++hit_movement_timer == 2)
 			{
 				hit_movement_timer = 0;
-				
+
 				hit_offset_y += 64;
 
 				if(hit_offset_y >= 192)
@@ -7225,7 +7225,7 @@ void MO_SledgeBrother::collide(IO_MovingObject * object)
 			Damage(iPlayerID);
 
 			ifsoundonplay(sfx_kicksound);
-		
+
 			if(type == movingobject_shell)
 			{
 				((CO_Shell*)object)->Die();
@@ -7334,7 +7334,7 @@ bool CO_Shell::collide(CPlayer * player)
 			if((player->ix + HALFPW + flipx >= ix + (iw >> 1) && velx > 0.0f) || (player->ix + HALFPW + flipx < ix + (iw >> 1) && velx < 0.0f))
 			{
 				Die();
-				return false;	
+				return false;
 			}
 		}
 	}
@@ -7583,7 +7583,7 @@ void CO_Shell::update()
 	}
 	else
 		iDeathTime = 0;
-	
+
 	//Have the powerup grow out of the powerup block
 	if(state == 0)
 	{
@@ -7601,7 +7601,7 @@ void CO_Shell::update()
 
 	if(iIgnoreBounceTimer > 0)
 		iIgnoreBounceTimer--;
-	
+
 	if(iBounceCounter > 0)
 		iBounceCounter--;
 
@@ -7616,7 +7616,7 @@ void CO_Shell::update()
 		fOldY = fy;
 
 		collision_detection_map();
-		
+
 		if(++animationtimer == animationspeed)
 		{
 			animationtimer = 0;
@@ -7694,7 +7694,7 @@ void CO_Shell::Kick(bool superkick)
 	owner = NULL;
 
 	state = 1;
-	
+
 	if(collision_detection_checksides())
 		Die();
 	else
@@ -7905,7 +7905,7 @@ void CO_ThrowBlock::update()
 
 		return;
 	}
-	
+
 	if(owner)
 	{
 		MoveToOwner();
@@ -7980,7 +7980,7 @@ void CO_ThrowBlock::Die()
 	eyecandyfront.add(new EC_FallingObject(&spr_brokenblueblock, ix + 16, iy, 1.5f, -7.0f, 6, 2, 0, fSuper ? 16 : 0, 16, 16));
 	eyecandyfront.add(new EC_FallingObject(&spr_brokenblueblock, ix, iy + 16, -1.5f, -4.0f, 6, 2, 0, fSuper ? 16 : 0, 16, 16));
 	eyecandyfront.add(new EC_FallingObject(&spr_brokenblueblock, ix + 16, iy + 16, 1.5f, -4.0f, 6, 2, 0, fSuper ? 16 : 0, 16, 16));
-	
+
 	dead = true;
 	ifsoundonplay(sfx_breakblock);
 
@@ -8019,7 +8019,7 @@ CO_Spring::CO_Spring(gfxSprite *nspr) :
 	bounce = GRAVITATION;
 	objectType = object_moving;
 	movingObjectType = movingobject_spring;
-	
+
 	spawnradius = 100.0f;
 	spawnangle = (float)(rand()%1000 * 0.00628f);
 
@@ -8037,7 +8037,7 @@ bool CO_Spring::collide(CPlayer * player)
 		else
 			hitother(player);
 	}
-	
+
 	return false;
 }
 
@@ -8056,7 +8056,7 @@ void CO_Spring::hittop(CPlayer * player)
 
 	player->superjumptimer = 4;
 	player->vely = -VELNOTEBLOCKREPEL;
-	
+
 	ifsoundonplay(sfx_bump);
 }
 
@@ -8124,7 +8124,7 @@ void CO_Spring::update()
 			if(++animationtimer == animationspeed)
 			{
 				animationtimer = 0;
-				
+
 				drawframe += iw;
 				if(drawframe >= animationWidth)
 				{
@@ -8150,7 +8150,7 @@ void CO_Spring::draw()
 			short spawnY = iy + (collisionHeight >> 1) - 8 + (short)(spawnradius * sin(displayangle));
 
 			displayangle += addangle;
-		
+
 			spr_awardsouls.draw(spawnX, spawnY, iSpawnIconX, 0, 16, 16);
 		}
 	}
@@ -8275,8 +8275,8 @@ bool CObjectContainer::isBlockAt(short x, short y)
 {
 	for(short i = 0; i < list_end; i++)
 	{
-		if(x >= list[i]->ix && x < list[i]->ix + list[i]->iw && 
-			y >= list[i]->iy && y < list[i]->iy + list[i]->ih && 
+		if(x >= list[i]->ix && x < list[i]->ix + list[i]->iw &&
+			y >= list[i]->iy && y < list[i]->iy + list[i]->ih &&
 			list[i]->getObjectType() == object_block)
 		{
 			return true;
@@ -8334,7 +8334,7 @@ void CObjectContainer::adjustPlayerAreas(CPlayer * player, CPlayer * other)
 			{
 				if(game_values.gamemodesettings.domination.relocateondeath)
 					area->placeArea();
-	
+
 				if(game_values.gamemodesettings.domination.stealondeath && player)
 					area->setOwner(player);
 				else if(game_values.gamemodesettings.domination.loseondeath)
@@ -8404,7 +8404,7 @@ void MysteryMushroomTempPlayer::SetPlayer(CPlayer * player, short iPowerup)
 
 	//bobomb = player->bobomb;
 	//powerup = player->powerup;
-	
+
 	burnupstarttimer = player->burnupstarttimer;
 	burnuptimer = player->burnuptimer;
 
@@ -8424,7 +8424,7 @@ void MysteryMushroomTempPlayer::SetPlayer(CPlayer * player, short iPowerup)
 	iOldPowerupX = player->score->x + scorepowerupoffsets[game_values.teamcounts[player->teamID] - 1][player->subTeamID];
 	iOldPowerupY = player->score->y + 25;
 }
-		
+
 void MysteryMushroomTempPlayer::GetPlayer(CPlayer * player, short * iPowerup)
 {
 	player->fNewSwapX = fx;
@@ -8441,7 +8441,7 @@ void MysteryMushroomTempPlayer::GetPlayer(CPlayer * player, short * iPowerup)
 
 	//player->bobomb = bobomb;
 	//player->powerup = powerup;
-	
+
 	player->burnupstarttimer = burnupstarttimer;
 	player->burnuptimer = burnuptimer;
 

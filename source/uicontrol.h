@@ -13,13 +13,13 @@ class UI_Control
 	public:
 		UI_Control(short x, short y);
         virtual ~UI_Control() {}
-	
+
 		virtual void Update() {}
 		virtual void Draw() {}
 
 		virtual MenuCodeEnum SendInput(CPlayerInput *) {return MENU_CODE_NONE;}
 
-		bool Select(bool select) 
+		bool Select(bool select)
 		{
 			fSelected = select;
 
@@ -67,7 +67,7 @@ class MI_Image : public UI_Control
 	public:
 		MI_Image(gfxSprite * nspr, short x, short y, short srcx, short srcy, short w, short h, short numxframes, short numyframes, short speed);
 		virtual ~MI_Image();
-		
+
 		void Update();
 		void Draw();
 
@@ -106,7 +106,7 @@ class MI_Text : public UI_Control
 	public:
 		MI_Text(char * text, short x, short y, short w, short size, short justified);
 		virtual ~MI_Text();
-		
+
 		void SetText(char * text);
 		void Draw();
 
@@ -122,7 +122,7 @@ class MI_ScoreText : public UI_Control
 	public:
 		MI_ScoreText(short x, short y);
 		virtual ~MI_ScoreText() {}
-		
+
 		void Draw();
 		void SetScore(short iScore);
 
@@ -144,13 +144,13 @@ class MI_IPField : public UI_Control
 		virtual ~MI_IPField();
 
 		char * GetValue();
-		
+
 		void Update();
 		void Draw();
-		
+
 		MenuCodeEnum SendInput(CPlayerInput * playerInput);
 		MenuCodeEnum Modify(bool modify);
-		
+
 	private:
 
 		void AssignHostAddress();
@@ -159,7 +159,7 @@ class MI_IPField : public UI_Control
 		gfxSprite * spr;
 
 		int iSelectedDigit;
-		
+
 		int values[12];
 
 		char szValue[16];
@@ -174,7 +174,7 @@ class SF_ListItem
 		SF_ListItem()
 		{
 			sName = "";
-			
+
 			iValue = 0;
 			sValue = "";
 			fValue = false;
@@ -253,7 +253,7 @@ class MI_SelectField : public UI_Control
 
 		//Set where the data of this control is written to (some member of game_values probably)
 		void SetData(short * ivalue, std::string * svalue, bool * fvalue) {iValue = ivalue; sValue = svalue; fValue = fvalue;}
-		
+
 	protected:
 
 		void SetValues();
@@ -276,7 +276,7 @@ class MI_SelectField : public UI_Control
 
 		MI_Image * miModifyImageLeft;
 		MI_Image * miModifyImageRight;
-		
+
 		MenuCodeEnum mcItemChangedCode;
 		MenuCodeEnum mcControlSelectedCode;
 
@@ -295,7 +295,7 @@ class MI_ImageSelectField : public MI_SelectField
 		virtual ~MI_ImageSelectField();
 
 		void Draw();
-		
+
 	private:
 
 		gfxSprite * spr_image;
@@ -307,7 +307,7 @@ class MI_InputControlField : public UI_Control
 	public:
 		MI_InputControlField(gfxSprite * nspr, short x, short y, char * name, short width, short indent);
         virtual ~MI_InputControlField() {};
-		
+
 		void Draw();
 		MenuCodeEnum SendInput(CPlayerInput * playerInput);
 		void SetKey(short * iSetKey, short key, short device);
@@ -407,7 +407,7 @@ class MI_InputControlContainer : public UI_Control
 		short iPlayerID;
 		short iDevice;
 		short iSelectedInputType;
-		
+
 		UI_Menu * mInputMenu;
 
 		MI_Image * miImage[2];
@@ -447,7 +447,7 @@ class MI_TeamSelect : public UI_Control
 		short iTeamIDs[4][3];
 		short iTeamCounts[4];
 		short iNumTeams;
-		
+
 		short iAnimationTimer;
 		short iAnimationFrame;
 		short iRandomAnimationFrame;
@@ -553,7 +553,7 @@ class MI_MapField : public UI_Control
 	protected:
 
 		gfxSprite * spr;
-		
+
 		SDL_Surface * surfaceMapBackground;
 		SDL_Surface * surfaceMapForeground;
 		SDL_Rect rectDst;
@@ -595,10 +595,10 @@ class MI_AnnouncerField : public UI_Control
 		void UpdateName();
 
 		gfxSprite * spr;
-		
+
 		char * szName;
 		short iWidth, iIndent;
-		
+
 		char szFieldName[256];
 
 		MI_Image * miModifyImageLeft;
@@ -642,10 +642,10 @@ class MI_PlaylistField : public UI_Control
 	protected:
 
 		gfxSprite * spr;
-		
+
 		char * szName;
 		short iWidth, iIndent;
-		
+
 		MI_Image * miModifyImageLeft;
 		MI_Image * miModifyImageRight;
 };
@@ -826,7 +826,7 @@ class MI_MapFilterScroll : public UI_Control
 		bool MovePrev();
 
 	private:
-		
+
 		std::vector<MFS_ListItem*> items;
 		std::vector<MFS_ListItem*>::iterator current;
 
@@ -873,7 +873,7 @@ class MI_MapBrowser : public UI_Control
 
 		short iFilterTagAnimationTimer;
 		short iFilterTagAnimationFrame;
-		
+
 		short iType;
 		short iMapCount;
 

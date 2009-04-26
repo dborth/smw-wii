@@ -41,7 +41,7 @@ class DirectoryListing
     public:
         /* Constructor accepts path, optional filename extension */
         DirectoryListing();
-		
+
 		bool init(std::string path, std::string file_ext="");
 
         /* Ask the listing whether or not it successfully got access to a folder */

@@ -344,10 +344,10 @@ float CapFallingVelocity(float vel)
 {
 	//if(vel < -MAXVELY)
 	//	return -MAXVELY;
-	
+
 	if(vel > MAXVELY)
 		return MAXVELY;
-	
+
 	return vel;
 }
 
@@ -355,10 +355,10 @@ float CapSideVelocity(float vel)
 {
 	if(vel < -MAXVELY)
 		return -MAXVELY;
-	
+
 	if(vel > MAXVELY)
 		return MAXVELY;
-	
+
 	return vel;
 }
 
@@ -423,7 +423,7 @@ void CleanDeadPlayers()
 				game_values.gamemode->chicken = NULL;
 
 			delete list_players[i];
-			
+
 			for(short j = i; j < list_players_cnt - 1; j++)
 			{
 				list_players[j] = list_players[j + 1];
@@ -575,7 +575,7 @@ CKeyState game_left, game_right, game_jump, game_down, game_turbo, game_powerup,
 CKeyState keys[NUM_KEYS];
 
 //[Keyboard/Joystick][Game/Menu][NumPlayers][NumKeys]
-short controlkeys[2][2][4][NUM_KEYS] = { { 
+short controlkeys[2][2][4][NUM_KEYS] = { {
 
 GAME - left, right, jump, down, turbo, powerup, start, cancel
 {SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_RCTRL, SDLK_RSHIFT, SDLK_RETURN, SDLK_ESCAPE},
@@ -590,10 +590,10 @@ MENU - up, down, left, right, select, cancel, random, fast scroll
 {SDLK_p, SDLK_SEMICOLON, SDLK_l, SDLK_QUOTE, SDLK_LEFTBRACKET, SDLK_o, SDLK_UNKNOWN, SDLK_UNKNOWN}
 */
 
-unsigned int game_map [8] = { WPAD_BUTTON_UP, WPAD_BUTTON_DOWN, WPAD_BUTTON_2, WPAD_BUTTON_LEFT, 
+unsigned int game_map [8] = { WPAD_BUTTON_UP, WPAD_BUTTON_DOWN, WPAD_BUTTON_2, WPAD_BUTTON_LEFT,
 							WPAD_BUTTON_1, WPAD_BUTTON_A, WPAD_BUTTON_PLUS, WPAD_BUTTON_MINUS };
-							
-unsigned int menu_map [8] = { WPAD_BUTTON_UP, WPAD_BUTTON_DOWN, WPAD_BUTTON_LEFT, WPAD_BUTTON_RIGHT, 
+
+unsigned int menu_map [8] = { WPAD_BUTTON_UP, WPAD_BUTTON_DOWN, WPAD_BUTTON_LEFT, WPAD_BUTTON_RIGHT,
 							WPAD_BUTTON_A, WPAD_BUTTON_B, WPAD_BUTTON_1, WPAD_BUTTON_2 };
 
 static void * CheckWiiEvents(void *arg)
@@ -601,16 +601,16 @@ static void * CheckWiiEvents(void *arg)
 	WPADData wpad;
 	SDL_Event event[32];
 	int i, j;
-	
+
 	while(1)
 	{
 		WPAD_ScanPads();
 		memset(&event, 0, sizeof(SDL_Event)*32);
-		
+
 		for(i=0; i < 4; i++)
 		{
 			memcpy(&wpad, WPAD_Data(i), sizeof(WPADData));
-			
+
 			for(j=0; j < 8; j++)
 			{
 				if(game_values.gamestate == GS_GAME)
@@ -644,7 +644,7 @@ static void * CheckWiiEvents(void *arg)
 					}
 				}
 			}
-			
+
 			if(wpad.btns_d & WPAD_BUTTON_HOME)
 			{
 				event[0].type = SDL_QUIT;
@@ -662,8 +662,8 @@ int main(int argc, char *argv[])
 	#ifndef HW_RVL
 	exit(0);
 	#endif
-	
-	/*if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTTHREAD | 
+
+	/*if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTTHREAD |
 		SDL_INIT_NOPARACHUTE | SDL_INIT_TIMER) < 0 )*/
 	if( SDL_Init(SDL_INIT_VIDEO) < 0 )
 	{
@@ -676,21 +676,21 @@ int main(int argc, char *argv[])
     atexit(SDL_Quit);
 
 	gfx_init(640, 480, false);		//initialize the graphics (SDL)
-	
+
 	printf("-------------------------------------------------------------------------------\n");
 	printf(" %s %s\n", TITLESTRING, VERSIONNUMBER);
 	printf("-------------------------------------------------------------------------------\n");
 	printf("\n---------------- startup ----------------\n\n\n");
-	
+
 	WPAD_Init();
 	SYS_SetResetCallback(WiiReset);
 	SYS_SetPowerCallback(WiiPower);
 	WPAD_SetPowerButtonCallback(WiiPowerButton);
 	fatInitDefault();
-	
+
 	lwp_t wiieventthread = LWP_THREAD_NULL;
 	LWP_CreateThread (&wiieventthread, CheckWiiEvents, NULL, NULL, 0, 80);
-	
+
 	filterslist.init(convertPath("filters/"), ".txt");
 	maplist.init();
 	skinlist.init();
@@ -700,7 +700,7 @@ int main(int argc, char *argv[])
 	gamegraphicspacklist.init(convertPath("gfx/packs/"));
 	soundpacklist.init(convertPath("sfx/packs/"));
 	tourlist.init(convertPath("tours/"), ".txt");
-	
+
 	blitdest = screen;
 
 	/*
@@ -726,7 +726,7 @@ int main(int argc, char *argv[])
 
 	for(short i = 0; i < joystickcount; i++)
 		joysticks[i] = SDL_JoystickOpen(i);
-	
+
 	SDL_JoystickEventState(SDL_DISABLE);
 
 	//currently this only sets the title, not the icon.
@@ -737,7 +737,7 @@ int main(int argc, char *argv[])
 	SDL_ShowCursor(SDL_DISABLE);
 
 	printf("\n---------------- loading ----------------\n");
-	
+
 	for(short iScore = 0; iScore < 4; iScore++)
 		score[iScore] = new CScore(iScore);
 
@@ -751,9 +751,9 @@ int main(int argc, char *argv[])
 	game_values.sound				= true;
 	game_values.music				= true;
 	game_values.gamestate			= GS_MENU;
-#ifdef _DEBUG	
+#ifdef _DEBUG
 	game_values.fullscreen			= false;
-#else	
+#else
 	game_values.fullscreen			= true;
 #endif
 
@@ -829,7 +829,7 @@ int main(int argc, char *argv[])
 	game_values.pfFilters			= new bool[NUM_AUTO_FILTERS + filterslist.GetCount()];
 	game_values.piFilterIcons		= new short[NUM_AUTO_FILTERS + filterslist.GetCount()];
 	game_values.fNeedWriteFilters	= false;
-	
+
 	for(short iFilter = 0; iFilter < NUM_AUTO_FILTERS + filterslist.GetCount(); iFilter++)
 	{
 		game_values.pfFilters[iFilter] = false;
@@ -839,7 +839,7 @@ int main(int argc, char *argv[])
 	//game_values.networktype		= 0;
 	//game_values.networkhost		= false;
 	//game_values.gamehost			= false;
-	
+
 	//Set the default powerup weights for bonus wheel and [?] boxes
 	for(short iPowerup = 0; iPowerup < NUM_POWERUPS; iPowerup++)
 		game_values.powerupweights[iPowerup] = g_iDefaultPowerupWeights[iPowerup];
@@ -886,7 +886,7 @@ int main(int argc, char *argv[])
 		game_values.playerInput.inputControls[iPlayer] = &game_values.inputConfiguration[iPlayer][0];
 #endif
 	}
-	
+
 	//set game modes
 	gamemodes[0] = new CGM_Classic();
 	gamemodes[1] = new CGM_Frag();
@@ -924,7 +924,7 @@ int main(int argc, char *argv[])
 	//Stomp
 	game_values.gamemodesettings.stomp.rate = 90; //Moderate
 	game_values.gamemodesettings.stomp.enemyweight[0] = 1; // turn on goombas, koopa and cheep cheeps by default
-	game_values.gamemodesettings.stomp.enemyweight[1] = 1;  
+	game_values.gamemodesettings.stomp.enemyweight[1] = 1;
 	game_values.gamemodesettings.stomp.enemyweight[2] = 2;
 
 	//Capture The Flag
@@ -950,7 +950,7 @@ int main(int argc, char *argv[])
 	game_values.gamemodesettings.domination.relocateondeath = false;
 	game_values.gamemodesettings.domination.quantity = 13; //# Players + 1 = 13
 	game_values.gamemodesettings.domination.relocationfrequency = 1240;  //Relocate after 20 seconds = 1240
-	
+
 	//King Of The Hill
 	game_values.gamemodesettings.kingofthehill.areasize = 3;
 	game_values.gamemodesettings.kingofthehill.relocationfrequency = 1240;
@@ -959,7 +959,7 @@ int main(int argc, char *argv[])
 	game_values.gamemodesettings.race.quantity = 4;
 	game_values.gamemodesettings.race.speed = 4;
 	game_values.gamemodesettings.race.penalty = 2;  //0 == none, 1 = 1 base, 2 = all bases lost on death
-		
+
 	//Frenzy
 	game_values.gamemodesettings.frenzy.quantity = 6; //#players - 1
 	game_values.gamemodesettings.frenzy.rate = 186; //3 seconds
@@ -983,11 +983,11 @@ int main(int argc, char *argv[])
 	game_values.gamemodesettings.survival.enemyweight[2] = 0;
 	game_values.gamemodesettings.survival.density = 20;
 	game_values.gamemodesettings.survival.speed = 4;
-	game_values.gamemodesettings.survival.shield = true;		
+	game_values.gamemodesettings.survival.shield = true;
 
 	//Read saved settings from disk
 	FILE *fp = NULL;
-	
+
 	fp = fopen("sd:/smw/options.bin", "rb");
 /*
 #ifdef _XBOX
@@ -1053,7 +1053,7 @@ int main(int argc, char *argv[])
 			game_values.pointspeed = (short)abyte[23];
 			game_values.swapstyle = (short)abyte[24];
 			game_values.secrets = ((short)abyte[26] > 0 ? true : false);
-			
+
 			fread(&game_values.spawninvincibility, sizeof(short), 1, fp);
 			fread(&game_values.itemrespawntime, sizeof(short), 1, fp);
 			fread(&game_values.fireballttl, sizeof(short), 1, fp);
@@ -1095,7 +1095,7 @@ int main(int argc, char *argv[])
 			#ifndef HW_RVL
 				fread(&game_values.fullscreen, sizeof(bool), 1, fp);
 			#endif
-			
+
 			for(short iGameMode = 0; iGameMode < GAMEMODE_LAST; iGameMode++)
 				fread(&(gamemodes[iGameMode]->goal), sizeof(short), 1, fp);
 
@@ -1187,11 +1187,11 @@ int main(int argc, char *argv[])
             break;
 		}
 	}
-	
-	
+
+
 
 	printf("\n---------------- shutdown ----------------\n");
-	
+
 	for(short i = 0; i < GAMEMODE_LAST; i++)
 		delete gamemodes[i];
 
@@ -1201,7 +1201,7 @@ int main(int argc, char *argv[])
 
 	delete[] joysticks;
 #endif
-	
+
     sfx_close();
 	gfx_close();
 	//net_close();
@@ -1222,7 +1222,7 @@ int main(int argc, char *argv[])
 		delete [] spr_player[k];
 		delete [] spr_chocobo[k];
 		delete [] spr_bobomb[k];
-		
+
 		delete score[k];
 	}
 
@@ -1290,7 +1290,7 @@ void RunGame()
 	static int exitgametimer = 0;
 	exitgametimer = 0;
 #endif
-	
+
 	y_shake = 0;
 	x_shake = 0;
 
@@ -1389,7 +1389,7 @@ void RunGame()
 				velx = (short)(rand()%51-25)/10.0f;	//big clouds: -3 - +3 pixel/frame
 			else
 				velx = (short)(rand()%41-20)/10.0f;	//small clouds: -2 - +2 pixel/frame
-			
+
 			velx = velx < 0.5f && velx > -0.5f ? 1 : velx;	//no static clouds please
 
 			//add cloud to eyecandy array
@@ -1402,14 +1402,14 @@ void RunGame()
 		{
 			short c = (short)(rand() % 3);	//ghost type
 			float velx = (short)(rand()%51-25)/10.0f;	//big clouds: -3 - +3 pixel/frame
-			
+
 			velx = velx < 0.5f && velx > -0.5f ? (rand() % 1 ? 1.0f : -1.0f) : velx;	//no static clouds please
 
 			//add cloud to eyecandy array
 			eyecandyfront.add(new EC_Ghost(&spr_ghosts[c], (float)(rand()%640), (float)(rand()%100), velx, 8, 2));
 		}
 	}
-	
+
 	short iScoreTextOffset[4];
 	for(short iTeam = 0; iTeam < score_cnt; iTeam++)
 	{
@@ -1437,7 +1437,7 @@ void RunGame()
 				{
 					//Detect player is in center of tile only
 					short x = (list_players[k]->ix + HALFPW) / TILESIZE;
-					
+
 					if(list_players[k]->ix + HALFPW >= 640)
 						x = (list_players[k]->ix + HALFPW - 640) / TILESIZE;
 
@@ -1454,7 +1454,7 @@ void RunGame()
 						blocktype = g_map.blockat(x, y);
 					}
 
-					if( (tile != tile_nonsolid && tile != tile_solid_on_top) || 
+					if( (tile != tile_nonsolid && tile != tile_solid_on_top) ||
 						(block && blocktype != 3 && blocktype < 11))
 					{
 						game_values.pausegame = true;
@@ -1479,12 +1479,12 @@ void RunGame()
 					actualvalues[1][1] = list_players[k]->iy + PH;
 
 					short corners[2][2];
-					corners[0][0] = list_players[k]->ix / TILESIZE; 
+					corners[0][0] = list_players[k]->ix / TILESIZE;
 
 					if(list_players[k]->ix < 0)
 						corners[0][0] = (list_players[k]->ix + 640) / TILESIZE;
 
-					corners[0][1] = (list_players[k]->ix + PW) / TILESIZE; 
+					corners[0][1] = (list_players[k]->ix + PW) / TILESIZE;
 
 					if(list_players[k]->ix + PW >= 640)
 						corners[0][1] = (list_players[k]->ix + PW - 640) / TILESIZE;
@@ -1507,7 +1507,7 @@ void RunGame()
 								blocktype = g_map.blockat(corners[0][j], corners[1][i]);
 							}
 
-							if( (tile != tile_nonsolid && tile != tile_solid_on_top) || 
+							if( (tile != tile_nonsolid && tile != tile_solid_on_top) ||
 								(block && blocktype != 3 && blocktype < 11))
 							{
 								game_values.pausegame = true;
@@ -1521,11 +1521,11 @@ void RunGame()
 							break;
 					}
 				}
-				
+
 				if(game_values.pausegame)
 					break;
 			}
-			
+
 			/*
 			//Kill off players to test spawning
 			static short chooseplayer = 0;
@@ -1543,10 +1543,10 @@ void RunGame()
 				{
 					list_players[chooseplayer]->die(0, false);
 				}
-				
+
 			}
 			*/
-			
+
 			//Automatically run menus
 			if(game_values.showscoreboard)
 			{
@@ -1576,7 +1576,7 @@ void RunGame()
 				}
 			}
 		}
-		
+
 #endif
 
 		game_values.playerInput.ClearPressedKeys(game_values.exitinggame ? 1 : 0);
@@ -1611,7 +1611,7 @@ void RunGame()
 							game_values.fullscreen = !game_values.fullscreen;
 							gfx_setresolution(640, 480, game_values.fullscreen);
 							blitdest = screen;
-							
+
 							//Continue with input -> don't feed this event to the input
 							//otherwise it will pause the game when switching to full/windowed screen
 							continue;
@@ -1654,7 +1654,7 @@ void RunGame()
 						if(event.key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL))
 							objectcollisionitems.add(new PU_SledgeHammerPowerup(&spr_sledgehammerpowerup, list_players[0]->ix + 32, list_players[0]->iy, 1, 32000, 30, 30, 1, 1));
 						else if(event.key.keysym.mod & (KMOD_LSHIFT | KMOD_RSHIFT))
-							objectcollisionitems.add(new PU_BobombPowerup(&spr_bobombpowerup, list_players[0]->ix + 32, list_players[0]->iy - 1, 1, true, 32000, 30, 30, 1, 1));	
+							objectcollisionitems.add(new PU_BobombPowerup(&spr_bobombpowerup, list_players[0]->ix + 32, list_players[0]->iy - 1, 1, true, 32000, 30, 30, 1, 1));
 						else
 							objectcollisionitems.add(new PU_StarPowerup(&spr_starpowerup, list_players[0]->ix + 32, list_players[0]->iy, 4, true, 2, 30, 30, 1, 1));
 					}
@@ -1685,7 +1685,7 @@ void RunGame()
 							if(!game_values.gamemode->gameover && game_values.bosspeeking == -1)
 							{
 								eyecandyfront.add(new EC_BossPeeker(&spr_sledgebrothers, rand()%90 + 90, 0));
-								
+
 								backgroundmusic[0].stop();
 								ifsoundonstop(sfx_invinciblemusic);
 								ifsoundonstop(sfx_timewarning);
@@ -1704,7 +1704,7 @@ void RunGame()
 							if(!game_values.gamemode->gameover && game_values.bosspeeking == -1)
 							{
 								eyecandyfront.add(new EC_BossPeeker(&spr_sledgebrothers, rand()%90 + 90, 1));
-								
+
 								backgroundmusic[0].stop();
 								ifsoundonstop(sfx_invinciblemusic);
 								ifsoundonstop(sfx_timewarning);
@@ -1723,7 +1723,7 @@ void RunGame()
 							if(!game_values.gamemode->gameover && game_values.bosspeeking == -1)
 							{
 								eyecandyfront.add(new EC_BossPeeker(&spr_sledgebrothers, rand()%90 + 90, 2));
-								
+
 								backgroundmusic[0].stop();
 								ifsoundonstop(sfx_invinciblemusic);
 								ifsoundonstop(sfx_timewarning);
@@ -1784,7 +1784,7 @@ void RunGame()
 					}
 #endif
 					break;
-				}	
+				}
 
 #ifdef HW_RVL
 				case SDL_JOYBUTTONDOWN:
@@ -1933,7 +1933,7 @@ void RunGame()
 
 						if(!game_values.friendlyfire && game_values.screenshaketeamid == list_players[k]->teamID)
 							continue;
-						
+
 						if(!list_players[k]->invincible && !list_players[k]->spawninvincible && list_players[k]->isready())
 						{
 							if(game_values.screenshakekillinair == list_players[k]->inair)
@@ -1944,7 +1944,7 @@ void RunGame()
 								{
 									PlayerKilledPlayer(*(killer), *list_players[k], death_style_jump, kill_style_pow);
 									game_values.screenshakekillscount++;
-									
+
 									if(killer->inair)
 										killer->killsinrowinair--;  //Don't want to give both shake and in air award
 								}
@@ -1960,13 +1960,13 @@ void RunGame()
 							}
 						}
 					}
-					
+
 					for(k = 0; k < objectcollisionitems.list_end; k++)
 					{
 						if(objectcollisionitems.list[k]->getObjectType() == object_moving)
 						{
 							IO_MovingObject * object = (IO_MovingObject *)objectcollisionitems.list[k];
-							
+
 							if((object->getMovingObjectType() == movingobject_goomba || object->getMovingObjectType() == movingobject_koopa)
 								&& game_values.screenshakekillinair == object->inair)
 							{
@@ -1982,7 +1982,7 @@ void RunGame()
 									((MO_Goomba*)object)->Die();
 
 									game_values.screenshakekillscount++;
-									
+
 									if(killer->inair)
 										killer->killsinrowinair--;  //Don't want to give both shake and in air award
 								}
@@ -1995,7 +1995,7 @@ void RunGame()
 						if(objectsplayer.list[k]->getObjectType() == object_moving)
 						{
 							IO_MovingObject * object = (IO_MovingObject *)objectsplayer.list[k];
-							
+
 							if(game_values.screenshakekillinair == object->inair)
 							{
 								if(object->getMovingObjectType() == movingobject_shell)
@@ -2035,7 +2035,7 @@ void RunGame()
 					if(game_values.bulletbilltimer[iPlayer] > 0)
 					{
 						game_values.bulletbilltimer[iPlayer]--;
-						
+
 						if(--game_values.bulletbillspawntimer[iPlayer] <= 0)
 						{
 							game_values.bulletbillspawntimer[iPlayer] = (short)(rand() % 20 + 25);
@@ -2085,7 +2085,7 @@ void RunGame()
 						}
 					}
 				}
-				
+
 				g_map.updatePlatforms();
 
 				game_values.playskidsound = false;
@@ -2234,7 +2234,7 @@ void RunGame()
 							{
 								IO_MovingObject * object = (IO_MovingObject*)objectsfront.list[i];
 								MovingObjectType type = object->getMovingObjectType();
-								
+
 								if(type == movingobject_podobo || type == movingobject_bulletbill || type == movingobject_superfireball || type == movingobject_hammer || type == movingobject_sledgehammer || type == movingobject_cheepcheep || type == movingobject_boomerang)
 								{
 									//bullet bills to explosions && hammers to bullet bills
@@ -2247,7 +2247,7 @@ void RunGame()
 										if(objectsfront.list[j]->getObjectType() == object_moving)
 										{
 											MovingObjectType type = ((IO_MovingObject*)objectsfront.list[j])->getMovingObjectType();
-										
+
 											if(type == movingobject_podobo || type == movingobject_bulletbill || type == movingobject_cheepcheep)
 												fCollideWith = true;
 										}
@@ -2269,7 +2269,7 @@ void RunGame()
 									for(j = 0; j < objectcollisionitems.list_end; j++)
 									{
 										bool collidewithobject = false;
-										
+
 										if(objectcollisionitems.list[j]->getObjectType() == object_moving)
 										{
 											IO_MovingObject * movingobject = (IO_MovingObject*)objectcollisionitems.list[j];
@@ -2328,7 +2328,7 @@ void RunGame()
 											if(objectcollisionitems.list[j]->getObjectType() == object_moving)
 											{
 												IO_MovingObject * object2 = (IO_MovingObject*)objectcollisionitems.list[j];
-											
+
 												if(object2->getMovingObjectType() == movingobject_goomba || object2->getMovingObjectType() == movingobject_koopa || object2->getMovingObjectType() == movingobject_sledgebrother)
 												{
 													if(!objectcollisionitems.list[j]->GetDead())
@@ -2369,7 +2369,7 @@ void RunGame()
 											if(objectsfront.list[j]->getObjectType() == object_moving)
 											{
 												MovingObjectType type = ((IO_MovingObject*)objectsfront.list[j])->getMovingObjectType();
-											
+
 												if(type == movingobject_podobo || type == movingobject_bulletbill || type == movingobject_cheepcheep)
 													fCollideWith = true;
 											}
@@ -2467,13 +2467,13 @@ void RunGame()
 							if(y_shake < 0)
 								y_shake = 0;
 						}
-					
+
 						if(game_values.showscoreboard)
 						{
 							if(game_values.scorepercentmove < 1.0f)
 							{
 								game_values.scorepercentmove += 0.01f;
-								
+
 								if(game_values.scorepercentmove >= 1.0f)
 									game_values.scorepercentmove = 1.0f;
 							}
@@ -2602,14 +2602,14 @@ void RunGame()
 			objectsfront.draw();
 			eyecandyfront.draw();
 			game_values.gamemode->draw();
-		
+
 			g_iWinningPlayer = -1;
 			short mostkills = 0;
-			
+
 			bool fReverseScoring = game_values.gamemode->GetReverseScoring();
 			if(fReverseScoring)
 				mostkills = 32000;
-			
+
 			for(i = 0; i < score_cnt; i++)
 			{
 				if((score[i]->score > mostkills && !fReverseScoring) || (score[i]->score < mostkills && fReverseScoring))
@@ -2622,7 +2622,7 @@ void RunGame()
 					g_iWinningPlayer = -1;
 				}
 			}
-			
+
 			//big end game scoreboard (sorted)
 			if(game_values.showscoreboard)
 			{
@@ -2638,7 +2638,7 @@ void RunGame()
 				{
 					sprintf(gameovertext, "Tie Game");
 				}
-					
+
 				game_font_large.drawCentered(320, 100, gameovertext);
 			}
 
@@ -2670,10 +2670,10 @@ void RunGame()
 						{
 							iScoreboardSprite = PGFX_STANDING_R;
 						}
-						
+
 						//Search for player state to display
 						CPlayer * player = GetPlayerFromGlobalID(globalID);
-						
+
 						if(player && !game_values.gamemode->gameover)
 						{
 							short iScoreOffsetX = score[i]->x + scoreoffsets[k];
@@ -2681,7 +2681,7 @@ void RunGame()
 
 							if(player->ownerPlayerID > -1)
 								spr_ownedtags.draw(iScoreOffsetX - 8, iScoreOffsetY - 8, player->ownerColorOffsetX, 0, 48, 48);
-	
+
 							player->GetScoreboardSprite()[iScoreboardSprite]->draw(iScoreOffsetX, iScoreOffsetY, player->iSrcOffsetX, 0, 32, 32);
 
 							if(player->jailed > 0)
@@ -2694,7 +2694,7 @@ void RunGame()
 						{
 							spr_player[globalID][iScoreboardSprite]->draw(score[i]->x + scoreoffsets[k], score[i]->y + 2, 0, 0, 32, 32);
 						}
-					
+
 						//give crown to player(s) with most kills
 						if(g_iWinningPlayer == i)
 							spr_crown.draw(score[i]->x + scoreoffsets[k] + 12, score[i]->y - 4);
@@ -2710,7 +2710,7 @@ void RunGame()
 						}
 					}
 				}
-				
+
 				short iScoreX = score[i]->x + iScoreTextOffset[i];
 				short iScoreY = score[i]->y + 4;
 
@@ -2792,7 +2792,7 @@ void RunGame()
 					game_values.swapplayersposition = 0.0f;
 					game_values.swapplayers = false;
 					game_values.screenfade = 0;
-					
+
 					if(game_values.swapstyle == 0)
 						ifsoundonstop(sfx_skid);
 
@@ -2821,7 +2821,7 @@ void RunGame()
 
 				spr_dialogbutton.draw(235, 250, 0, (game_values.exityes ? 34 : 0), 80, 34);
 				spr_dialogbutton.draw(325, 250, 0, (game_values.exityes ? 0 : 34), 80, 34);
-			
+
 				menu_font_large.draw(275 - (menu_font_large.getWidth("Yes") >> 1),  269 - (menu_font_large.getHeight() >> 1), "Yes");
 				menu_font_large.draw(365 - (menu_font_large.getWidth("No") >> 1),  269 - (menu_font_large.getHeight() >> 1), "No");
 			}
@@ -2841,13 +2841,13 @@ void RunGame()
 	if(g_fAutoTest)
 		menu_font_small.drawRightJustified(635, 5, "Auto");
 #endif
- 
+
 		//double buffering -> flip buffers
 		SDL_Flip(screen);
 
 		flipfps = 1000.0f / (float)ticks;
 
-		
+
 		//Sleep for time just under what we need
 		short delay = (short)(game_values.framelimiter - SDL_GetTicks() + framestart - 2);
 
@@ -2855,7 +2855,7 @@ void RunGame()
 		{
 			if(delay > game_values.framelimiter)
 				delay = game_values.framelimiter;
-			
+
 			SDL_Delay(delay);
 		}
 
@@ -2873,7 +2873,7 @@ void RunGame()
 			{
 				if(delay > 1000)
 					delay = 1000;
-				
+
 				SDL_Delay(delay);
 			}
 
@@ -2908,7 +2908,7 @@ void RunGame()
 		*/
 	}
 
-	
+
 	//we never get here
 
 	return;
@@ -3027,7 +3027,7 @@ void UpdateScoreBoard()
 			if(++game_values.tournament_scores[maxTeam].wins >= game_values.tournamentgames)
 			{
 				game_values.tournamentwinner = maxTeam;
-				
+
 				if(game_values.music)
 					backgroundmusic[4].play(true, true);
 			}
@@ -3052,23 +3052,23 @@ bool coldec_player2player(CPlayer &o1, CPlayer &o2)
 
 	if(o1.ix + PW < o2.ix)
 	{
-		if (o1.ix + 640 >= o2.ix + PW || o1.ix + PW + 640 < o2.ix || o1.iy > o2.iy + PH || o1.iy + PH < o2.iy) 
+		if (o1.ix + 640 >= o2.ix + PW || o1.ix + PW + 640 < o2.ix || o1.iy > o2.iy + PH || o1.iy + PH < o2.iy)
 			return false;
-		else 
+		else
 			return true;
 	}
 	else if(o2.ix + PW < o1.ix)
 	{
-		if (o1.ix >= o2.ix + PW + 640 || o1.ix + PW < o2.ix + 640 || o1.iy > o2.iy + PH || o1.iy + PH < o2.iy) 
+		if (o1.ix >= o2.ix + PW + 640 || o1.ix + PW < o2.ix + 640 || o1.iy > o2.iy + PH || o1.iy + PH < o2.iy)
 			return false;
-		else 
+		else
 			return true;
 	}
 	else  //Normal case where no overlap
 	{
-		if (o1.ix >= o2.ix + PW || o1.ix + PW < o2.ix || o1.iy > o2.iy + PH || o1.iy + PH < o2.iy) 
+		if (o1.ix >= o2.ix + PW || o1.ix + PW < o2.ix || o1.iy > o2.iy + PH || o1.iy + PH < o2.iy)
 			return false;
-		else 
+		else
 			return true;
 	}
 }
@@ -3078,23 +3078,23 @@ bool coldec_player2obj(CPlayer &o1, CObject &o2)
 	//Special cases to deal with players overlapping the right and left sides of the screen
 	if(o1.ix + PW < o2.ix)
 	{
-		if (o1.ix + 640 >= o2.ix + o2.collisionWidth || o1.ix + PW + 640 < o2.ix || o1.iy >= o2.iy + o2.collisionHeight || o1.iy + PH < o2.iy) 
+		if (o1.ix + 640 >= o2.ix + o2.collisionWidth || o1.ix + PW + 640 < o2.ix || o1.iy >= o2.iy + o2.collisionHeight || o1.iy + PH < o2.iy)
 			return false;
-		else 
+		else
 			return true;
 	}
 	else if(o2.ix + o2.collisionWidth < o1.ix)
 	{
-		if (o1.ix >= o2.ix + o2.collisionWidth + 640 || o1.ix + PW < o2.ix + 640 || o1.iy >= o2.iy + o2.collisionHeight || o1.iy + PH < o2.iy) 
+		if (o1.ix >= o2.ix + o2.collisionWidth + 640 || o1.ix + PW < o2.ix + 640 || o1.iy >= o2.iy + o2.collisionHeight || o1.iy + PH < o2.iy)
 			return false;
-		else 
+		else
 			return true;
 	}
 	else //Normal case where no overlap
 	{
-		if (o1.ix >= o2.ix + o2.collisionWidth || o2.ix > o1.ix + PW || o1.iy >= o2.iy + o2.collisionHeight || o2.iy > o1.iy + PH) 
+		if (o1.ix >= o2.ix + o2.collisionWidth || o2.ix > o1.ix + PW || o1.iy >= o2.iy + o2.collisionHeight || o2.iy > o1.iy + PH)
 			return false;
-		else 
+		else
 			return true;
 	}
 }
@@ -3109,23 +3109,23 @@ bool coldec_obj2obj(CObject &o1, CObject &o2)
 
 	if(o1r < o2.ix)
 	{
-		if (o1.ix + 640 >= o2r || o1r + 640 < o2.ix || o1.iy >= o2b || o1b < o2.iy) 
+		if (o1.ix + 640 >= o2r || o1r + 640 < o2.ix || o1.iy >= o2b || o1b < o2.iy)
 			return false;
-		else 
+		else
 			return true;
 	}
 	else if(o2r < o1.ix)
 	{
 		if (o1.ix >= o2r + 640 || o1r < o2.ix + 640 || o1.iy >= o2b || o1b < o2.iy)
 			return false;
-		else 
+		else
 			return true;
 	}
 	else
 	{
-		if (o1.ix >= o2r || o2.ix > o1r || o1.iy >= o2b || o2.iy > o1b) 
+		if (o1.ix >= o2r || o2.ix > o1r || o1.iy >= o2b || o2.iy > o1b)
 			return false;
-		else 
+		else
 			return true;
 	}
 }
@@ -3136,7 +3136,7 @@ void LoadMapObjects()
 
 	for(short iSwitch = 0; iSwitch < 8; iSwitch++)
 		g_map.switchBlocks[iSwitch].clear();
-	
+
 	for(short x = 0; x < MAPWIDTH; x++)
 	{
 		for(short y = 0; y < MAPHEIGHT; y++)
@@ -3223,7 +3223,7 @@ bool SwapPlayers(short iUsingPlayerID)
 	{
 		game_values.swapplayers = true;
 		game_values.swapplayersposition = 0.0f;
-		
+
 		if(game_values.swapstyle == 1)
 		{
 			game_values.swapplayersblink = false;
@@ -3244,7 +3244,7 @@ bool SwapPlayers(short iUsingPlayerID)
 			continue;
 
 		short iNewSpot = iPlayer + iIncrement;
-		
+
 		do
 		{
 			if(++iNewSpot >= list_players_cnt)
@@ -3269,7 +3269,7 @@ bool SwapPlayers(short iUsingPlayerID)
 			continue;
 
 		spots[iPlayer].GetPlayer(list_players[iPlayer], &game_values.gamepowerups[list_players[iPlayer]->getGlobalID()]);
-		
+
 		if(game_values.swapstyle != 1)
 			eyecandyfront.add(new EC_SingleAnimation(&spr_fireballexplosion, (short)list_players[iPlayer]->fNewSwapX + (HALFPW) - 16, (short)list_players[iPlayer]->fNewSwapY + (HALFPH) - 16, 3, 8));
 
@@ -3284,7 +3284,7 @@ bool SwapPlayers(short iUsingPlayerID)
 	}
 
 	//Clean the dead mystery mushroom
-	objectcollisionitems.cleandeadobjects();	
+	objectcollisionitems.cleandeadobjects();
 
 	return true;
 }
@@ -3321,7 +3321,7 @@ void AddHammerKill(short kills)
 			if(!game_values.gamemode->gameover && game_values.bosspeeking == -1)
 			{
 				eyecandyfront.add(new EC_BossPeeker(&spr_sledgebrothers, rand()%90 + 90, 0));
-				
+
 				backgroundmusic[0].stop();
 				ifsoundonstop(sfx_invinciblemusic);
 				ifsoundonstop(sfx_timewarning);

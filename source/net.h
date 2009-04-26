@@ -80,7 +80,7 @@ class NetServer
 		void cleanup();
 
 	private:
-		
+
 		//IPaddress ip;
 		//TCPsocket tcpsock;
 		//SDLNet_SocketSet socketset;
@@ -101,9 +101,9 @@ class NetClient
 		void handleserver();
 		int handleserverdata(Uint8 *data);
 		void sendjoin();
-		
+
 		void cleanup();
-		
+
 	private:
 
 		//IPaddress ip;
