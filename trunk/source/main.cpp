@@ -555,6 +555,8 @@ bool g_fRecordTest = false;
 #include <fat.h>
 #include <wiiuse/wpad.h>
 #include <unistd.h>
+#include <sys/iosupport.h>
+extern const devoptab_t dotab_stdnull;
 
 static u8 wiiButton = 0;
 
@@ -667,6 +669,12 @@ int main(int argc, char *argv[])
         return false;
     }
 
+	SDL_ShowCursor(SDL_DISABLE);
+
+	// disable console
+	//devoptab_list[STD_OUT] = &dotab_stdnull;
+	//devoptab_list[STD_ERR] = &dotab_stdnull;
+
 	printf("-------------------------------------------------------------------------------\n");
 	printf(" %s %s\n", TITLESTRING, VERSIONNUMBER);
 	printf("-------------------------------------------------------------------------------\n");
@@ -727,7 +735,6 @@ int main(int argc, char *argv[])
 	char title[128];
 	sprintf(title, "%s %s", TITLESTRING, VERSIONNUMBER);
 	SDL_WM_SetCaption(title, "smw.ico");*/
-	SDL_ShowCursor(SDL_DISABLE);
 
 	printf("\n---------------- loading ----------------\n");
 
