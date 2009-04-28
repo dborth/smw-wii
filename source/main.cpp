@@ -663,9 +663,8 @@ int main(int argc, char *argv[])
 	exit(0);
 	#endif
 
-	/*if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTTHREAD |
-		SDL_INIT_NOPARACHUTE | SDL_INIT_TIMER) < 0 )*/
-	if( SDL_Init(SDL_INIT_VIDEO) < 0 )
+	if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTTHREAD |
+		SDL_INIT_NOPARACHUTE | SDL_INIT_TIMER) < 0 )
 	{
         printf("Couldn't initialize SDL: %s\n", SDL_GetError());
 		sleep(5);
@@ -720,14 +719,13 @@ int main(int argc, char *argv[])
 	sfx_init();                     //init the sound system
 
 	//Joystick-Init
-	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
-	joystickcount = (short)SDL_NumJoysticks();
-	joysticks = new SDL_Joystick*[joystickcount];
+	joystickcount = 0; //(short)SDL_NumJoysticks();
+	/*joysticks = new SDL_Joystick*[joystickcount];
 
 	for(short i = 0; i < joystickcount; i++)
 		joysticks[i] = SDL_JoystickOpen(i);
 
-	SDL_JoystickEventState(SDL_DISABLE);
+	SDL_JoystickEventState(SDL_DISABLE);*/
 
 	//currently this only sets the title, not the icon.
 	//setting the icon isn't implemented in sdl ->  i'll ask on the mailing list
