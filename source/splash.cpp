@@ -182,9 +182,9 @@ bool LoadMenuGraphics()
 	_load_gfx(menu_shade, convertPath("gfx/packs/menu/menu_shade.png", graphicspack));
 	menu_shade.setalpha(GetScreenBackgroundFade());
 
-	_load_gfxck(menu_plain_field, convertPath("gfx/packs/menu/menu_plain_field.png", graphicspack));
 	_load_gfxck(spr_scoreboard, convertPath("gfx/packs/menu/scoreboard.png", graphicspack));
 	_load_gfxck(menu_slider_bar, convertPath("gfx/packs/menu/menu_slider_bar.png", graphicspack));
+	_load_gfxck(menu_plain_field, convertPath("gfx/packs/menu/menu_plain_field.png", graphicspack));
 	_load_gfxck(menu_player_select, convertPath("gfx/packs/menu/menu_player_select.png", graphicspack));
 	_load_gfxck(menu_dialog, convertPath("gfx/packs/menu/menu_dialog.png", graphicspack));
 	_load_gfxck(menu_map_filter, convertPath("gfx/packs/menu/menu_map_filter.png", graphicspack));

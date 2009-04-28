@@ -659,10 +659,6 @@ static void * CheckWiiEvents(void *arg)
 
 int main(int argc, char *argv[])
 {
-	#ifndef HW_RVL
-	exit(0);
-	#endif
-
 	if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTTHREAD |
 		SDL_INIT_NOPARACHUTE | SDL_INIT_TIMER) < 0 )
 	{
@@ -671,15 +667,13 @@ int main(int argc, char *argv[])
         return false;
     }
 
-    // Clean up on exit
-    atexit(SDL_Quit);
-
-	gfx_init(640, 480, false);		//initialize the graphics (SDL)
-
 	printf("-------------------------------------------------------------------------------\n");
 	printf(" %s %s\n", TITLESTRING, VERSIONNUMBER);
 	printf("-------------------------------------------------------------------------------\n");
-	printf("\n---------------- startup ----------------\n\n\n");
+	printf("\n---------------- startup ----------------\n");
+
+	gfx_init(640, 480, false);		//initialize the graphics (SDL)
+	blitdest = screen;
 
 	WPAD_Init();
 	SYS_SetResetCallback(WiiReset);
@@ -700,8 +694,6 @@ int main(int argc, char *argv[])
 	soundpacklist.init(convertPath("sfx/packs/"));
 	tourlist.init(convertPath("tours/"), ".txt");
 
-	blitdest = screen;
-
 	/*
 	//Comment this in to performance test the preview map loading
 	MI_MapField * miMapField = new MI_MapField(&spr_selectfield, 70, 165, "Map", 500, 120);
@@ -718,20 +710,23 @@ int main(int argc, char *argv[])
 
 	sfx_init();                     //init the sound system
 
+
 	//Joystick-Init
-	joystickcount = 0; //(short)SDL_NumJoysticks();
-	/*joysticks = new SDL_Joystick*[joystickcount];
+	joystickcount = 0;
+/*	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+	joystickcount = (short)SDL_NumJoysticks();
+	joysticks = new SDL_Joystick*[joystickcount];
 
 	for(short i = 0; i < joystickcount; i++)
 		joysticks[i] = SDL_JoystickOpen(i);
 
-	SDL_JoystickEventState(SDL_DISABLE);*/
+	SDL_JoystickEventState(SDL_ENABLE);
 
 	//currently this only sets the title, not the icon.
 	//setting the icon isn't implemented in sdl ->  i'll ask on the mailing list
 	char title[128];
 	sprintf(title, "%s %s", TITLESTRING, VERSIONNUMBER);
-	SDL_WM_SetCaption(title, "smw.ico");
+	SDL_WM_SetCaption(title, "smw.ico");*/
 	SDL_ShowCursor(SDL_DISABLE);
 
 	printf("\n---------------- loading ----------------\n");
@@ -1595,7 +1590,7 @@ void RunGame()
 #endif
 				case SDL_KEYDOWN:
 				{
-#ifndef HW_RVL
+#ifndef _XBOX
 					if(event.key.keysym.mod & (KMOD_LALT | KMOD_RALT))
 					{
 						if(event.key.keysym.sym == SDLK_F4)
@@ -1784,7 +1779,7 @@ void RunGame()
 					break;
 				}
 
-#ifdef HW_RVL
+#ifdef _XBOX
 				case SDL_JOYBUTTONDOWN:
 				{
 					if(event.jbutton.state == SDL_PRESSED && event.jbutton.button == 5)
@@ -2511,7 +2506,7 @@ void RunGame()
 				else if(bossgamemode->GetBossType() == 2)
 					g_map.loadMap(convertPath("maps/special/volcano.map"), read_type_full);
 
-				char filename[512];
+				char filename[128];
 				sprintf(filename, "gfx/packs/backgrounds/%s", g_map.szBackgroundFile);
 				std::string path = convertPath(filename, gamegraphicspacklist.current_name());
 

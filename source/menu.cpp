@@ -140,7 +140,7 @@ void Menu::WriteGameOptions()
 			fwrite(&game_values.playerInput.inputControls[iPlayer]->iDevice, sizeof(short), 1, fp);
 		}
 
-#ifndef _XBOX
+#ifndef HW_RVL
 		fwrite(&game_values.fullscreen, sizeof(bool), 1, fp);
 #endif
 		//Write out game mode goals
