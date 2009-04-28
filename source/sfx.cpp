@@ -1,6 +1,7 @@
 #include "sfx.h"
 #include <iostream>
 #include <string>
+#include <unistd.h>
 using namespace std;
 
 #ifdef _WIN32
@@ -185,7 +186,7 @@ bool sfxMusic::load(const string& filename)
 		reset();
 
     cout << "load "<< filename<< "..."<< endl;
-	//music = Mix_LoadMUS(filename.c_str());
+	music = Mix_LoadMUS(filename.c_str());
 
 	if(!music)
 	{
@@ -193,7 +194,7 @@ bool sfxMusic::load(const string& filename)
 		return false;
 	}
 
-	//Mix_HookMusicFinished(&musicfinished);
+	Mix_HookMusicFinished(&musicfinished);
 
 	ready = true;
 
@@ -202,28 +203,37 @@ bool sfxMusic::load(const string& filename)
 
 void sfxMusic::play(bool fPlayonce, bool fResume)
 {
+	if(!music)
+		return;
 	//Mix_PlayMusic(music, (fPlayonce ? 0 : -1));
 	fResumeMusic = fResume;
 }
 
 void sfxMusic::stop()
 {
-	//Mix_HaltMusic();
+	if(!music)
+		return;
+
+	Mix_HaltMusic();
 }
 
 void sfxMusic::sfx_pause()
 {
+	if(!music)
+		return;
+
 	paused = !paused;
 
-	/*if(paused)
+	if(paused)
 		Mix_PauseMusic();
 	else
-		Mix_ResumeMusic();*/
+		Mix_ResumeMusic();
 }
 
 void sfxMusic::reset()
 {
-	//Mix_FreeMusic(music);
+	if(music)
+		Mix_FreeMusic(music);
 	music = NULL;
 	ready = false;
 }
@@ -232,5 +242,3 @@ int sfxMusic::isplaying()
 {
 	return Mix_PlayingMusic();
 }
-
-
