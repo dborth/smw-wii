@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <malloc.h>
 using namespace std;
 
 #ifdef _WIN32
@@ -15,6 +17,8 @@ extern void DECLSPEC soundfinished(int channel);
 extern void DECLSPEC musicfinished();
 
 extern sfxSound * g_PlayingSoundChannels[NUM_SOUND_CHANNELS];
+static Uint8 *musicBuffer;
+static SDL_RWops *musicRW;
 
 bool sfx_init()
 {
@@ -186,7 +190,25 @@ bool sfxMusic::load(const string& filename)
 		reset();
 
     cout << "load "<< filename<< "..."<< endl;
-	music = Mix_LoadMUS(filename.c_str());
+    // streaming music from a file seems to crash after awhile - libfat issue?
+	//music = Mix_LoadMUS(filename.c_str());
+
+    // read in entire file
+    FILE *fp = fopen(filename.c_str(), "r");
+    if (!fp) return false;
+    struct stat fileinfo;
+	fstat(fp->_file, &fileinfo);
+	int size = fileinfo.st_size;
+	musicBuffer = (Uint8 *)memalign(32, size);
+	fread(musicBuffer, 1, size, fp);
+	fclose(fp);
+
+	// put into SDL RW structure
+	musicRW = SDL_RWFromMem(musicBuffer, size);
+	if (!musicRW) return false;
+
+	// load into mixer
+	music = Mix_LoadMUS_RW(musicRW);
 
 	if(!music)
 	{
@@ -205,7 +227,7 @@ void sfxMusic::play(bool fPlayonce, bool fResume)
 {
 	if(!music)
 		return;
-	//Mix_PlayMusic(music, (fPlayonce ? 0 : -1));
+	Mix_PlayMusic(music, (fPlayonce ? 0 : -1));
 	fResumeMusic = fResume;
 }
 
@@ -235,6 +257,8 @@ void sfxMusic::reset()
 	if(music)
 		Mix_FreeMusic(music);
 	music = NULL;
+	SDL_FreeRW(musicRW);
+	free(musicBuffer);
 	ready = false;
 }
 

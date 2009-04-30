@@ -613,7 +613,7 @@ static void * CheckWiiEvents(void *arg)
 				menu_map[k++] = WPAD_CLASSIC_BUTTON_DOWN;
 				menu_map[k++] = WPAD_CLASSIC_BUTTON_LEFT;
 				menu_map[k++] = WPAD_CLASSIC_BUTTON_RIGHT;
-				menu_map[k++] = WPAD_CLASSIC_BUTTON_A;
+				menu_map[k++] = WPAD_CLASSIC_BUTTON_Y;
 				menu_map[k++] = WPAD_CLASSIC_BUTTON_B;
 				menu_map[k++] = 0;
 				menu_map[k++] = 0;
