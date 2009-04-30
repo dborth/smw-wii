@@ -565,20 +565,6 @@ void WiiPower() { wiiButton = SYS_POWEROFF_STANDBY; }
 void WiiPowerButton(s32 chan) { wiiButton = SYS_POWEROFF_STANDBY; }
 
 /*
-
-struct
-{
-CKeyState menu_up, menu_down, menu_left, menu_right, menu_select, menu_cancel, menu_random, menu_scrollfast;
-};
-struct
-{
-CKeyState game_left, game_right, game_jump, game_down, game_turbo, game_powerup, game_start, game_cancel;
-}
-CKeyState keys[NUM_KEYS];
-
-//[Keyboard/Joystick][Game/Menu][NumPlayers][NumKeys]
-short controlkeys[2][2][4][NUM_KEYS] = { {
-
 GAME - left, right, jump, down, turbo, powerup, start, cancel
 {SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_RCTRL, SDLK_RSHIFT, SDLK_RETURN, SDLK_ESCAPE},
 {SDLK_a, SDLK_d, SDLK_w, SDLK_s, SDLK_e, SDLK_q, SDLK_UNKNOWN, SDLK_UNKNOWN},
@@ -592,25 +578,68 @@ MENU - up, down, left, right, select, cancel, random, fast scroll
 {SDLK_p, SDLK_SEMICOLON, SDLK_l, SDLK_QUOTE, SDLK_LEFTBRACKET, SDLK_o, SDLK_UNKNOWN, SDLK_UNKNOWN}
 */
 
-unsigned int game_map [8] = { WPAD_BUTTON_UP, WPAD_BUTTON_DOWN, WPAD_BUTTON_2, WPAD_BUTTON_LEFT,
-							WPAD_BUTTON_1, WPAD_BUTTON_A, WPAD_BUTTON_PLUS, WPAD_BUTTON_MINUS };
-
-unsigned int menu_map [8] = { WPAD_BUTTON_UP, WPAD_BUTTON_DOWN, WPAD_BUTTON_LEFT, WPAD_BUTTON_RIGHT,
-							WPAD_BUTTON_A, WPAD_BUTTON_B, WPAD_BUTTON_1, WPAD_BUTTON_2 };
+unsigned int game_map[8];
+unsigned int menu_map[8];
 
 static void * CheckWiiEvents(void *arg)
 {
 	WPADData wpad;
 	SDL_Event event[32];
-	int i, j;
+	int i, j, k;
+	u32 exp_type = 0;
 
 	while(1)
 	{
 		WPAD_ScanPads();
 		memset(&event, 0, sizeof(SDL_Event)*32);
-
 		for(i=0; i < 4; i++)
 		{
+			if (WPAD_Probe(i, &exp_type) != 0)
+				exp_type = WPAD_EXP_NONE;
+
+			if(exp_type == WPAD_EXP_CLASSIC)
+			{
+				k=0;
+				game_map[k++] = WPAD_CLASSIC_BUTTON_LEFT;
+				game_map[k++] = WPAD_CLASSIC_BUTTON_RIGHT;
+				game_map[k++] = WPAD_CLASSIC_BUTTON_B;
+				game_map[k++] = WPAD_CLASSIC_BUTTON_DOWN;
+				game_map[k++] = WPAD_CLASSIC_BUTTON_Y;
+				game_map[k++] = WPAD_CLASSIC_BUTTON_A;
+				game_map[k++] = WPAD_CLASSIC_BUTTON_PLUS;
+				game_map[k++] = WPAD_CLASSIC_BUTTON_MINUS;
+				k=0;
+				menu_map[k++] = WPAD_CLASSIC_BUTTON_UP;
+				menu_map[k++] = WPAD_CLASSIC_BUTTON_DOWN;
+				menu_map[k++] = WPAD_CLASSIC_BUTTON_LEFT;
+				menu_map[k++] = WPAD_CLASSIC_BUTTON_RIGHT;
+				menu_map[k++] = WPAD_CLASSIC_BUTTON_A;
+				menu_map[k++] = WPAD_CLASSIC_BUTTON_B;
+				menu_map[k++] = 0;
+				menu_map[k++] = 0;
+			}
+			else
+			{
+				k=0;
+				game_map[k++] = WPAD_BUTTON_UP;
+				game_map[k++] = WPAD_BUTTON_DOWN;
+				game_map[k++] = WPAD_BUTTON_2;
+				game_map[k++] = WPAD_BUTTON_LEFT;
+				game_map[k++] = WPAD_BUTTON_1;
+				game_map[k++] = WPAD_BUTTON_A;
+				game_map[k++] = WPAD_BUTTON_PLUS;
+				game_map[k++] = WPAD_BUTTON_MINUS;
+				k=0;
+				menu_map[k++] = WPAD_BUTTON_RIGHT;
+				menu_map[k++] = WPAD_BUTTON_LEFT;
+				menu_map[k++] = WPAD_BUTTON_UP;
+				menu_map[k++] = WPAD_BUTTON_DOWN;
+				menu_map[k++] = WPAD_BUTTON_2;
+				menu_map[k++] = WPAD_BUTTON_1;
+				menu_map[k++] = 0;
+				menu_map[k++] = 0;
+			}
+
 			memcpy(&wpad, WPAD_Data(i), sizeof(WPADData));
 
 			for(j=0; j < 8; j++)
@@ -653,7 +682,7 @@ static void * CheckWiiEvents(void *arg)
 				SDL_PushEvent(&event[0]);
 			}
 		}
-		usleep(100);
+		usleep(5000);
 	}
 }
 
@@ -661,8 +690,7 @@ static void * CheckWiiEvents(void *arg)
 
 int main(int argc, char *argv[])
 {
-	if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTTHREAD |
-		SDL_INIT_NOPARACHUTE | SDL_INIT_TIMER) < 0 )
+	if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTTHREAD | SDL_INIT_TIMER) < 0 )
 	{
         printf("Couldn't initialize SDL: %s\n", SDL_GetError());
 		sleep(5);
@@ -672,8 +700,8 @@ int main(int argc, char *argv[])
 	SDL_ShowCursor(SDL_DISABLE);
 
 	// disable console
-	//devoptab_list[STD_OUT] = &dotab_stdnull;
-	//devoptab_list[STD_ERR] = &dotab_stdnull;
+	devoptab_list[STD_OUT] = &dotab_stdnull;
+	devoptab_list[STD_ERR] = &dotab_stdnull;
 
 	printf("-------------------------------------------------------------------------------\n");
 	printf(" %s %s\n", TITLESTRING, VERSIONNUMBER);
@@ -683,14 +711,13 @@ int main(int argc, char *argv[])
 	gfx_init(640, 480, false);		//initialize the graphics (SDL)
 	blitdest = screen;
 
-	WPAD_Init();
 	SYS_SetResetCallback(WiiReset);
 	SYS_SetPowerCallback(WiiPower);
 	WPAD_SetPowerButtonCallback(WiiPowerButton);
 	fatInitDefault();
 
 	lwp_t wiieventthread = LWP_THREAD_NULL;
-	LWP_CreateThread (&wiieventthread, CheckWiiEvents, NULL, NULL, 0, 80);
+	LWP_CreateThread (&wiieventthread, CheckWiiEvents, NULL, NULL, 0, 78);
 
 	filterslist.init(convertPath("filters/"), ".txt");
 	maplist.init();

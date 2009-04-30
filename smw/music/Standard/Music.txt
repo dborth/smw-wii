@@ -1,14 +1,14 @@
 #Stage Clear
-Special/stageclear.ogg
+Special/stageclear.mp3
 
 #Main Menu
-Menu/menu.ogg
+Menu/menu.mp3
 
 #Tournament Menu
-Menu/tournamentmenu.ogg
+Menu/tournamentmenu.mp3
 
 #Tournament Over
-Special/tournamentover.ogg
+Special/tournamentover.mp3
 
 
 #These music files will be used for the music categories listed.  In
@@ -16,48 +16,48 @@ Special/tournamentover.ogg
 #"Underground", etc will be read into those categories as well.
 
 [Land]
-smb3level1.ogg
-M2_Level1.ogg
+smb3level1.mp3
+M2_Level1.mp3
 
 [Underground]
-M1_Underground.ogg
-M3_Boss.ogg
+M1_Underground.mp3
+M3_Boss.mp3
 
 [Underwater]
-M3_Underwater.ogg
+M3_Underwater.mp3
 
 [Castle]
-M3_Boss.ogg
+M3_Boss.mp3
 
 #These are not needed (see ReadMe.txt), because they have the same
 #tracks as the above 4 categories, but I included them for easy editing
 #purposes.
 
 [Platforms]
-smb3level1.ogg
-M2_Level1.ogg
+smb3level1.mp3
+M2_Level1.mp3
 
 [Ghost]
-M1_Underground.ogg
-M3_Boss.ogg
+M1_Underground.mp3
+M3_Boss.mp3
 
 [Bonus]
-M3_Underwater.ogg
+M3_Underwater.mp3
 
 [Battle]
-M3_Boss.ogg
+M3_Boss.mp3
 
 [Desert]
-smb3level1.ogg
-M2_Level1.ogg
+smb3level1.mp3
+M2_Level1.mp3
 
 [Clouds]
-smb3level1.ogg
-M2_Level1.ogg
+smb3level1.mp3
+M2_Level1.mp3
 
 [Snow]
-smb3level1.ogg
-M2_Level1.ogg
+smb3level1.mp3
+M2_Level1.mp3
 
 
 #These are special tags that allow you to force which music is played
@@ -69,10 +69,10 @@ M2_Level1.ogg
 #capitalized.  For example, if the name of the map is "two52_cave.map",
 #please use "Cave" as the map name below
 [Maps]
-0smw,smb3level1.ogg,M2_Level1.ogg
+0smw,smb3level1.mp3,M2_Level1.mp3
 
 [Backgrounds]
-Land_Classic.png,smb3level1.ogg,M2_Level1.ogg
+Land_Classic.png,smb3level1.mp3,M2_Level1.mp3
 
 
 #Mapping of how the old backgrounds map to the new music categories by
