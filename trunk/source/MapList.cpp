@@ -974,7 +974,7 @@ MusicEntry::MusicEntry(const std::string & musicdirectory)
 		if(File_Exists(musicPath))
 		{
 			SimpleFileList musiclist;
-			musiclist.init(musicPath + getDirectorySeperator(), ".ogg");
+			musiclist.init(musicPath + getDirectorySeperator(), ".mp3");
 
 			short iCount = musiclist.GetCount();
 
