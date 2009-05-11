@@ -213,18 +213,18 @@ void Menu::CreateMenu()
 	miOptionsButton = new MI_Button(&spr_selectfield, 120, 332, "Options", 400, 0);
 	miOptionsButton->SetCode(MENU_CODE_TO_OPTIONS_MENU);
 
-	miControlsButton = new MI_Button(&spr_selectfield, 120, 372, "Controls", 400, 0);
-	miControlsButton->SetCode(MENU_CODE_TO_CONTROLS_MENU);
+	//miControlsButton = new MI_Button(&spr_selectfield, 120, 372, "Controls", 400, 0);
+	//miControlsButton->SetCode(MENU_CODE_TO_CONTROLS_MENU);
 
-	miExitButton = new MI_Button(&spr_selectfield, 120, 412, "Exit", 400, 0);
+	miExitButton = new MI_Button(&spr_selectfield, 120, 372, "Exit", 400, 0);
 	miExitButton->SetCode(MENU_CODE_EXIT_APPLICATION);
 
 	mMainMenu.AddControl(miMainStartButton, miExitButton, miPlayerSelect, NULL, NULL);
 	mMainMenu.AddControl(miPlayerSelect, miMainStartButton, miTournamentField, NULL, NULL);
 	mMainMenu.AddControl(miTournamentField, miPlayerSelect, miOptionsButton, NULL, NULL);
-	mMainMenu.AddControl(miOptionsButton, miTournamentField, miControlsButton, NULL, NULL);
-	mMainMenu.AddControl(miControlsButton, miOptionsButton, miExitButton, NULL, NULL);
-	mMainMenu.AddControl(miExitButton, miControlsButton, miMainStartButton, NULL, NULL);
+	mMainMenu.AddControl(miOptionsButton, miTournamentField, miExitButton, NULL, NULL);
+	//mMainMenu.AddControl(miControlsButton, miOptionsButton, miExitButton, NULL, NULL);
+	mMainMenu.AddControl(miExitButton, miOptionsButton, miMainStartButton, NULL, NULL);
 
 	mMainMenu.SetHeadControl(miMainStartButton);
 #ifndef _XBOX

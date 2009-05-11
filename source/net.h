@@ -2,7 +2,7 @@
 #define __NETWORK_H_
 
 #include "SDL.h"
-//#include "SDL_net.h"
+#include "SDL_net.h"
 
 #define MAXCLIENTS      4
 #define MAX_NETWORK_MESSAGE_SIZE 128
@@ -51,8 +51,8 @@ bool net_connectclient();
 struct ServerClient
 {
 	int active;
-	//TCPsocket sock;
-	//IPaddress peer;
+	TCPsocket sock;
+	IPaddress peer;
 	Uint8 name[256 + 1];
 };
 
@@ -81,9 +81,9 @@ class NetServer
 
 	private:
 
-		//IPaddress ip;
-		//TCPsocket tcpsock;
-		//SDLNet_SocketSet socketset;
+		IPaddress ip;
+		TCPsocket tcpsock;
+		SDLNet_SocketSet socketset;
 
 		int numclients;
 		ServerClient clients[MAXCLIENTS];
@@ -106,12 +106,11 @@ class NetClient
 
 	private:
 
-		//IPaddress ip;
-		//TCPsocket tcpsock;
-		//SDLNet_SocketSet socketset;
+		IPaddress ip;
+		TCPsocket tcpsock;
+		SDLNet_SocketSet socketset;
 
 		ClientPeer peers[MAXCLIENTS];
 };
 
 #endif //__NETWORK_H_
-
