@@ -2,6 +2,8 @@
 #define SMW_PATH_HEADER
 #include <string>
 
+#define PREFIXPATH "sd:/smw"
+
 #ifndef PATH_MAX
 #define PATH_MAX 4096
 #endif
@@ -22,7 +24,7 @@ const std::string getFileFromPath(const std::string &path);
 
 //#undef convertPathC
 //#define convertPathC(s) s
-//#define convertPath(s) s
+//#define convertPath(s) s 
 
 #ifdef __MACOSX__
     void Initialize_Paths();

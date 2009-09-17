@@ -1,10 +1,6 @@
 #include "sfx.h"
 #include <iostream>
 #include <string>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <malloc.h>
-#include <ogc/cache.h>
 using namespace std;
 
 #ifdef _WIN32
@@ -21,7 +17,7 @@ extern sfxSound * g_PlayingSoundChannels[NUM_SOUND_CHANNELS];
 
 bool sfx_init()
 {
-	Mix_OpenAudio(48000, AUDIO_S16MSB, 2, 2048);
+	Mix_OpenAudio(44100, AUDIO_S16, 2, 2048);
 	Mix_AllocateChannels(NUM_SOUND_CHANNELS);
 
 	for(short iChannel = 0; iChannel < NUM_SOUND_CHANNELS; iChannel++)
@@ -70,7 +66,7 @@ bool sfxSound::init(const string& filename)
 
 	cout << "load " << filename << "..." << endl;
 	sfx = Mix_LoadWAV(filename.c_str());
-
+	
 	if(sfx == NULL)
 	{
 		printf(" failed!\n");
@@ -83,7 +79,7 @@ bool sfxSound::init(const string& filename)
 	instances = 0;
 
 	Mix_ChannelFinished(&soundfinished);
-
+	
 	return true;
 }
 
@@ -101,7 +97,7 @@ int sfxSound::play()
 			return channel;
 
 		starttime = ticks;
-
+		
 		if(g_PlayingSoundChannels[channel])
 			printf("Error: Sound was played on channel that was not cleared!\n");
 
@@ -183,68 +179,14 @@ sfxMusic::sfxMusic()
 sfxMusic::~sfxMusic()
 {}
 
-static bool musicLoaded = false;
-
-static char musicFileList[9][50] =
-{
-	"sd:/smw/music/Standard/M1_Underground.mp3",
-	"sd:/smw/music/Standard/M2_Level1.mp3",
-	"sd:/smw/music/Standard/M3_Boss.mp3",
-	"sd:/smw/music/Standard/M3_Underwater.mp3",
-	"sd:/smw/music/Standard/smb3level1.mp3",
-	"sd:/smw/music/Standard/Menu/menu.mp3",
-	"sd:/smw/music/Standard/Menu/tournamentmenu.mp3",
-	"sd:/smw/music/Standard/Special/stageclear.mp3",
-	"sd:/smw/music/Standard/Special/tournamentover.mp3"
-};
-
-static Uint8 *musicBuffer[9];
-static SDL_RWops *musicRW[9];
-
 bool sfxMusic::load(const string& filename)
 {
-	int i = 0;
-	int j = -1;
-
-	if (!musicLoaded)
-	{
-		for(i=0; i < 9; i++)
-		{
-			 // read in entire file
-			FILE *fp = fopen(musicFileList[i], "r");
-			if (!fp) return false;
-			struct stat fileinfo;
-			fstat(fp->_file, &fileinfo);
-			int size = fileinfo.st_size;
-			musicBuffer[i] = (Uint8 *)memalign(32, size);
-			fread(musicBuffer[i], 1, size, fp);
-			fclose(fp);
-
-			// put into SDL RW structure
-			musicRW[i] = SDL_RWFromMem(musicBuffer[i], size);
-		}
-	}
-
 	if(music)
 		reset();
 
-	// find matching file
-	for(i=0; i < 9; i++)
-	{
-		if(strcmp(filename.c_str(), musicFileList[i]) == 0)
-			j = i;
-	}
-
-	if(j == -1)
-		return false;
-
-    cout << "load "<< filename<< "..."<< endl;
-    // streaming music from a file seems to crash after awhile - libfat issue?
-	//music = Mix_LoadMUS(filename.c_str());
-
-	// load into mixer
-	music = Mix_LoadMUS_RW(musicRW[j]);
-
+    cout << "load " << filename << "..." << endl;
+	music = Mix_LoadMUS(filename.c_str());
+	
 	if(!music)
 	{
 	    printf("Error Loading Music: %s\n", Mix_GetError());
@@ -260,25 +202,17 @@ bool sfxMusic::load(const string& filename)
 
 void sfxMusic::play(bool fPlayonce, bool fResume)
 {
-	if(!music)
-		return;
-	Mix_PlayMusic(music, (fPlayonce ? 0 : -1));
+	Mix_PlayMusic(music, fPlayonce ? 0 : -1);
 	fResumeMusic = fResume;
 }
 
 void sfxMusic::stop()
 {
-	if(!music)
-		return;
-
 	Mix_HaltMusic();
 }
 
 void sfxMusic::sfx_pause()
 {
-	if(!music)
-		return;
-
 	paused = !paused;
 
 	if(paused)
@@ -289,8 +223,7 @@ void sfxMusic::sfx_pause()
 
 void sfxMusic::reset()
 {
-	if(music)
-		Mix_FreeMusic(music);
+	Mix_FreeMusic(music);
 	music = NULL;
 	ready = false;
 }
@@ -299,3 +232,5 @@ int sfxMusic::isplaying()
 {
 	return Mix_PlayingMusic();
 }
+
+

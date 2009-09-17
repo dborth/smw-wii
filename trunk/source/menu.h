@@ -1,6 +1,8 @@
 #ifndef __MENU_H_
 #define __MENU_H_
 
+#include "modeoptionsmenu.h"
+#include "uicustomcontrol.h"
 
 #ifdef _DEBUG
 class ScriptOperation
@@ -21,7 +23,8 @@ class ScriptOperation
 };
 #endif
 
-enum DisplayError {DISPLAY_ERROR_NONE, DISPLAY_ERROR_READ_TOUR_FILE, DISPLAY_ERROR_MAP_FILTER};
+enum MatchType {MATCH_TYPE_SINGLE_GAME = 0, MATCH_TYPE_TOURNAMENT = 1, MATCH_TYPE_TOUR = 2, MATCH_TYPE_WORLD = 4, MATCH_TYPE_MINIGAME = 3, MATCH_TYPE_QUICK_GAME = 5};
+enum DisplayError {DISPLAY_ERROR_NONE, DISPLAY_ERROR_READ_TOUR_FILE, DISPLAY_ERROR_READ_WORLD_FILE, DISPLAY_ERROR_MAP_FILTER};
 
 class Menu
 {
@@ -34,7 +37,7 @@ class Menu
 
 #ifdef _DEBUG
 
-		void LoadScript(char * szScriptFile);
+		void LoadScript(const char * szScriptFile);
 		void ResetScript();
 		void GetNextScriptOperation();
 
@@ -44,7 +47,7 @@ class Menu
 		bool fScriptRunPreGameOptions;
 
 		void StartRecordScript();
-		void SaveScript(char * szScriptFile);
+		void SaveScript(const char * szScriptFile);
 		void SetNextScriptOperation();
 		void AddEmtpyLineToScript();
 #endif
@@ -56,20 +59,26 @@ class Menu
 		void Exit();
 		void WriteGameOptions();
 		void ResetTournamentBackToMainMenu();
+	
+		void SetControllingTeamForSettingsMenu(short iControlTeam, bool fDisplayMessage);
+		void DisplayControllingTeamMessage(short iControlTeam);
+		
+		ModeOptionsMenu modeOptionsMenu;
 
 		UI_Menu * mCurrentMenu;
-
+		
 		//Main Menu
 		UI_Menu mMainMenu;
-
+		
 		MI_Image * miSMWTitle;
 		MI_Image * miSMWVersion;
-		//MI_Text * miSMWVersionText;
-
+		MI_Text * miSMWVersionText;
+	
 		MI_Button * miMainStartButton;
-		MI_PlayerSelect * miPlayerSelect;
-		MI_SelectField * miTournamentField;
+		MI_Button * miQuickGameButton;
 
+		MI_PlayerSelect * miPlayerSelect;
+	
 		MI_Button * miOptionsButton;
 		MI_Button * miControlsButton;
 
@@ -83,7 +92,7 @@ class Menu
 		MI_Button * miPlayer2ControlsButton;
 		MI_Button * miPlayer3ControlsButton;
 		MI_Button * miPlayer4ControlsButton;
-
+		
 		MI_Button * miPlayerControlsBackButton;
 
 		MI_Image * miPlayerControlsLeftHeaderBar;
@@ -101,17 +110,19 @@ class Menu
 		MI_Button * miTeamOptionsMenuButton;
 		MI_Button * miPowerupOptionsMenuButton;
 		MI_Button * miProjectilesOptionsMenuButton;
+		MI_Button * miProjectilesLimitsMenuButton;
 		MI_Button * miPowerupSettingsMenuButton;
 		MI_Button * miGraphicsOptionsMenuButton;
+		MI_Button * miEyeCandyOptionsMenuButton;
 		MI_Button * miSoundOptionsMenuButton;
 		MI_Button * miGenerateMapThumbsButton;
-
+		
 		MI_Button * miOptionsMenuBackButton;
 
 		MI_Image * miOptionsMenuLeftHeaderBar;
 		MI_Image * miOptionsMenuRightHeaderBar;
 		MI_Text * miOptionsMenuHeaderText;
-
+		
 		MI_Image * miGenerateThumbsDialogImage;
 		MI_Text * miGenerateThumbsDialogAreYouText;
 		MI_Text * miGenerateThumbsDialogSureText;
@@ -121,13 +132,14 @@ class Menu
 		//Gameplay Options Menu
 		UI_Menu mGameplayOptionsMenu;
 		MI_SelectField * miRespawnField;
-		MI_SelectField * miShieldField;
+		MI_SelectField * miShieldStyleField;
+		MI_SelectField * miShieldTimeField;
 		MI_SelectField * miBoundsTimeField;
-		MI_SelectField * miWarpLocksField;
+		MI_SelectField * miSuicideTimeField;
+		MI_SelectField * miWarpLockStyleField;
+		MI_SelectField * miWarpLockTimeField;
 		MI_SelectField * miBotsField;
-		MI_SelectField * miFrameLimiterField;
 		MI_SelectField * miPointSpeedField;
-		MI_SelectField * miSecretsField;
 		MI_Button * miGameplayOptionsMenuBackButton;
 
 		MI_Image * miGameplayOptionsMenuLeftHeaderBar;
@@ -138,6 +150,7 @@ class Menu
 		UI_Menu mTeamOptionsMenu;
 		MI_SelectField * miTeamKillsField;
 		MI_SelectField * miTeamColorsField;
+		MI_SelectField * miTournamentControlField;
 		MI_Button * miTeamOptionsMenuBackButton;
 
 		MI_Image * miTeamOptionsMenuLeftHeaderBar;
@@ -146,9 +159,11 @@ class Menu
 
 		//Powerup Weight Selection
 		UI_Menu mPowerupSelectionMenu;
-		MI_PowerupSlider * miPowerupSlider[NUM_POWERUPS];
-		MI_Button * miPowerupSelectionBackButton;
-		MI_Button * miPowerupSelectionRestoreDefaultsButton;
+		MI_PowerupSelection * miPowerupSelection;
+
+		//MI_PowerupSlider * miPowerupSlider[NUM_POWERUPS];
+		//MI_Button * miPowerupSelectionBackButton;
+		//MI_Button * miPowerupSelectionRestoreDefaultsButton;
 
 		MI_Image * miPowerupSelectionLeftHeaderBar;
 		MI_Image * miPowerupSelectionMenuRightHeaderBar;
@@ -161,6 +176,7 @@ class Menu
 		MI_SelectField * miSwapStyleField;
 		MI_SelectField * miBonusWheelField;
 		MI_SelectField * miKeepPowerupField;
+		MI_SelectField * miHiddenBlockRespawnField;
 		MI_StoredPowerupResetButton * miStoredPowerupResetButton;
 		MI_Button * miPowerupSettingsMenuBackButton;
 
@@ -174,22 +190,41 @@ class Menu
 		MI_Button * miPowerupSelectionDialogYesButton;
 		MI_Button * miPowerupSelectionDialogNoButton;
 
+		//Weapons Use Limits Menu
+		UI_Menu mProjectilesLimitsMenu;
+		MI_SelectField * miFireballLimitField;
+		MI_SelectField * miHammerLimitField;
+		MI_SelectField * miBoomerangLimitField;
+		MI_SelectField * miFeatherLimitField;
+		MI_SelectField * miLeafLimitField;
+		MI_SelectField * miPwingsLimitField;
+		MI_SelectField * miTanookiLimitField;
+		MI_SelectField * miBombLimitField;
+		MI_SelectField * miWandLimitField;
+
+		MI_Button * miProjectilesLimitsMenuBackButton;
+
+		MI_Image * miProjectilesLimitsMenuLeftHeaderBar;
+		MI_Image * miProjectilesLimitsMenuRightHeaderBar;
+		MI_Text * miProjectilesLimitsMenuHeaderText;
 
 		//Weapons & Projectiles Options Menu
 		UI_Menu mProjectilesOptionsMenu;
+
 		MI_SelectField * miFireballLifeField;
-		MI_SelectField * miFireballLimitField;
 		MI_SelectField * miHammerLifeField;
 		MI_SelectField * miHammerDelayField;
 		MI_SelectField * miHammerOneKillField;
-		MI_SelectField * miHammerLimitField;
 		MI_SelectField * miShellLifeField;
+		MI_SelectField * miWandFreezeTimeField;
+
 		MI_SelectField * miBlueBlockLifeField;
+		MI_SelectField * miGrayBlockLifeField;
+		MI_SelectField * miRedBlockLifeField;
 		MI_SelectField * miBoomerangStyleField;
 		MI_SelectField * miBoomerangLifeField;
-		MI_SelectField * miBoomerangLimitField;
 		MI_SelectField * miFeatherJumpsField;
-		MI_SelectField * miFeatherLimitField;
+		
 		MI_Button * miProjectilesOptionsMenuBackButton;
 
 		MI_Text * miFireballText;
@@ -197,6 +232,7 @@ class Menu
 		MI_Text * miBoomerangText;
 		MI_Text * miFeatherText;
 		MI_Text * miShellText;
+		MI_Text * miWandText;
 		MI_Text * miBlueBlockText;
 
 		MI_Image * miProjectilesOptionsMenuLeftHeaderBar;
@@ -205,12 +241,8 @@ class Menu
 
 		//Graphics Options Menu
 		UI_Menu mGraphicsOptionsMenu;
-		MI_SelectField * miSpawnStyleField;
-		MI_SelectField * miAwardStyleField;
-		MI_SelectField * miScoreStyleField;
-		MI_SelectField * miCrunchField;
 		MI_SelectField * miTopLayerField;
-		MI_SelectField * miWinningCrownField;
+		MI_SelectField * miFrameLimiterField;
 
 #ifdef _XBOX
 		MI_Button * miScreenSettingsButton;
@@ -219,12 +251,30 @@ class Menu
 #endif //_XBOX
 
 		MI_PacksField * miMenuGraphicsPackField;
+		MI_PacksField * miWorldGraphicsPackField;
 		MI_PacksField * miGameGraphicsPackField;
 		MI_Button * miGraphicsOptionsMenuBackButton;
 
 		MI_Image * miGraphicsOptionsMenuLeftHeaderBar;
 		MI_Image * miGraphicsOptionsMenuRightHeaderBar;
 		MI_Text * miGraphicsOptionsMenuHeaderText;
+
+		//Eye Candy Options Menu
+		UI_Menu mEyeCandyOptionsMenu;
+		MI_SelectField * miSpawnStyleField;
+		MI_SelectField * miAwardStyleField;
+		MI_SelectField * miScoreStyleField;
+		MI_SelectField * miCrunchField;
+		MI_SelectField * miWinningCrownField;
+		MI_SelectField * miStartCountDownField;
+		MI_SelectField * miStartModeDisplayField;
+		MI_SelectField * miDeadTeamNoticeField;
+
+		MI_Button * miEyeCandyOptionsMenuBackButton;
+		
+		MI_Image * miEyeCandyOptionsMenuLeftHeaderBar;
+		MI_Image * miEyeCandyOptionsMenuRightHeaderBar;
+		MI_Text * miEyeCandyOptionsMenuHeaderText;
 
 		//Sound Options Menu
 		UI_Menu mSoundOptionsMenu;
@@ -233,6 +283,7 @@ class Menu
 		MI_SelectField * miPlayNextMusicField;
 		MI_AnnouncerField * miAnnouncerField;
 		MI_PlaylistField * miPlaylistField;
+		MI_SelectField * miWorldMusicField;
 		MI_PacksField * miSoundPackField;
 		MI_Button * miSoundOptionsMenuBackButton;
 
@@ -242,13 +293,13 @@ class Menu
 
 #ifdef _XBOX
 		UI_Menu mScreenSettingsMenu;
-
+		
 		MI_Button * miScreenResizeButton;
 		MI_SelectField * miScreenHardwareFilterField;
 		MI_SelectField * miScreenFlickerFilterField;
 		MI_SelectField * miScreenSoftFilterField;
 		//MI_SelectField * miScreenAspectRatioField;
-
+		
 		MI_Button * miScreenSettingsMenuBackButton;
 
 		MI_Image * miScreenSettingsMenuLeftHeaderBar;
@@ -258,20 +309,39 @@ class Menu
 		UI_Menu mScreenResizeMenu;
 		MI_ScreenResize * miScreenResize;
 #endif
+	
+		//Match Selection Menu
+		UI_Menu mMatchSelectionMenu;
+
+		MI_WorldPreviewDisplay * miWorldPreviewDisplay;
+		MI_Image * miMatchSelectionDisplayImage;
+		MI_SelectField * miMatchSelectionField;
+
+		MI_SelectField * miTournamentField;
+		MI_SelectField * miTourField;
+		MI_SelectField * miWorldField;
+		MI_SelectField * miMinigameField;
+
+		MI_Button * miMatchSelectionStartButton;
+
+		MI_Image * miMatchSelectionMenuLeftHeaderBar;
+		MI_Image * miMatchSelectionMenuRightHeaderBar;
+		MI_Text * miMatchSelectionMenuHeaderText;
+
 
 		//Game Settings Menu
 		UI_Menu mGameSettingsMenu;
 
 		MI_ImageSelectField * miModeField;
-		MI_SelectField * miGoalField[17];
+		MI_SelectField * miGoalField[22];
 		MI_Button * miModeSettingsButton;
 		MI_MapField * miMapField;
 		MI_Button * miSettingsStartButton;
 		MI_Button * miMapFiltersButton;
 		MI_Button * miMapThumbnailsButton;
-
+		
 		MI_Image * miMapFiltersOnImage;
-
+		
 		MI_Image * miGameSettingsLeftHeaderBar;
 		MI_Image * miGameSettingsMenuRightHeaderBar;
 		MI_Text * miGameSettingsMenuHeaderText;
@@ -283,7 +353,7 @@ class Menu
 		MI_Button * miGameSettingsExitDialogNoButton;
 
 		MI_MapFilterScroll * miMapFilterScroll;
-
+		
 		//Map Filter Edit Menu
 		UI_Menu mMapFilterEditMenu;
 		MI_MapBrowser * miMapBrowser;
@@ -292,141 +362,27 @@ class Menu
 		UI_Menu mTourStopMenu;
 
 		MI_TourStop * miTourStop;
-
+		
 		MI_Image * miTourStopExitDialogImage;
 		MI_Text * miTourStopExitDialogExitTourText;
 		MI_Button * miTourStopExitDialogYesButton;
 		MI_Button * miTourStopExitDialogNoButton;
 
+		//World "Menu"
+		UI_Menu mWorldMenu;
+		MI_World * miWorld;
+		MI_TourStop * miWorldStop;
 
-		//Game Mode Settings Menu
-		UI_Menu mModeSettingsMenu[17];
+		MI_Image * miWorldExitDialogImage;
+		MI_Text * miWorldExitDialogExitTourText;
+		MI_Button * miWorldExitDialogYesButton;
+		MI_Button * miWorldExitDialogNoButton;
 
-		//Jail
-		MI_SelectField * miJailModeTagFreeField;
-		MI_SelectField * miJailModeTimeFreeField;
-		MI_Button * miJailModeBackButton;
-
-		MI_Image * miJailModeLeftHeaderBar;
-		MI_Image * miJailModeRightHeaderBar;
-		MI_Text * miJailModeHeaderText;
-
-		//Coins
-		MI_SelectField * miCoinModePenaltyField;
-		MI_SelectField * miCoinModeQuantityField;
-		MI_Button * miCoinModeBackButton;
-
-		MI_Image * miCoinModeLeftHeaderBar;
-		MI_Image * miCoinModeRightHeaderBar;
-		MI_Text * miCoinModeHeaderText;
-
-		//Capture The Flag
-		MI_SliderField * miFlagModeSpeedField;
-		MI_SelectField * miFlagModeTouchReturnField;
-		MI_SelectField * miFlagModePointMoveField;
-		MI_SelectField * miFlagModeAutoReturnField;
-		MI_SelectField * miFlagModeHomeScoreField;
-		MI_Button * miFlagModeBackButton;
-
-		MI_Image * miFlagModeLeftHeaderBar;
-		MI_Image * miFlagModeRightHeaderBar;
-		MI_Text * miFlagModeHeaderText;
-
-		//Chicken
-		MI_SelectField * miChickenModeTagOnTouchField;
-		MI_Button * miChickenModeBackButton;
-
-		MI_Image * miChickenModeLeftHeaderBar;
-		MI_Image * miChickenModeRightHeaderBar;
-		MI_Text * miChickenModeHeaderText;
-
-		//Tag
-		MI_SelectField * miTagModeTagOnTouchField;
-		MI_Button * miTagModeBackButton;
-
-		MI_Image * miTagModeLeftHeaderBar;
-		MI_Image * miTagModeRightHeaderBar;
-		MI_Text * miTagModeHeaderText;
-
-		//Star
-		MI_SelectField * miStarModeTimeField;
-		MI_SelectField * miStarModeShineField;
-		MI_Button * miStarModeBackButton;
-
-		MI_Image * miStarModeLeftHeaderBar;
-		MI_Image * miStarModeRightHeaderBar;
-		MI_Text * miStarModeHeaderText;
-
-		//Domination
-		MI_SelectField * miDominationModeQuantityField;
-		MI_SelectField * miDominationModeLoseOnDeathField;
-		MI_SelectField * miDominationModeRelocateOnDeathField;
-		MI_SelectField * miDominationModeStealOnDeathField;
-		MI_SelectField * miDominationModeRelocateFrequencyField;
-
-		MI_Text * miDominationModeDeathText;
-
-		MI_Button * miDominationModeBackButton;
-
-		MI_Image * miDominationModeLeftHeaderBar;
-		MI_Image * miDominationModeRightHeaderBar;
-		MI_Text * miDominationModeHeaderText;
-
-		//King of the Hill
-		MI_SelectField * miKingOfTheHillModeSizeField;
-		MI_SelectField * miKingOfTheHillModeRelocateFrequencyField;
-		MI_Button * miKingOfTheHillModeBackButton;
-
-		MI_Image * miKingOfTheHillModeLeftHeaderBar;
-		MI_Image * miKingOfTheHillModeRightHeaderBar;
-		MI_Text * miKingOfTheHillModeHeaderText;
-
-		//Race
-		MI_SelectField * miRaceModeQuantityField;
-		MI_SelectField * miRaceModeSpeedField;
-		MI_SelectField * miRaceModePenaltyField;
-		MI_Button * miRaceModeBackButton;
-
-		MI_Image * miRaceModeLeftHeaderBar;
-		MI_Image * miRaceModeRightHeaderBar;
-		MI_Text * miRaceModeHeaderText;
-
-		//Stomp
-		MI_SelectField * miStompModeRateField;
-		MI_PowerupSlider * miStompModeEnemySlider[3];
-		MI_Button * miStompModeBackButton;
-
-		MI_Image * miStompModeLeftHeaderBar;
-		MI_Image * miStompModeRightHeaderBar;
-		MI_Text * miStompModeHeaderText;
-
-		//Frenzy
-		MI_SelectField * miFrenzyModeQuantityField;
-		MI_SelectField * miFrenzyModeRateField;
-		MI_SelectField * miFrenzyModeStoredShellsField;
-		MI_PowerupSlider * miFrenzyModePowerupSlider[12];
-		MI_Button * miFrenzyModeBackButton;
-
-		MI_Image * miFrenzyModeLeftHeaderBar;
-		MI_Image * miFrenzyModeRightHeaderBar;
-		MI_Text * miFrenzyModeHeaderText;
-
-		//Survival
-		MI_PowerupSlider * miSurvivalModeEnemySlider[3];
-		MI_SelectField * miSurvivalModeDensityField;
-		MI_SelectField * miSurvivalModeSpeedField;
-		MI_SelectField * miSurvivalModeShieldField;
-		MI_Button * miSurvivalModeBackButton;
-
-		MI_Image * miSurvivalModeLeftHeaderBar;
-		MI_Image * miSurvivalModeRightHeaderBar;
-		MI_Text * miSurvivalModeHeaderText;
-
-
+		
 		//Team Select
 		UI_Menu mTeamSelectMenu;
 		MI_TeamSelect * miTeamSelect;
-
+		
 		MI_Image * miTeamSelectLeftHeaderBar;
 		MI_Image * miTeamSelectRightHeaderBar;
 		MI_Text * miTeamSelectHeaderText;
@@ -448,6 +404,13 @@ class Menu
 		bool fNeedMenuMusicReset;
 
 		const char * szCurrentMapName;
+
+		short iUnlockMinigameOptionIndex;
+
+		short iTournamentAIStep;
+		short iTournamentAITimer;
+
+		friend void RunGame();
 };
 
 #endif //__MENU_H_

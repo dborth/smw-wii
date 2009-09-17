@@ -4,7 +4,8 @@
 #define GAMEMODE_NUM_OPTIONS 21
 
 //Enum for each game mode
-enum GameModeType{game_mode_frag, game_mode_timelimit, game_mode_coins, game_mode_classic, game_mode_chicken, game_mode_tag, game_mode_frenzy, game_mode_survival, game_mode_eggs, game_mode_domination, game_mode_owned, game_mode_jail, game_mode_stomp, game_mode_race, game_mode_star, game_mode_ctf, game_mode_koth, GAMEMODE_LAST, game_mode_boss};
+enum GameModeType{game_mode_classic, game_mode_frag, game_mode_timelimit, game_mode_jail, game_mode_coins, game_mode_stomp, game_mode_eggs, game_mode_ctf, game_mode_chicken, game_mode_tag, game_mode_star, game_mode_domination, game_mode_koth, game_mode_race, game_mode_owned, game_mode_frenzy, game_mode_survival, game_mode_greed, game_mode_health, game_mode_collection, game_mode_chase, game_mode_shyguytag, GAMEMODE_LAST, game_mode_bonus = 999, game_mode_pipe_minigame = 1000, game_mode_boss_minigame = 1001, game_mode_boxes_minigame = 1002};
+enum PlayerKillType{player_kill_none, player_kill_normal, player_kill_removed, player_kill_nonkill};
 
 struct SModeOption
 {
@@ -12,111 +13,27 @@ struct SModeOption
 	short iValue;
 };
 
-//gamemode base class
-class CGameMode
+struct TourStop;
+class CO_PhantoKey;
+
+class GameTimerDisplay
 {
 	public:
+		GameTimerDisplay();
+		~GameTimerDisplay() {}
 
-		CGameMode();
-        virtual ~CGameMode();
-
-		virtual void init();  //called once when the game is started
-		virtual void think() {}	//called once a frame
-		virtual void draw() {}
-		//called when a player stomps another player, after the p2p logic has run
-		//returns true if the other was deleted
-		virtual bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
-		virtual bool playerkilledself(CPlayer &player);
-		virtual void playerextraguy(CPlayer &player, short iType);
-
-		virtual bool CheckWinner(CPlayer &) {return false;}
-
-		void transferbobombifneeded(CPlayer &inflictor, CPlayer &other);
-		void displayplayertext();
-		void playwarningsound();
-
-		short winningteam;
-		bool gameover;
-
-		CPlayer *chicken;
-		CPlayer *tagged;
-		CPlayer *star;
-		CPlayer *frenzyowner;
-
-		GameModeType getgamemode(){return gamemode;}
-		GameModeType gamemode;
-
-		char * GetModeName() {return szModeName;}
-		char * GetGoalName() {return szGoalName;}
-		SModeOption * GetOptions() {return modeOptions;}
-
-		bool playedwarningsound;
-		short goal;
-
-		short GetClosestGoal(short iGoal);
-		bool GetReverseScoring() {return fReverseScoring;}
-
-#ifdef _DEBUG
-		virtual void setdebuggoal() {};
-#endif
-
-	protected:
-		char szModeName[64];
-		char szGoalName[64];
-		SModeOption modeOptions[GAMEMODE_NUM_OPTIONS];
-
-		void SetupModeStrings(char * szMode, char * szGoal, short iGoalSpacing);
-
-		CPlayer * GetHighestScorePlayer(bool fGetLowest);
-
-		bool fReverseScoring;
-};
-
-
-
-//Fraglimit
-class CGM_Frag : public CGameMode
-{
-	public:
-        CGM_Frag();
-		virtual ~CGM_Frag() {;};
-
-		virtual void think();
-		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
-		bool playerkilledself(CPlayer &player);
-		void playerextraguy(CPlayer &player, short iType);
-
-		bool CheckWinner(CPlayer &player);
-
-#ifdef _DEBUG
-		void setdebuggoal() {goal = 5;}
-#endif
-
-};
-
-
-//Timelimit
-class CGM_TimeLimit : public CGameMode
-{
-	public:
-        CGM_TimeLimit();
-		virtual ~CGM_TimeLimit() {;};
-
-		void init();
-		void think();
-		void draw();
-		void drawtime();
-		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
-		bool playerkilledself(CPlayer &player);
-
-#ifdef _DEBUG
-		void setdebuggoal() {goal = 30;}
-#endif
+		void Init(short iTime, bool fCountDown);
+		short RunClock();
+		void Draw();
+		void SetTime(short iTime);
+		void AddTime(short iTime);
 
 	protected:
 		void SetDigitCounters();
 
 		short timeleft;
+		bool countdown;
+
 		short framesleft_persecond;
 		short iDigitLeftSrcX;
 		short iDigitMiddleSrcX;
@@ -129,19 +46,128 @@ class CGM_TimeLimit : public CGameMode
 		short iFramesPerSecond;
 };
 
+//gamemode base class
+class CGameMode
+{
+	public:
+		
+		CGameMode();
+        virtual ~CGameMode();
+		
+		virtual void init();  //called once when the game is started
+		virtual void think();	//called once a frame
+		virtual void draw_background() {}
+		virtual void draw_foreground() {}
+		//called when a player stomps another player, after the p2p logic has run
+		//returns true if the other was deleted
+		virtual short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		virtual short playerkilledself(CPlayer &player, killstyle style);
+		virtual void playerextraguy(CPlayer &player, short iType);
+
+		virtual short CheckWinner(CPlayer *) {return player_kill_normal;}
+
+		virtual bool HasStoredPowerups() {return true;}
+
+		void transferbobombifneeded(CPlayer &inflictor, CPlayer &other);
+		void displayplayertext();
+		void playwarningsound();
+
+		short winningteam;
+		bool gameover;
+
+		CPlayer *chicken;
+		CPlayer *tagged;
+		CPlayer *frenzyowner;
+
+		GameModeType getgamemode(){return gamemode;}
+		GameModeType gamemode;
+
+		char * GetModeName() {return szModeName;}
+		char * GetGoalName() {return szGoalName;}
+		SModeOption * GetOptions() {return modeOptions;}
+		
+		bool playedwarningsound;
+		short goal;
+
+		short GetClosestGoal(short iGoal);
+		bool GetReverseScoring() {return fReverseScoring;}
+
+#ifdef _DEBUG
+		virtual void setdebuggoal() {};
+#endif
+		
+	protected:
+		char szModeName[64];
+		char szGoalName[64];
+		SModeOption modeOptions[GAMEMODE_NUM_OPTIONS];
+
+		void SetupModeStrings(const char * szMode, const char * szGoal, short iGoalSpacing);
+
+		CPlayer * GetHighestScorePlayer(bool fGetHighest);
+		short GetScoreRankedPlayerList(CPlayer * players[4], bool fGetHighest);
+
+		bool fReverseScoring;
+};
+
+
+
+//Fraglimit
+class CGM_Frag : public CGameMode
+{
+	public:
+        CGM_Frag();
+		virtual ~CGM_Frag() {}
+		
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
+		void playerextraguy(CPlayer &player, short iType);
+
+		short CheckWinner(CPlayer * player);
+
+#ifdef _DEBUG
+		void setdebuggoal() {goal = 5;}
+#endif
+		
+};
+
+
+//Timelimit
+class CGM_TimeLimit : public CGameMode
+{
+	public:
+        CGM_TimeLimit();
+		virtual ~CGM_TimeLimit() {}
+		
+		void init();
+		void think();
+		void draw_foreground();
+		void drawtime();
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
+
+		void addtime(short iTime);
+
+#ifdef _DEBUG
+		void setdebuggoal() {goal = 30;}
+#endif
+
+	protected:
+		GameTimerDisplay gameClock;
+
+};
+
 
 //mariowar classic
 class CGM_Classic : public CGameMode
 {
 	public:
         CGM_Classic();
-		virtual ~CGM_Classic() {;};
-
-		void init();
-		virtual void think();
-		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
-		bool playerkilledself(CPlayer &player);
-		void playerextraguy(CPlayer &player, short iType);
+		virtual ~CGM_Classic() {}
+		
+		virtual void init();
+		virtual short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		virtual short playerkilledself(CPlayer &player, killstyle style);
+		virtual void playerextraguy(CPlayer &player, short iType);
 
 #ifdef _DEBUG
 		void setdebuggoal() {goal = 5;}
@@ -155,14 +181,14 @@ class CGM_Chicken : public CGameMode
 {
 	public:
         CGM_Chicken();
-		virtual ~CGM_Chicken() {;};
-
+		virtual ~CGM_Chicken() {}
+	
 		void think();
-		void draw();
-		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
-		bool playerkilledself(CPlayer &player);
+		void draw_foreground();
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
 		void playerextraguy(CPlayer &player, short iType);
-		bool CheckWinner(CPlayer &player);
+		short CheckWinner(CPlayer * player);
 
 #ifdef _DEBUG
 		void setdebuggoal() {goal = 100;}
@@ -174,12 +200,12 @@ class CGM_Tag : public CGameMode
 {
 	public:
         CGM_Tag();
-		virtual ~CGM_Tag() {;};
-
+		virtual ~CGM_Tag() {}
+		
 		void init();
 		void think();
-		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
-		bool playerkilledself(CPlayer &player);
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
 		void playerextraguy(CPlayer &player, short iType);
 
 #ifdef _DEBUG
@@ -188,17 +214,48 @@ class CGM_Tag : public CGameMode
 
 };
 
+class CGM_ShyGuyTag : public CGameMode
+{
+	public:
+        CGM_ShyGuyTag();
+		virtual ~CGM_ShyGuyTag() {}
+		
+		void init();
+		void think();
+		void draw_foreground();
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
+		void playerextraguy(CPlayer &player, short iType);
+
+		void SetShyGuy(short iTeam);
+
+#ifdef _DEBUG
+		void setdebuggoal() {goal = 100;}
+#endif
+
+	private:
+
+		short CheckWinner(CPlayer * player);
+		short CountShyGuys();
+		void FreeShyGuys();
+
+		GameTimerDisplay gameClock;
+		bool fRunClock;
+		short scorecounter;
+};
+
 class CGM_Coins : public CGameMode
 {
 		public:
         CGM_Coins();
-		virtual ~CGM_Coins() {;};
-
+		virtual ~CGM_Coins() {}
+		
 		virtual void init();
-		virtual void think();
-		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
-		bool playerkilledself(CPlayer &player);
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
 		void playerextraguy(CPlayer &player, short iType);
+
+		short CheckWinner(CPlayer * player);
 
 #ifdef _DEBUG
 		void setdebuggoal() {goal = 5;}
@@ -210,13 +267,13 @@ class CGM_Eggs : public CGameMode
 {
 	public:
         CGM_Eggs();
-		virtual ~CGM_Eggs() {;};
-
+		virtual ~CGM_Eggs() {}
+		
 		void init();
-		void think();
-		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
-		bool playerkilledself(CPlayer &player);
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
 		void playerextraguy(CPlayer &player, short iType);
+		short CheckWinner(CPlayer * player);
 
 #ifdef _DEBUG
 		void setdebuggoal() {goal = 5;}
@@ -229,8 +286,8 @@ class CGM_Frenzy : public CGM_Frag
 {
 	public:
         CGM_Frenzy();
-		virtual ~CGM_Frenzy() {;};
-
+		virtual ~CGM_Frenzy() {}
+		
 		void init();
 		void think();
 		char *getMenuString(char *buffer64);
@@ -245,8 +302,8 @@ class CGM_Survival : public CGM_Classic
 {
 	public:
         CGM_Survival();
-		virtual ~CGM_Survival() {;};
-
+		virtual ~CGM_Survival() {}
+		
 		void init();
 		void think();
 		char *getMenuString(char *buffer64);
@@ -265,13 +322,13 @@ class CGM_Domination : public CGameMode
 {
 	public:
         CGM_Domination();
-		virtual ~CGM_Domination() {;};
-
+		virtual ~CGM_Domination() {}
+		
 		void init();
-		void think();
-		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
-		bool playerkilledself(CPlayer &player);
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
 		void playerextraguy(CPlayer &player, short iType);
+		short CheckWinner(CPlayer * player);
 
 #ifdef _DEBUG
 		void setdebuggoal() {goal = 100;}
@@ -283,11 +340,11 @@ class CGM_Owned : public CGameMode
 {
 	public:
         CGM_Owned();
-		virtual ~CGM_Owned() {;};
-
+		virtual ~CGM_Owned() {}
+		
 		void think();
-		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
-		bool playerkilledself(CPlayer &player);
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
 		void playerextraguy(CPlayer &player, short iType);
 
 #ifdef _DEBUG
@@ -295,7 +352,7 @@ class CGM_Owned : public CGameMode
 #endif
 
 	private:
-		bool CheckWinner(CPlayer &player);
+		short CheckWinner(CPlayer * player);
 
 };
 
@@ -309,9 +366,9 @@ class CGM_Jail : public CGM_Frag
 {
 	public:
         CGM_Jail();
-		virtual ~CGM_Jail() {;};
-
-		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
+		virtual ~CGM_Jail() {}
+		
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
 		void playerextraguy(CPlayer &player, short iType);
 		char *getMenuString(char *buffer64);
 };
@@ -321,20 +378,20 @@ class CGM_Stomp : public CGameMode
 {
 	public:
         CGM_Stomp();
-		virtual ~CGM_Stomp() {;};
-
+		virtual ~CGM_Stomp() {}
+		
 		void init();
 		void think();
 
-		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
-		bool playerkilledself(CPlayer &player);
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
 		void playerextraguy(CPlayer &player, short iType);
 
 		char *getMenuString(char *buffer64);
 
 	private:
 		void ResetSpawnTimer();
-		bool CheckWinner(CPlayer & player);
+		short CheckWinner(CPlayer * player);
 
 		short spawntimer;
 		short iSelectedEnemy;
@@ -345,12 +402,11 @@ class CGM_Stomp : public CGameMode
 class CGM_Race : public CGameMode
 {
 	public:
-        virtual ~CGM_Race() {;};
+        virtual ~CGM_Race() {}
 		CGM_Race();
 		void init();
-		void think();
-		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
-		bool playerkilledself(CPlayer &player);
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
 		void playerextraguy(CPlayer &player, short iType);
 
 		short getNextGoal(short teamID) {return nextGoal[teamID];}
@@ -363,6 +419,8 @@ class CGM_Race : public CGameMode
 	protected:
 		void PenalizeRaceGoals(CPlayer &player);
 		short nextGoal[4];
+		short quantity;
+		short penalty;
 };
 
 
@@ -373,22 +431,32 @@ class CGM_Star : public CGM_TimeLimit
 {
 	public:
         CGM_Star();
-		virtual ~CGM_Star() {;};
-
+		virtual ~CGM_Star() {}
+		
 		void init();
 		void think();
-		void draw();
-		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
-		bool playerkilledself(CPlayer &player);
+		void draw_foreground();
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
 		void playerextraguy(CPlayer &player, short iType);
+
+		bool isplayerstar(CPlayer * player);
+		CPlayer * swapplayer(short id, CPlayer * player);
+		CPlayer * getstarplayer(short id) {return starPlayer[id];}
+
+		short getcurrentmodetype() {return iCurrentModeType;}
 
 #ifdef _DEBUG
 		void setdebuggoal() {goal = 1;}
 #endif
 
 	private:
-		CO_Star * starItem;
+		void SetupMode();
 
+		CO_Star * starItem[3];
+		CPlayer * starPlayer[3];
+		short iCurrentModeType;
+		bool fDisplayTimer;
 };
 
 //Capture The Flag mode - each team has a base and a flag
@@ -398,13 +466,13 @@ class CGM_CaptureTheFlag : public CGameMode
 {
 	public:
         CGM_CaptureTheFlag();
-		virtual ~CGM_CaptureTheFlag() {;};
-
+		virtual ~CGM_CaptureTheFlag() {}
+		
 		void init();
-		void think();
-		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
-		bool playerkilledself(CPlayer &player);
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
 		void playerextraguy(CPlayer &player, short iType);
+		short CheckWinner(CPlayer * player);
 
 #ifdef _DEBUG
 		void setdebuggoal() {goal = 5;}
@@ -417,30 +485,121 @@ class CGM_KingOfTheHill : public CGM_Domination
 {
 	public:
         CGM_KingOfTheHill();
-		virtual ~CGM_KingOfTheHill() {;};
-
+		virtual ~CGM_KingOfTheHill() {}
+		
 		void init();
-		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
-		bool playerkilledself(CPlayer &player);
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
+		void playerextraguy(CPlayer &player, short iType);
 
 #ifdef _DEBUG
 		void setdebuggoal() {goal = 100;}
 #endif
 };
 
-//Similar to coin mode but you have to smash the most goombas/cheeps/koopas
-class CGM_Boss : public CGameMode
+//Greed mode (players try to steal each other's coins)
+class CGM_Greed : public CGM_Classic
 {
 	public:
-        CGM_Boss();
-		virtual ~CGM_Boss() {;};
+        CGM_Greed();
+		virtual ~CGM_Greed() {}
+		
+		void init();
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
+		void playerextraguy(CPlayer &player, short iType);
 
+		short ReleaseCoins(CPlayer &player, killstyle style);
+
+#ifdef _DEBUG
+		void setdebuggoal() {goal = 10;}
+#endif
+
+};
+
+//health mode
+class CGM_Health : public CGM_Classic
+{
+	public:
+        CGM_Health();
+		virtual ~CGM_Health() {}
+		
+		virtual void init();
+		virtual short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		virtual short playerkilledself(CPlayer &player, killstyle style);
+		virtual void playerextraguy(CPlayer &player, short iType);
+
+#ifdef _DEBUG
+		void setdebuggoal() {goal = 5;}
+#endif
+
+};
+
+//Collection (Collect cards for points)
+class CGM_Collection : public CGameMode
+{
+	public:
+        CGM_Collection();
+		virtual ~CGM_Collection() {}
+		
 		void init();
 		void think();
-		void draw();
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
+		void playerextraguy(CPlayer &player, short iType);
 
-		bool playerkilledplayer(CPlayer &inflictor, CPlayer &other);
-		bool playerkilledself(CPlayer &player);
+		void ReleaseCard(CPlayer &player);
+
+		short CheckWinner(CPlayer * player);
+
+#ifdef _DEBUG
+		void setdebuggoal() {goal = 5;}
+#endif
+
+	private:
+		short timer;
+};
+
+
+//Chase (player is chased by phanto)
+class CGM_Chase : public CGameMode
+{
+	public:
+        CGM_Chase();
+		virtual ~CGM_Chase() {}
+		
+		void init();
+		void think();
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
+		void playerextraguy(CPlayer &player, short iType);
+
+		short CheckWinner(CPlayer * player);
+
+		CPlayer * GetKeyHolder();
+
+#ifdef _DEBUG
+		void setdebuggoal() {goal = 50;}
+#endif
+
+	private:
+		CO_PhantoKey * key;
+};
+
+
+//Special mode where players try to kill a boss
+class CGM_Boss_MiniGame : public CGameMode
+{
+	public:
+        CGM_Boss_MiniGame();
+		virtual ~CGM_Boss_MiniGame() {}
+		
+		void init();
+		void think();
+		void draw_foreground();
+
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
 		void playerextraguy(CPlayer &player, short iType);
 
 		char *getMenuString(char *buffer64);
@@ -449,12 +608,94 @@ class CGM_Boss : public CGameMode
 		void SetBossType(short bosstype);
 		short GetBossType() {return iBossType;}
 
-	private:
+		bool HasStoredPowerups() {return false;}
 
+	private:
+		
 		short enemytimer, poweruptimer;
 		short iBossType;
 };
 
-#endif
 
+//Special mode where players can collect a bonus item
+class CGM_Bonus : public CGameMode
+{
+	public:
+        CGM_Bonus();
+		virtual ~CGM_Bonus() {}
+		
+		void init();
+		void draw_background();
+
+		//Override so it doesn't display winner text after you choose a powerup
+		void think() {}
+
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style) {return false;}
+		short playerkilledself(CPlayer &player, killstyle style) {return false;}
+		void playerextraguy(CPlayer &player, short iType) {}
+
+		bool HasStoredPowerups() {return false;}
+
+	private:
+
+		TourStop * tsTourStop;
+};
+
+//Special mode where players collect coins from a pipe
+class CGM_Pipe_MiniGame : public CGameMode
+{
+	public:
+        CGM_Pipe_MiniGame();
+		virtual ~CGM_Pipe_MiniGame() {}
+		
+		void init();
+		void think();
+
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
+		void playerextraguy(CPlayer &player, short iType);
+		short CheckWinner(CPlayer * player);
+
+		void SetBonus(short iType, short iTimer, short iTeamID);
+		bool IsSlowdown() {return fSlowdown;}
+
+		bool HasStoredPowerups() {return false;}
+
+	private:
+
+		short iNextItemTimer;
+		short iBonusTimer, iBonusType, iBonusTeam;
+
+		bool fSlowdown;
+};
+
+
+//Special mode where players break boxes
+class CGM_Boxes_MiniGame : public CGameMode
+{
+	public:
+        CGM_Boxes_MiniGame();
+		virtual ~CGM_Boxes_MiniGame() {}
+		
+		void init();
+		void think();
+
+		short playerkilledplayer(CPlayer &inflictor, CPlayer &other, killstyle style);
+		short playerkilledself(CPlayer &player, killstyle style);
+		void playerextraguy(CPlayer &player, short iType);
+
+		char *getMenuString(char *buffer64);
+
+		short CheckWinner(CPlayer * player);
+		bool SetWinner(CPlayer * player);
+		
+		bool HasStoredPowerups() {return false;}
+
+	private:
+		
+		void ReleaseCoin(CPlayer &player);
+		void ReleaseAllCoinsFromTeam(CPlayer &player);
+};
+
+#endif
 
