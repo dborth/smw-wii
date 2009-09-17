@@ -1,17 +1,21 @@
 #include "global.h"
 
+extern short LookupTeamID(short id);
+
 UI_Menu::UI_Menu()
 {
 	cancelCode = MENU_CODE_NONE;
 	fModifyingItem = false;
 	headControl = NULL;
 	current = NULL;
+	
+	iControllingTeam = -1;
 }
 
 UI_Menu::~UI_Menu()
 {
 	std::list<UI_Control*>::iterator iterateAll = controls.begin();
-
+	
 	while (iterateAll != controls.end())
 	{
 		delete (*iterateAll);
@@ -63,7 +67,7 @@ void UI_Menu::ResetMenu()
 void UI_Menu::Update()
 {
 	std::list<UI_Control*>::iterator iterateAll = controls.begin();
-
+	
 	while (iterateAll != controls.end())
 	{
 		(*iterateAll)->Update();
@@ -77,7 +81,7 @@ void UI_Menu::Update()
 void UI_Menu::Draw()
 {
 	std::list<UI_Control*>::iterator iterateAll = controls.begin();
-
+	
 	while (iterateAll != controls.end())
 	{
 		(*iterateAll)->Draw();
@@ -92,61 +96,76 @@ MenuCodeEnum UI_Menu::SendInput(CPlayerInput * playerInput)
 	if(fModifyingItem)
 	{
 		MenuCodeEnum ret = current->SendInput(playerInput);
-
+		
 		if(MENU_CODE_UNSELECT_ITEM == ret)
 		{
 			fModifyingItem = false;
-
+			
 			if(current->IsAutoModify())
 				return cancelCode;
 
 			return MENU_CODE_NONE;
 		}
-
+		
 		return ret;
 	}
 
 	for(short iPlayer = 0; iPlayer < 4; iPlayer++)
 	{
-		if(iPlayer != 0 && game_values.playerInput.inputControls[iPlayer]->iDevice == DEVICE_KEYBOARD)
+		//Only allow the controlling team to control the menu (if there is one)
+		if(iControllingTeam != -1)
+		{
+			//Pay attention to other player's exit button pushes so we can exit when AI is controlling
+			if(game_values.playercontrol[iPlayer] != 1 || (iControllingTeam != LookupTeamID(iPlayer) && (!fAllowExitButton || !playerInput->outputControls[iPlayer].menu_cancel.fPressed)))
+				continue;			
+		}
+		//Only let player 1 on the keyboard control the menu unless there is another controlling team
+		else if(iPlayer != 0 && game_values.playerInput.inputControls[iPlayer] && game_values.playerInput.inputControls[iPlayer]->iDevice == DEVICE_KEYBOARD)
+		{
 			continue;
+		}
 
 		if(playerInput->outputControls[iPlayer].menu_up.fPressed)
 		{
-			MoveNextControl(MENU_ITEM_NEIGHBOR_UP);
+			return MoveNextControl(MENU_CODE_NEIGHBOR_UP);
 		}
 
 		if(playerInput->outputControls[iPlayer].menu_down.fPressed)
 		{
-			MoveNextControl(MENU_ITEM_NEIGHBOR_DOWN);
+			return MoveNextControl(MENU_CODE_NEIGHBOR_DOWN);
 		}
-
+		
 		if(playerInput->outputControls[iPlayer].menu_left.fPressed)
 		{
-			MoveNextControl(MENU_ITEM_NEIGHBOR_LEFT);
+			return MoveNextControl(MENU_CODE_NEIGHBOR_LEFT);
 		}
 
 		if(playerInput->outputControls[iPlayer].menu_right.fPressed)
 		{
-			MoveNextControl(MENU_ITEM_NEIGHBOR_RIGHT);
+			return MoveNextControl(MENU_CODE_NEIGHBOR_RIGHT);
 		}
 
 		if(playerInput->outputControls[iPlayer].menu_select.fPressed)
 		{
-			MenuCodeEnum ret = current->Modify(true);
-
-			if(MENU_CODE_MODIFY_ACCEPTED == ret)
+			MenuCodeEnum ret = MENU_CODE_NONE;
+			
+			if(current)
 			{
-				fModifyingItem = true;
-				return MENU_CODE_NONE;
+				ret = current->Modify(true);
+			
+				if(MENU_CODE_MODIFY_ACCEPTED == ret)
+				{
+					fModifyingItem = true;
+					return MENU_CODE_NONE;
+				}
+				
+				if(MENU_CODE_UNSELECT_ITEM == ret)
+				{
+					fModifyingItem = false;
+					return MENU_CODE_NONE;
+				}
 			}
-
-			if(MENU_CODE_UNSELECT_ITEM == ret)
-			{
-				fModifyingItem = false;
-				return MENU_CODE_NONE;
-			}
-
+			
 			return ret;
 		}
 
@@ -155,12 +174,15 @@ MenuCodeEnum UI_Menu::SendInput(CPlayerInput * playerInput)
 			return cancelCode;
 		}
 	}
-
+	
 	return MENU_CODE_NONE;
 }
 
-void UI_Menu::MoveNextControl(short iDirection)
+MenuCodeEnum UI_Menu::MoveNextControl(MenuCodeEnum iDirection)
 {
+	if(!current)
+		return MENU_CODE_NONE;
+
 	UI_Control * neighbor = current->GetNeighbor(iDirection);
 
 	while(neighbor && !neighbor->IsVisible())
@@ -173,7 +195,10 @@ void UI_Menu::MoveNextControl(short iDirection)
 		current->Select(false);
 		current = neighbor;
 		fModifyingItem = current->Select(true);
+		return iDirection;
 	}
+
+	return MENU_CODE_NONE;
 }
 
 void UI_Menu::RememberCurrent()
@@ -197,3 +222,75 @@ void UI_Menu::RestoreCurrent()
 	eyeCandy.clean();
 }
 
+MenuCodeEnum UI_Menu::MouseClick(short iMouseX, short iMouseY)
+{
+	//Loop through all controls to see if one was clicked on
+	std::list<UI_Control*>::iterator itr = controls.begin(), lim = controls.end();
+	UI_Control * pFound = NULL;
+	MenuCodeEnum code = MENU_CODE_NONE;
+	while(itr != lim)
+	{
+		if((*itr)->IsVisible())
+		{
+			code = (*itr)->MouseClick(iMouseX, iMouseY);
+
+			if(code != MENU_CODE_NONE)
+			{
+				pFound = *itr;
+				break;
+			}
+		}
+
+		itr++;
+	}
+
+	if(pFound)
+	{
+		//If we clicked the same control we have selected
+		if(pFound != current)
+		{
+			if(fModifyingItem)
+			{
+				current->Modify(false);
+				fModifyingItem = false;
+			}
+
+			current->Select(false);
+			current = pFound;
+			fModifyingItem = current->Select(true);
+
+			if(!fModifyingItem)
+			{
+				fModifyingItem = current->Modify(true) == MENU_CODE_MODIFY_ACCEPTED;
+			}
+		}
+		else
+		{
+			if(!fModifyingItem)
+			{
+				fModifyingItem = current->Modify(true) == MENU_CODE_MODIFY_ACCEPTED;
+			}
+		}
+	}
+	else
+	{
+		//If nothing was clicked, then stop modifying the current control
+		if(fModifyingItem)
+		{
+			current->Modify(false);
+			fModifyingItem = false;
+		}
+	}
+
+	return code;
+}
+
+void UI_Menu::Refresh()
+{
+	std::list<UI_Control*>::iterator itr = controls.begin(), lim = controls.end();
+	while(itr != lim)
+	{
+		(*itr)->Refresh();
+		itr++;
+	}	
+}

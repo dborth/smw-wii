@@ -24,7 +24,7 @@ INCLUDES	:=	source
 # options for code generation
 #---------------------------------------------------------------------------------
 
-CFLAGS		=	-g -O2 -Wall $(MACHDEP) $(INCLUDE)
+CFLAGS		=	-g -O3 -Wall $(MACHDEP) $(INCLUDE) -DGEKKO
 CXXFLAGS	=	-save-temps -Xassembler -aln=$@.lst $(CFLAGS)
 LDFLAGS		=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map
 
@@ -32,12 +32,12 @@ LDFLAGS		=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
 LIBS :=	-lSDL_mixer -lsmpeg -lSDL_image -lSDL_net -lSDL -lpng -ljpeg -lz -lwiiuse \
-		-lfat -lbte -logc -ltremor -lfreetype -lwiikeyboard
+		-lfat -lbte -logc -lvorbisidec -lfreetype -lwiikeyboard
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(CURDIR)
+LIBDIRS	:= $(PORTLIBS)
 
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional
@@ -76,7 +76,7 @@ export OFILES	:=	$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) \
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
 					-I$(CURDIR)/$(BUILD) \
-					-I$(LIBOGC_INC) -I$(LIBOGC_INC)/SDL
+					-I$(LIBOGC_INC) -I$(LIBOGC_INC)/SDL -I$(PORTLIBS)/include/freetype2
 
 #---------------------------------------------------------------------------------
 # build a list of library paths

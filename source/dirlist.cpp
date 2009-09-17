@@ -57,7 +57,7 @@ DirectoryListing::~DirectoryListing()
     #endif
 }
 
-bool DirectoryListing::init(string path, string file_ext)
+void DirectoryListing::init(string path, string file_ext)
 {
     /* Store optional filename extension and search path */
     Filename_Extension = file_ext;
@@ -65,8 +65,8 @@ bool DirectoryListing::init(string path, string file_ext)
 
     /* Windows Directory Enumeration*/
     #ifdef _WIN32
-        //TODO: check if this does what we want:
-        string search = path+"*";
+
+		string search = path+"*";
         findhandle = FindFirstFile(search.c_str(), &finddata);
         Success = findhandle != INVALID_HANDLE_VALUE;
         Stored_Filename = finddata.cFileName;
@@ -76,9 +76,7 @@ bool DirectoryListing::init(string path, string file_ext)
         dhandle = opendir(path.c_str());
         Success = dhandle != NULL;
     #endif
-	return Success;
 }
-
 
 std::string DirectoryListing :: fullName(const std::string &s)
 {
@@ -101,7 +99,7 @@ bool DirectoryListing :: operator() (string &s)
             {
                 /* Return this filename */
                 s = Stored_Filename;
-
+                
                 /* Ask for another filename */
                 if (FindNextFile(findhandle, &finddata))
                     Stored_Filename = finddata.cFileName;
@@ -113,7 +111,7 @@ bool DirectoryListing :: operator() (string &s)
 
             /* No files remain */
             else retval = false;
-
+            
 
         /* POSIX directory enumeration - more straightforward */
         #else
@@ -139,6 +137,8 @@ bool DirectoryListing :: operator() (string &s)
 
 bool DirectoryListing :: NextDirectory (string &s)
 {
+	if (!Success) return false;
+
     bool retval;
         /* Microsoft directory enumeration - here we retval = a stored filename first,
          * and then fetch the next directory from microsoft */
@@ -152,7 +152,7 @@ bool DirectoryListing :: NextDirectory (string &s)
         {
             /* Return this filename */
             s = Stored_Filename;
-
+            
             /* Ask for another filename */
             if (FindNextFile(findhandle, &finddata))
                 Stored_Filename = finddata.cFileName;
@@ -163,7 +163,7 @@ bool DirectoryListing :: NextDirectory (string &s)
         }
 
         /* No files remain */
-        else
+        else 
             retval = false;
 	}
     //while (retval == true && ((GetFileAttributes(s.c_str()) & FILE_ATTRIBUTE_DIRECTORY) == 0 || s == "." || s == ".." || s == "CVS" || s == ".svn"));
@@ -192,3 +192,4 @@ bool DirectoryListing :: NextDirectory (string &s)
 
     return retval;
 }
+

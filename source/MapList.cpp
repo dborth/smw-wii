@@ -12,6 +12,10 @@
     #include <dirent.h>
 #endif
 
+#if defined(__MACOSX__)
+#include <sys/stat.h>
+#endif
+
 #include "global.h"
 #include "dirlist.h"
 #include <ctype.h>
@@ -20,7 +24,7 @@ using std::cout;
 using std::endl;
 using std::string;
 
-extern short g_iVersion[];
+extern int g_iVersion[];
 
 char * lowercase(char * name)
 {
@@ -37,12 +41,14 @@ MapListNode::MapListNode(std::string fullName)
 	pfFilters = new bool[NUM_AUTO_FILTERS + filterslist.GetCount()];
 	for(short iFilter = 0; iFilter < filterslist.GetCount() + NUM_AUTO_FILTERS; iFilter++)
 		pfFilters[iFilter] = false;
-
+	
 	fInCurrentFilterSet = true;
 	filename = fullName;
 	iIndex = 0;
-
+	
 	fReadFromCache = false;
+
+	iShortNameLength = strlen(stripCreatorAndDotMap(fullName).c_str());
 
 	fValid = true;
 }
@@ -52,7 +58,7 @@ MapListNode::~MapListNode()
 	delete [] pfFilters;
 }
 
-extern char * g_szMusicCategoryNames[MAXMUSICCATEGORY];
+extern const char * g_szMusicCategoryNames[MAXMUSICCATEGORY];
 extern short g_iDefaultMusicCategory[MAXMUSICCATEGORY];
 
 ///////////// MapList ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,9 +69,10 @@ MapList::MapList()
 
 MapList::~MapList()
 {
-	std::map<std::string, MapListNode*>::iterator iterateAll = maps.begin();
-
-	while (iterateAll != maps.end())
+	//Delete all map list nodes
+	std::map<std::string, MapListNode*>::iterator iterateAll = maps.begin(), lim = maps.end();
+	
+	while (iterateAll != lim)
 	{
 		delete (iterateAll->second);
 		iterateAll++;
@@ -73,12 +80,25 @@ MapList::~MapList()
 
 	maps.clear();
 
+	//Delete all world map list nodes
+	iterateAll = worldmaps.begin();
+	lim = worldmaps.end();
+	
+	while (iterateAll != lim)
+	{
+		delete (iterateAll->second);
+		iterateAll++;
+	}
+
+	worldmaps.clear();
+
 	delete [] mlnFilteredMaps;
 	delete [] mlnMaps;
 }
 
-bool MapList::init()
+void MapList::init(bool fWorldEditor)
 {
+	strcpy(szUnknownMapString, "-");
 	DirectoryListing d;
 	d.init(convertPath("maps/"), ".map");
 	std::string curname;
@@ -90,19 +110,72 @@ bool MapList::init()
 	}
 
 #ifdef _DEBUG
-	DirectoryListing debugMapDir(convertPath("maps/test/"), ".map");
+	DirectoryListing debugMapDir;
+	debugMapDir.init(convertPath("maps/test/"), ".map");
 	while(debugMapDir(curname))
 	{
 		MapListNode * node = new MapListNode(debugMapDir.fullName(curname));
 		maps[stripCreatorAndDotMap(curname)] = node;
 	}
+
+	DirectoryListing specialDebugMapDir;
+	specialDebugMapDir.init(convertPath("maps/special/"), ".map");
+	while(specialDebugMapDir(curname))
+	{
+		MapListNode * node = new MapListNode(specialDebugMapDir.fullName(curname));
+		maps[stripCreatorAndDotMap(curname)] = node;
+	}
 #endif
+
+	//If this is for the world editor, load all the world maps into the map viewer UI control
+	if(fWorldEditor)
+	{
+		//Load in the "tour only" maps directory
+		DirectoryListing tourMapDir;
+		tourMapDir.init(convertPath("maps/tour/"), ".map");
+
+		while(tourMapDir(curname))
+		{
+			MapListNode * node = new MapListNode(tourMapDir.fullName(curname));
+			maps[stripCreatorAndDotMap(curname)] = node;
+		}
+
+		SimpleDirectoryList worldeditormapdirs;
+		worldeditormapdirs.init(convertPath("worlds/"));
+
+		short iEditorDirCount = worldeditormapdirs.GetCount();
+		for(short iDir = 0; iDir < iEditorDirCount; iDir++)
+		{
+			const char * szName = worldeditormapdirs.current_name();
+			
+			DirectoryListing worldMapDir;
+			worldMapDir.init(convertPath(std::string(szName) + std::string("/")), ".map");
+
+			while(worldMapDir(curname))
+			{
+				MapListNode * node = new MapListNode(worldMapDir.fullName(curname));
+				maps[stripCreatorAndDotMap(curname)] = node;
+			}
+			
+			worldeditormapdirs.next();
+		}
+
+#ifndef _DEBUG
+		DirectoryListing specialEditorMapDir;
+		specialEditorMapDir.init(convertPath("maps/special/"), ".map");
+		while(specialEditorMapDir(curname))
+		{
+			MapListNode * node = new MapListNode(specialEditorMapDir.fullName(curname));
+			maps[stripCreatorAndDotMap(curname)] = node;
+		}
+#endif
+
+	}
 
 	//TODO: add proper test via size
 	if(maps.empty())
-	{
+	{	
 		printf("ERROR: Empty map directory!\n");
-		sleep(5);
 		exit(0);
 	}
 
@@ -117,24 +190,91 @@ bool MapList::init()
 
 	current = maps.begin();
 	savedcurrent = current;
+	outercurrent = current;
 
 	iFilteredMapCount = maps.size();
 
 	mlnFilteredMaps = new std::map<std::string, MapListNode*>::iterator[maps.size()];
 	mlnMaps = new std::map<std::string, MapListNode*>::iterator[maps.size()];
-	return true;
+
+	//Load in the "tour only" maps directory
+	DirectoryListing tourMapDir;
+	tourMapDir.init(convertPath("maps/tour/"), ".map");
+
+	while(tourMapDir(curname))
+	{
+		MapListNode * node = new MapListNode(tourMapDir.fullName(curname));
+		worldmaps[stripCreatorAndDotMap(curname)] = node;
+	}
+
+	//Read all world map directories and load them into the world/tour only list
+	SimpleDirectoryList worldmapdirs;
+	worldmapdirs.init(convertPath("worlds/"));
+
+	short iDirCount = worldmapdirs.GetCount();
+	for(short iDir = 0; iDir < iDirCount; iDir++)
+	{
+		const char * szName = worldmapdirs.current_name();
+		
+		DirectoryListing worldMapDir;
+		worldMapDir.init(convertPath(std::string(szName) + std::string("/")), ".map");
+
+		while(worldMapDir(curname))
+		{
+			MapListNode * node = new MapListNode(worldMapDir.fullName(curname));
+			worldmaps[stripCreatorAndDotMap(curname)] = node;
+		}
+		
+		worldmapdirs.next();
+	}
+
+	DirectoryListing specialMapDir;
+	specialMapDir.init(convertPath("maps/special/"), ".map");
+	while(specialMapDir(curname))
+	{
+		MapListNode * node = new MapListNode(specialMapDir.fullName(curname));
+		worldmaps[stripCreatorAndDotMap(curname)] = node;
+	}
+}
+
+//Called by level editor to load world maps into the map list
+void MapList::addWorldMaps()
+{
+	SimpleDirectoryList worldmapdirs;
+	worldmapdirs.init(convertPath("worlds/"));
+
+	short iDirCount = worldmapdirs.GetCount();
+	for(short iDir = 0; iDir < iDirCount; iDir++)
+	{
+		const char * szName = worldmapdirs.current_name();
+		
+		DirectoryListing worldMapDir;
+		worldMapDir.init(convertPath(std::string(szName) + std::string("/")), ".map");
+
+		DirectoryListing specialDebugMapDir;
+		specialDebugMapDir.init(convertPath("maps/special/"), ".map");
+		
+		std::string curname;
+		while(worldMapDir(curname))
+		{
+			MapListNode * node = new MapListNode(worldMapDir.fullName(curname));
+			maps[stripCreatorAndDotMap(curname)] = node;
+		}
+		
+		worldmapdirs.next();
+	}
 }
 
 void MapList::add(const char * name)
 {
-	//TODO: remove std::string conversion after re-enabling convertPath
-	std::string fullName = (std::string)(convertPath("maps/")) + name;	//why does name end with .map???
+	std::string fullName = convertPath("maps/") + name;
 
 	for(std::map<std::string, MapListNode*>::iterator i = maps.begin(); i != maps.end(); ++i)
 	{
 		if((*i).second->filename == fullName)
-				return;
+			return;
 	}
+
 	//not found - insert new map
 	MapListNode * node = new MapListNode(fullName);
 	maps[stripCreatorAndDotMap(name)] = node;
@@ -142,7 +282,7 @@ void MapList::add(const char * name)
 
 bool MapList::find(const char * name)
 {
-	char * szLookForName = strlwr(strdup(name));
+	char * szLookForName = _strlwr(_strdup(name));
 	bool fFound = false;
 
 	std::map<std::string, MapListNode*>::iterator oldCurrent = current;
@@ -150,7 +290,7 @@ bool MapList::find(const char * name)
 	{
 		next(false);	//sets us to the beginning if we hit the end -> loop through the maps
 
-		char * szCurrentName = strlwr(strdup((*current).second->filename.c_str()));
+		char * szCurrentName = _strlwr(_strdup((*current).second->filename.c_str()));
 
 		if(strstr(szCurrentName, szLookForName))	//compare names after
 			fFound = true;
@@ -164,32 +304,60 @@ bool MapList::find(const char * name)
 	return fFound;
 }
 
-bool MapList::findexact(const char * name)
+bool MapList::findexact(const char * name, bool fWorld)
 {
 	char * szLookForName = new char[strlen(name) + 1];
 	strcpy(szLookForName, name);
-	strlwr(szLookForName);
+	_strlwr(szLookForName);
 
 	bool fFound = false;
 
+	//If we're looking for a world, then search the world maps first
+	//if the world map isn't found, then search the regular map list
+	if(fWorld)
+	{
+		std::map<std::string, MapListNode*>::iterator iterateAll = worldmaps.begin(), lim = worldmaps.end();
+		
+		while(iterateAll != lim && !fFound)
+		{
+			char * szCurrentName = new char[iterateAll->first.length() + 1];
+			strcpy(szCurrentName, iterateAll->first.c_str());
+			_strlwr(szCurrentName);
+
+			if(!strcmp(szCurrentName, szLookForName))
+			{
+				fFound = true;
+				outercurrent = iterateAll;
+			}
+
+			delete[] szCurrentName;
+
+			iterateAll++;
+		}
+
+		if(fFound)
+			return true;
+	}
+
 	std::map<std::string, MapListNode*>::iterator oldCurrent = current;
 
+	fFound = false;
 	do
 	{
 		next(false);	//sets us to the beginning if we hit the end -> loop through the maps
 
 		char * szCurrentName = new char[current->first.length() + 1];
 		strcpy(szCurrentName, current->first.c_str());
-		strlwr(szCurrentName);
+		_strlwr(szCurrentName);
 
 		if(!strcmp(szCurrentName, szLookForName))
 			fFound = true;
 
-		free(szCurrentName);
+		delete[] szCurrentName;
 	}
 	while(current != oldCurrent && !fFound);
 
-	free(szLookForName);
+	delete[] szLookForName;
 
 	return fFound;
 }
@@ -204,6 +372,7 @@ bool MapList::FindFilteredMap()
 	return true;
 }
 
+//Searches for a map that starts with this single character
 bool MapList::startswith(char letter)
 {
 	//Captialize the letter becuase all maps have first letter in caps
@@ -217,6 +386,42 @@ bool MapList::startswith(char letter)
 
 		if(currentShortmapname()[0] == letter)
 			return true;
+	}
+	while(current != oldCurrent);
+
+	return false;
+}
+
+//Searches for maps that start with this entire string
+bool MapList::startswith(std::string match)
+{
+	int iMatchLen = strlen(match.c_str());
+
+	std::map<std::string, MapListNode*>::iterator oldCurrent = current;
+	do
+	{
+		next(true);	//sets us to the beginning if we hit the end -> loop through the maps
+
+		const char * szMapName = currentShortmapname();
+		const int iMapNameLen = currentShortMapNameLen();
+	
+		if(iMatchLen > iMapNameLen)
+			continue;
+
+		for(short iIndex = 0; iIndex < iMatchLen && iIndex < iMapNameLen; iIndex++)
+		{
+			if(tolower(szMapName[iIndex]) == tolower(match[iIndex]))
+				continue;
+			
+			goto TRYNEXTMAP;
+		}
+
+		//gets here if we matched
+		return true;
+
+		//Label that we break to if we don't match (it'd be nice if we had labeled continues in c++)
+		TRYNEXTMAP:
+		continue;
 	}
 	while(current != oldCurrent);
 
@@ -244,6 +449,8 @@ void MapList::prev(bool fUseFilters)
 			current = --maps.end();	//continue from end
 		else
 			--current;
+
+		outercurrent = current;
 	}
 
 	return;
@@ -254,7 +461,7 @@ void MapList::next(bool fUseFilters)
 	if(fUseFilters)
 	{
 		std::map<std::string, MapListNode*>::iterator oldCurrent = current;
-
+		
 		do
 		{
 			next(false);
@@ -270,6 +477,8 @@ void MapList::next(bool fUseFilters)
 			current = maps.begin();	//continue from start
 		else
 			++current;
+
+		outercurrent = current;
 	}
 
 	return;
@@ -294,6 +503,18 @@ void MapList::random(bool fUseFilters)
 		next(fUseFilters);
 }
 
+const char* MapList::randomFilename()
+{
+	std::map<std::string, MapListNode*>::iterator random = maps.begin();
+
+	short iRand = rand() % maps.size();
+
+	for(short iMap = 0; iMap < iRand; iMap++)
+		random++;
+
+	return (*random).second->filename.c_str();
+}
+
 
 void MapList::WriteFilters()
 {
@@ -311,15 +532,15 @@ void MapList::WriteFilters()
 
 			fprintf(fp, "#Version\n");
 			fprintf(fp, "%d.%d.%d.%d\n\n", g_iVersion[0], g_iVersion[1], g_iVersion[2], g_iVersion[3]);
-
+			
 			fprintf(fp, "#Icon\n");
 			fprintf(fp, "%d\n\n", game_values.piFilterIcons[iFilter + NUM_AUTO_FILTERS]);
 
 			fprintf(fp, "#Maps\n");
+			
+			std::map<std::string, MapListNode*>::iterator itr = maps.begin(), lim = maps.end();
 
-			std::map<std::string, MapListNode*>::iterator itr = maps.begin();
-
-			while(itr != maps.end())
+			while(itr != lim)
 			{
 				if((*itr).second->pfFilters[iFilter + NUM_AUTO_FILTERS])
 					fprintf(fp, "%s\n", (*itr).first.c_str());
@@ -328,6 +549,10 @@ void MapList::WriteFilters()
 			}
 
 			fclose(fp);
+			
+#if defined(__MACOSX__)
+			chmod(filterslist.GetIndex(iFilter), S_IRWXU | S_IRWXG | S_IROTH);
+#endif
 		}
 	}
 }
@@ -354,7 +579,7 @@ void MapList::ReadFilters()
 				for(short iFilter = 0; iFilter < NUM_AUTO_FILTERS; iFilter++)
 				{
 					char * psz = strtok(NULL, ",\n");
-
+					
 					if(psz)
 					{
 						maps[pszMapName]->pfFilters[iFilter] = strcmp(psz, "0") != 0;
@@ -434,7 +659,7 @@ void MapList::ReadFilters()
 				char * pszMap = strtok(buffer, "\r\n");
 
 				//If that map is found
-				if(findexact(pszMap))
+				if(findexact(pszMap, false))
 					(*current).second->pfFilters[iFilter + NUM_AUTO_FILTERS] = true;
 			}
 		}
@@ -444,14 +669,15 @@ void MapList::ReadFilters()
 
 	//Reset the current back to the beginning after setting up the filters for each map
 	current = maps.begin();
+	outercurrent = current;
 }
 
 //Forces all the maps to reload the auto filters from the live map files (flush the cache)
 void MapList::ReloadMapAutoFilters()
 {
-	std::map<std::string, MapListNode*>::iterator itr = maps.begin();
+	std::map<std::string, MapListNode*>::iterator itr = maps.begin(), lim = maps.end();
 
-	while(itr != maps.end())
+	while(itr != lim)
 	{
 		MapListNode * mln = itr->second;
 		g_map.loadMap(mln->filename, read_type_summary);
@@ -464,13 +690,13 @@ void MapList::ReloadMapAutoFilters()
 void MapList::WriteMapSummaryCache()
 {
 	FILE * fp = fopen(convertPath("maps/cache/mapsummary.txt").c_str(), "w");
-
+	
 	if(!fp)
 		return;
 
-	std::map<std::string, MapListNode*>::iterator itr = maps.begin();
+	std::map<std::string, MapListNode*>::iterator itr = maps.begin(), lim = maps.end();
 
-	while(itr != maps.end())
+	while(itr != lim)
 	{
 		fprintf(fp, itr->first.c_str());
 
@@ -482,6 +708,10 @@ void MapList::WriteMapSummaryCache()
 	}
 
 	fclose(fp);
+	
+#if defined(__MACOSX__)
+	chmod(convertPath("maps/cache/mapsummary.txt").c_str(), S_IRWXU | S_IRWXG | S_IROTH);
+#endif
 }
 
 //Applies the currently selected filters to the entire map set
@@ -489,11 +719,11 @@ void MapList::WriteMapSummaryCache()
 //will show up in the map field or in the thumbnail browser
 void MapList::ApplyFilters(bool * pfFilters)
 {
-	std::map<std::string, MapListNode*>::iterator itr = maps.begin();
+	std::map<std::string, MapListNode*>::iterator itr = maps.begin(), lim = maps.end();
 
 	iFilteredMapCount = 0;
 	short iTotalCount = 0;
-	while(itr != maps.end())
+	while(itr != lim)
 	{
 		bool fMatched = true;
 		for(short iFilter = 0; iFilter < NUM_AUTO_FILTERS + filterslist.GetCount(); iFilter++)
@@ -558,570 +788,7 @@ std::map<std::string, MapListNode*>::iterator MapList::GetIteratorAt(unsigned sh
 	}
 }
 
-///////////// SimpleFileList ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-bool SimpleFileList::init(const std::string &path, const std::string &extension)
+const char * MapList::GetUnknownMapName()
 {
-	DirectoryListing d;
-	d.init(path, extension);
-	std::string curname;
-	while(d(curname))
-	{
-		filelist.insert(filelist.end(), d.fullName(curname));
-	}
-
-	currentIndex = 0;
-
-	if(filelist.empty())
-	{
-		printf("ERROR: Empty directory. %s\n", path.c_str());
-		sleep(5);
-		//exit(0);
-		currentIndex = -1;
-		return false;
-	}
-	return true;
+	return szUnknownMapString;
 }
-
-void SimpleFileList::next()
-{
-	if(filelist.empty())
-		return;
-
-	if(currentIndex + 1 == int(filelist.size()))
-		currentIndex = 0;
-	else
-		currentIndex++;
-};
-
-void SimpleFileList::prev()
-{
-	if(filelist.empty())
-		return;
-
-	if(currentIndex == 0)
-		currentIndex = filelist.size() - 1;
-	else
-		currentIndex--;
-};
-
-const char * SimpleFileList::GetIndex(unsigned int index)
-{
-	if(index < filelist.size())
-		return filelist[index].c_str();
-
-	return NULL;
-}
-
-
-void SimpleFileList::SetCurrentName(const std::string &name)
-{
-	if(filelist.empty())
-		return;
-
-	for(unsigned short i = 0; i < filelist.size(); i++)
-	{
-		if(!strcmp(filelist[i].c_str(), name.c_str()))
-		{
-			currentIndex = i;
-			break;
-		}
-	}
-}
-
-///////////// SkinList ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-SkinListNode::SkinListNode(std::string skinName, std::string skinPath)
-{
-	sSkinName = skinName;
-	sSkinPath = skinPath;
-}
-
-
-SkinList::SkinList()
-{
-
-}
-
-bool SkinList::init()
-{
-	DirectoryListing d;
-	d.init(convertPath("gfx/skins/"), ".bmp");
-	std::string curname;
-	while(d(curname))
-	{
-		std::string sShortSkinName = stripCreatorAndDotMap(curname);
-		SkinListNode * node = new SkinListNode(sShortSkinName, d.fullName(curname));
-
-		if(skins.empty())
-		{
-			skins.push_back(node);
-		}
-		else
-		{
-			std::vector<SkinListNode*>::iterator itr = skins.begin();
-
-			while(itr != skins.end())
-			{
-				if(sShortSkinName.compare((*itr)->sSkinName) < 0)
-					break;
-
-				itr++;
-			}
-
-			skins.insert(itr, node);
-		}
-	}
-	return true;
-}
-
-const char * SkinList::GetIndex(unsigned int index)
-{
-	if(index < skins.size())
-		return skins[index]->sSkinPath.c_str();
-
-	return NULL;
-}
-
-const char * SkinList::GetSkinName(unsigned int index)
-{
-	if(index < skins.size())
-		return skins[index]->sSkinName.c_str();
-
-	return NULL;
-}
-
-///////////// SimpleDirectoryList ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-SimpleDirectoryList::SimpleDirectoryList()
-{
-
-}
-
-bool SimpleDirectoryList::init(const std::string &path)
-{
-	DirectoryListing d;
-	d.init(path);
-	std::string curname;
-	while(d.NextDirectory(curname))
-	{
-		filelist.insert(filelist.end(), d.fullName(curname));
-	}
-	if(filelist.empty())
-	{
-		printf("ERROR: Empty directory.  %s\n", path.c_str());
-		sleep(5);
-		//exit(0);
-
-		char hi;
-		scanf("%c", &hi);
-	}
-
-	currentIndex = 0;
-	return true;
-}
-
-///////////// MusicList ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-MusicList::MusicList()
-{
-
-}
-
-MusicList::~MusicList()
-{
-	for(unsigned int i = 0; i < entries.size(); i++)
-	{
-		delete entries[i];
-	}
-}
-
-bool MusicList::init()
-{
-	DirectoryListing d;
-	d.init(convertPath("music/"));
-	std::string currentdir;
-	while(d.NextDirectory(currentdir))
-	{
-		MusicEntry *m = new MusicEntry(d.fullName(currentdir));
-		if (!m->fError)
-			entries.push_back(m);
-		else
-			delete m;
-	}
-
-	if(entries.empty())
-	{
-		printf("ERROR: Empty Music directory!\n");
-		exit(0);
-	}
-
-	currentIndex = 0;
-	return true;
-}
-
-string MusicList::GetMusic(int musicID)
-{
-	return entries[currentIndex]->GetMusic(musicID);
-}
-
-void MusicList::SetRandomMusic(int iMusicCategory, const char * szMapName, const char * szBackground)
-{
-	CurrentMusic = entries[currentIndex]->GetRandomMusic(iMusicCategory, szMapName, szBackground);
-}
-
-void MusicList::SetNextMusic(int iMusicCategory, const char * szMapName, const char * szBackground)
-{
-	CurrentMusic = entries[currentIndex]->GetNextMusic(iMusicCategory, szMapName, szBackground);
-}
-
-string MusicList::GetCurrentMusic()
-{
-	return CurrentMusic;
-}
-
-
-void MusicList::next()
-{
-	if(currentIndex+1 == int(entries.size()))
-		currentIndex = 0;
-	else
-		currentIndex++;
-};
-
-void MusicList::prev()
-{
-	if(currentIndex == 0)
-		currentIndex = entries.size()-1;
-	else
-		currentIndex--;
-};
-
-
-///////////// MusicEntry ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-MusicEntry::MusicEntry(const std::string & musicdirectory)
-{
-	fError = false;
-	fUsesMapOverrides = false;
-	fUsesBackgroundOverrides = false;
-
-	iCurrentMusic = 0;
-
-	int i, k;
-
-	char * szDir = (char*)(musicdirectory.c_str());
-
-	for(k = 0; k < MAXMUSICCATEGORY; k++)
-		numsongsforcategory[k] = 0;
-
-	char musiclistname[FILEBUFSIZE];
-#ifdef _XBOX
-	sprintf(musiclistname, szDir + 9);
-#else
-    char * p = strrchr(szDir, '/');
-    if (!p) p=szDir; else p++;
-    strcpy(musiclistname, p);
-#endif
-
-	for(i = (int)strlen(musiclistname); i >= 0; i--)
-	{
-		if(musiclistname[i] == '.')
-		{
-			musiclistname[i] = '\0';
-			break;
-		}
-	}
-
-	name = musiclistname;
-
-	std::string musicfile = musicdirectory + getDirectorySeperator() + std::string("Music.txt");
-
-	FILE * in = fopen(musicfile.c_str(), "r");
-
-	if(!in)
-	{
-		printf("Error: Could not open: %s\n", musicfile.c_str());
-		fError = true;
-		return;
-	}
-
-	int iNumFile = 0;
-	int iAddToCategory = -1;
-	char szBuffer[256];
-	while(fgets(szBuffer, 256, in))
-	{
-		//Ignore comment lines
-		if(szBuffer[0] == '#' || szBuffer[0] == ' ' || szBuffer[0] == '\t' || szBuffer[0] == '\n' || szBuffer[0] == '\r')
-			continue;
-
-		//Chop off line ending
-		int stringLength = strlen(szBuffer);
-		for(k = 0; k < stringLength; k++)
-		{
-			if(szBuffer[k] == '\r' || szBuffer[k] == '\n')
-			{
-				szBuffer[k] = '\0';
-				break;
-			}
-		}
-
-		//If we found a category header
-		if(szBuffer[0] == '[')
-		{
-			if(!stricmp(szBuffer, "[land]"))
-				iAddToCategory = 0;
-			else if(!stricmp(szBuffer, "[underground]"))
-				iAddToCategory = 1;
-			else if(!stricmp(szBuffer, "[underwater]"))
-				iAddToCategory = 2;
-			else if(!stricmp(szBuffer, "[castle]"))
-				iAddToCategory = 3;
-			else if(!stricmp(szBuffer, "[platforms]"))
-				iAddToCategory = 4;
-			else if(!stricmp(szBuffer, "[ghost]"))
-				iAddToCategory = 5;
-			else if(!stricmp(szBuffer, "[bonus]"))
-				iAddToCategory = 6;
-			else if(!stricmp(szBuffer, "[battle]"))
-				iAddToCategory = 7;
-			else if(!stricmp(szBuffer, "[desert]"))
-				iAddToCategory = 8;
-			else if(!stricmp(szBuffer, "[clouds]"))
-				iAddToCategory = 9;
-			else if(!stricmp(szBuffer, "[snow]"))
-				iAddToCategory = 10;
-			else if(!stricmp(szBuffer, "[maps]"))
-				iAddToCategory = MAXMUSICCATEGORY;
-			else if(!stricmp(szBuffer, "[backgrounds]"))
-				iAddToCategory = MAXMUSICCATEGORY + 1;
-
-			continue;
-		}
-
-		//Cap the number of songs at MAXCATEGORYTRACKS for a category
-		if(iAddToCategory > -1 && iAddToCategory < MAXMUSICCATEGORY && numsongsforcategory[iAddToCategory] >= MAXCATEGORYTRACKS)
-			continue;
-
-		if(iNumFile < 4 || iAddToCategory > -1)
-		{
-			if(iAddToCategory == MAXMUSICCATEGORY || iAddToCategory == MAXMUSICCATEGORY + 1)
-			{
-				char * pszName = strtok(szBuffer, ",\n");
-
-				if(!pszName)
-					continue;
-
-				if(iAddToCategory == MAXMUSICCATEGORY)
-				{
-					if(mapoverride.find(pszName) == mapoverride.end())
-						mapoverride[pszName] = new MusicOverride();
-				}
-				else
-				{
-					if(backgroundoverride.find(pszName) == backgroundoverride.end())
-						backgroundoverride[pszName] = new MusicOverride();
-				}
-
-				char * pszMusic = strtok(NULL, ",\n");
-				while(pszMusic)
-				{
-					std::string sPath = musicdirectory + getDirectorySeperator() + convertPartialPath(std::string(pszMusic));
-
-					if(File_Exists(sPath.c_str()))
-					{
-						songFileNames.push_back(sPath);
-
-						if(iAddToCategory == MAXMUSICCATEGORY)
-						{
-							fUsesMapOverrides = true;
-							mapoverride[pszName]->songs.push_back(iNumFile);
-						}
-						else
-						{
-							fUsesBackgroundOverrides = true;
-							backgroundoverride[pszName]->songs.push_back(iNumFile);
-						}
-
-						iNumFile++;
-					}
-					pszMusic = strtok(NULL, ",\n");
-				}
-			}
-			else
-			{
-				std::string sPath = musicdirectory + getDirectorySeperator() + convertPartialPath(std::string(szBuffer));
-
-				if(File_Exists(sPath.c_str()))
-				{
-					songFileNames.push_back(sPath);
-
-					//Don't add to category lists if this is one of the four special music tracks
-					if(iNumFile >= 4)
-					{
-						songsforcategory[iAddToCategory][numsongsforcategory[iAddToCategory]] = iNumFile;
-						numsongsforcategory[iAddToCategory]++;
-					}
-					iNumFile++;
-				}
-			}
-		}
-	}
-
-	fclose(in);
-
-	//Now read labeled subdirectories like "Land", "Underground", "Castle", etc for more songs
-
-	for(short iMusicCategory = 0; iMusicCategory < MAXMUSICCATEGORY; iMusicCategory++)
-	{
-		std::string musicPath = musicdirectory + getDirectorySeperator() + std::string(g_szMusicCategoryNames[iMusicCategory]);
-		if(File_Exists(musicPath))
-		{
-			SimpleFileList musiclist;
-			musiclist.init(musicPath + getDirectorySeperator(), ".mp3");
-
-			short iCount = musiclist.GetCount();
-
-			//printf("Found %d files in %s\n", iCount, musicPath.c_str());
-
-			for(short iFile = 0; iFile < iCount; iFile++)
-			{
-				if(numsongsforcategory[iMusicCategory] < MAXCATEGORYTRACKS)
-				{
-					songFileNames.push_back(musiclist.current_name());
-					songsforcategory[iMusicCategory][numsongsforcategory[iMusicCategory]] = iNumFile;
-					numsongsforcategory[iMusicCategory]++;
-					iNumFile++;
-				}
-
-				musiclist.next();
-			}
-		}
-	}
-
-	if(iNumFile == 0)
-	{
-		printf("Error: No songs found in: %s\n", musicdirectory.c_str());
-		fError = true;
-		return;
-	}
-
-	//Verify we have at least one track for each category
-	for(i = 0; i < MAXMUSICCATEGORY; i++)
-	{
-		if(numsongsforcategory[i] == 0)
-		{
-			if(i < 4)
-			{
-				printf("Error: Missing track definition for music category: %s\n", g_szMusicCategoryNames[i]);
-				fError = true;
-				return;
-			}
-			else  //Use default category
-			{
-				numsongsforcategory[i] = numsongsforcategory[g_iDefaultMusicCategory[i]];
-				for(k = 0; k < numsongsforcategory[i]; k++)
-				{
-					songsforcategory[i][k] = songsforcategory[g_iDefaultMusicCategory[i]][k];
-				}
-			}
-		}
-	}
-
-	/*
-	std::vector<std::string>::iterator itr = songFileNames.begin();
-
-	printf("------ Songlist ------\n");
-	short iCounter = 0;
-	while(itr != songFileNames.end())
-	{
-		printf("%d: %s\n", iCounter++, itr->c_str());
-		itr++;
-	}
-
-	printf("\n\n");
-
-	for(i = 0; i < MAXMUSICCATEGORY; i++)
-	{
-		printf("---- %d ----\n", i);
-		printf("Count: %d\n", numsongsforcategory[i]);
-		for(k = 0; k < numsongsforcategory[i]; k++)
-			printf("%d\n", songsforcategory[i][k]);
-	}
-	*/
-};
-
-
-
-string MusicEntry::GetMusic(unsigned int musicID)
-{
-    if (musicID >= songFileNames.size())
-        return songFileNames[songFileNames.size()-1];
-
-    return songFileNames[musicID];
-}
-
-string MusicEntry::GetRandomMusic(int iMusicCategory, const char * szMapName, const char * szBackground)
-{
-	//First check if there is specific map music
-	if(fUsesMapOverrides && mapoverride.find(szMapName) != mapoverride.end())
-	{
-		if(mapoverride[szMapName]->songs.size() > 0)
-		{
-			iCurrentMusic = rand() % mapoverride[szMapName]->songs.size();
-			return songFileNames[mapoverride[szMapName]->songs[iCurrentMusic]];
-		}
-	}
-	//Then check if there is specific background music
-	if(fUsesBackgroundOverrides && backgroundoverride.find(szBackground) != backgroundoverride.end())
-	{
-		if(backgroundoverride[szBackground]->songs.size() > 0)
-		{
-			iCurrentMusic = rand() % backgroundoverride[szBackground]->songs.size();
-			return songFileNames[backgroundoverride[szBackground]->songs[iCurrentMusic]];
-		}
-	}
-
-	//Then default to the music category
-	if(iMusicCategory >= 0 && iMusicCategory < MAXMUSICCATEGORY && numsongsforcategory[iMusicCategory] > 0)
-	{
-		iCurrentMusic = rand() % numsongsforcategory[iMusicCategory];
-		return songFileNames[songsforcategory[iMusicCategory][iCurrentMusic]];
-	}
-
-	return songFileNames[4];
-}
-
-string MusicEntry::GetNextMusic(int iMusicCategory, const char * szMapName, const char * szBackground)
-{
-	//First check if there is specific map music
-	if(mapoverride.find(szMapName) != mapoverride.end())
-	{
-		if(mapoverride[szMapName]->songs.size() > 0)
-		{
-			if(++iCurrentMusic >= mapoverride[szMapName]->songs.size())
-				iCurrentMusic = 0;
-
-			return songFileNames[mapoverride[szMapName]->songs[iCurrentMusic]];
-		}
-	}
-	//Then check if there is specific background music
-	if(backgroundoverride.find(szBackground) != backgroundoverride.end())
-	{
-		if(backgroundoverride[szBackground]->songs.size() > 0)
-		{
-			if(++iCurrentMusic >= backgroundoverride[szBackground]->songs.size())
-				iCurrentMusic = 0;
-
-			return songFileNames[backgroundoverride[szBackground]->songs[iCurrentMusic]];
-		}
-	}
-
-	//Then default to the music category
-	if(iMusicCategory >= 0 && iMusicCategory < MAXMUSICCATEGORY && numsongsforcategory[iMusicCategory] > 0)
-	{
-		if(++iCurrentMusic >= numsongsforcategory[iMusicCategory])
-			iCurrentMusic = 0;
-
-		return songFileNames[songsforcategory[iMusicCategory][iCurrentMusic]];
-	}
-
-	return songFileNames[4];
-}
-

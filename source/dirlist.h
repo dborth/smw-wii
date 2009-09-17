@@ -39,10 +39,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class DirectoryListing
 {
     public:
-        /* Constructor accepts path, optional filename extension */
         DirectoryListing();
-
-		bool init(std::string path, std::string file_ext="");
+		 /* Accepts path, optional filename extension */
+		void init(std::string path, std::string file_ext="");
 
         /* Ask the listing whether or not it successfully got access to a folder */
         bool GetSuccess() {return Success;};

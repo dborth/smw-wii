@@ -12,6 +12,8 @@ class MapListNode
 		short iIndex;
 		short iFilteredIndex;
 
+		int iShortNameLength;
+
 		bool fReadFromCache;
 
 		bool fValid;
@@ -23,34 +25,41 @@ class MapList
     public:
         MapList();
         ~MapList();
+        
+        void init(bool fWorldEditor);
 
-		bool init();
+		//Adds maps in all world map directories to the map list so they can be edited in the map editor
+		void addWorldMaps();
 
         void add(const char * name);
         bool find(const char * name);
-		bool findexact(const char * name);
+		bool findexact(const char * name, bool fWorld);
         bool startswith(char letter);
+		bool startswith(std::string match);
 
-		const char* currentFilename(){return (*current).second->filename.c_str();};
-        const char* currentShortmapname(){return (*current).first.c_str();};
-
+		const char* currentFilename(){return (*outercurrent).second->filename.c_str();}
+        const char* currentShortmapname(){return (*outercurrent).first.c_str();}
+		const int currentShortMapNameLen(){return (*outercurrent).second->iShortNameLength;}
+        
 		void prev(bool fUseFilters);
         void next(bool fUseFilters);
 		void random(bool fUseFilters);
 
+		const char* randomFilename();
+
 		//Sets/Gets if a map at the current map node is valid and can be loaded
 		void SetValid(bool fValid) {(*current).second->fValid = fValid;}
 		bool GetValid() {return (*current).second->fValid;}
-
+        
 		int GetFilteredCount() {return iFilteredMapCount;}
 		int GetCount() {return maps.size();}
-
+		
 		std::map<std::string, MapListNode*>::iterator GetCurrent() {return current;}
-		void SetCurrent(std::map<std::string, MapListNode*>::iterator itr) {current = itr;}
+		void SetCurrent(std::map<std::string, MapListNode*>::iterator itr) {outercurrent = current = itr;}
 
 		void WriteFilters();
 		void ReadFilters();
-
+		
 		bool GetFilter(short iFilter) {return (*current).second->pfFilters[iFilter];}
 		bool * GetFilters() {return (*current).second->pfFilters;}
 		void ToggleFilter(short iFilter) {(*current).second->pfFilters[iFilter] = !(*current).second->pfFilters[iFilter];}
@@ -67,182 +76,22 @@ class MapList
 		void ReloadMapAutoFilters();
 		void WriteMapSummaryCache();
 
+		const char * GetUnknownMapName();
+
     private:
 
         std::map<std::string, MapListNode*> maps;
+		std::map<std::string, MapListNode*> worldmaps;
+
         std::map<std::string, MapListNode*>::iterator current;
 		std::map<std::string, MapListNode*>::iterator savedcurrent;
+
+		std::map<std::string, MapListNode*>::iterator outercurrent;
 
 		short iFilteredMapCount;
 
 		std::map<std::string, MapListNode*>::iterator * mlnFilteredMaps;
 		std::map<std::string, MapListNode*>::iterator * mlnMaps;
+
+		char szUnknownMapString[2];
 };
-
-//it was kinda a bad idea to have skinlist and announcer list based on this, because both are accessed in different ways (skinlist like an vector and announcer list like a list). grrrr
-class SimpleFileList
-{
-    public:
-		SimpleFileList() {;};
-        virtual ~SimpleFileList(){;};	//i have no idea how to do that virtual destructor crap right. i guess this might do it.
-        bool init(const std::string &path, const std::string &extension);
-		const char * GetIndex(unsigned int index);
-        int GetCount() {return filelist.size();}
-
-        int GetCurrentIndex(){return currentIndex;};
-		void SetCurrent(unsigned int index)
-		{
-			if(filelist.empty())
-				return;
-
-			if(index < filelist.size())
-				currentIndex = index;
-			else
-				currentIndex = 0;
-		};
-
-        const char * current_name()
-		{
-			if(currentIndex > -1)
-				return filelist[currentIndex].c_str();
-
-			return NULL;
-		};
-
-        void next();
-        void prev();
-
-        void random()
-		{
-			if(!filelist.empty())
-				currentIndex = rand() % filelist.size();
-		};
-
-		void SetCurrentName(const std::string &name);
-
-    protected:
-        std::vector<std::string> filelist;
-        int currentIndex;
-};
-
-class SimpleDirectoryList : public SimpleFileList
-{
-    public:
-        SimpleDirectoryList();
-		bool init(const std::string &path);
-        virtual ~SimpleDirectoryList(){;};
-};
-
-class SkinListNode
-{
-	public:
-		SkinListNode(std::string skinName, std::string skinPath);
-		~SkinListNode() {}
-
-		std::string sSkinName;
-		std::string sSkinPath;
-};
-
-class SkinList
-{
-    public:
-        SkinList();
-		bool init();
-		int GetCount() {return skins.size();}
-		const char * GetIndex(unsigned int index);
-		const char * GetSkinName(unsigned int index);
-
-	private:
-		std::vector<SkinListNode*> skins;
-};
-
-class AnnouncerList : public SimpleFileList
-{
-};
-
-class GraphicsList : public SimpleDirectoryList
-{
-};
-
-class SoundsList : public SimpleDirectoryList
-{
-};
-
-class TourList : public SimpleFileList
-{
-};
-
-class BackgroundList : public SimpleFileList
-{//convertPath("gfx/packs/Classic/backgrounds/"), ".png"
-};
-
-class FiltersList : public SimpleFileList
-{
-};
-
-class MusicOverride
-{
-	public:
-		std::vector<int> songs;
-};
-
-class MusicEntry
-{
-    public:
-        MusicEntry(const std::string & musicdirectory);
-		~MusicEntry() {}
-
-        std::string GetMusic(unsigned int musicID);
-        std::string GetRandomMusic(int iCategoryID, const char * szMapName, const char * szBackground);
-		std::string GetNextMusic(int iCategoryID, const char * szMapName, const char * szBackground);
-
-        int		numsongsforcategory[MAXMUSICCATEGORY];
-        int		songsforcategory[MAXMUSICCATEGORY][MAXCATEGORYTRACKS];
-        std::vector<std::string> songFileNames;
-
-		std::map<std::string, MusicOverride*> mapoverride;
-		std::map<std::string, MusicOverride*> backgroundoverride;
-
-        std::string name;
-		unsigned short iCurrentMusic;
-
-        bool fError;
-
-		bool fUsesMapOverrides;
-		bool fUsesBackgroundOverrides;
-};
-
-class MusicList
-{
-    public:
-        MusicList();
-        ~MusicList();
-
-		bool init();
-
-        std::string GetMusic(int musicID);
-        void SetRandomMusic(int iCategoryID, const char * szMapName, const char * szBackground);
-		void SetNextMusic(int iCategoryID, const char * szMapName, const char * szBackground);
-        std::string GetCurrentMusic();
-
-        int GetCurrentIndex(){return currentIndex;};
-        void SetCurrent(unsigned int index)
-		{
-			if(index < entries.size())
-				currentIndex = index;
-			else
-				currentIndex = 0;
-		};
-
-        const char * current_name(){return entries[currentIndex]->name.c_str();};
-        void next();
-        void prev();
-        void random(){currentIndex = rand()%entries.size();};
-
-
-    private:
-        std::string CurrentMusic;
-        std::vector<MusicEntry*> entries;
-        int currentIndex;
-};
-

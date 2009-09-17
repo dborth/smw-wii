@@ -11,33 +11,82 @@ class CEyecandy
 {
 	public:
 		CEyecandy() {dead = false;}
-		virtual ~CEyecandy(){;};
+		virtual ~CEyecandy() {}
 
-		virtual void draw(){printf("CEyecandy::draw() - NO!\n");};
-		virtual void update(){printf("CEyecandy::update() - NO!\n");};
-
+		virtual void update() = 0;
+		virtual void draw() = 0;
+	
 	protected:
 		bool dead;
-
+	
 	friend class CEyecandyContainer;
 };
 
+class EC_StillImage : public CEyecandy
+{
+	public:
+		EC_StillImage(gfxSprite * nspr, short dstx, short dsty, short srcx, short srcy, short w, short h);
+		virtual ~EC_StillImage() {}
 
+		virtual void update() {}
+		virtual void draw();
 
+	protected:
+		gfxSprite * spr;
 
+		short iSrcX, iSrcY;
+		short ix, iy;
+		short iw, ih;
+};
+
+//animated eyecandy base class
+class EC_Animated : public CEyecandy
+{
+	public:
+		EC_Animated(gfxSprite * nspr, short dstx, short dsty, short srcx, short srcy, short w, short h, short speed, short frames);
+		virtual ~EC_Animated() {}
+		
+		virtual void animate();
+
+		virtual void update();
+		virtual void draw();
+		
+	protected:
+		gfxSprite * spr;
+
+		short iAnimationX, iAnimationY;
+		short iAnimationW, iAnimationH;
+		short iAnimationSpeed;
+		short iAnimationFrames;
+
+		short iAnimationTimer;
+		short iAnimationFrame;
+
+		short ix, iy;
+};
+
+class EC_OscillatingAnimation : public EC_Animated
+{
+	public:
+		EC_OscillatingAnimation(gfxSprite * nspr, short dstx, short dsty, short srcx, short srcy, short w, short h, short speed, short frames);
+		virtual ~EC_OscillatingAnimation() {}
+		
+		virtual void animate();
+
+	protected:
+		bool fForward;
+};
 
 //actual eyecandy implementations
-class EC_Corpse : public CEyecandy
+class EC_Corpse : public EC_StillImage
 {
 	public:
 		EC_Corpse(gfxSprite *nspr, float nx, float ny, short iSrcOffsetX);
-		~EC_Corpse(){;};
-		void draw();
+		~EC_Corpse() {}
 		void update();
 
 	private:
-		gfxSprite *spr;
-		float x, y;
+		float dx, dy;
 		short tx, tx2;
 		float vely;
 		short timeleft;
@@ -45,45 +94,87 @@ class EC_Corpse : public CEyecandy
 };
 
 
-class EC_Cloud : public CEyecandy
+class EC_Cloud : public EC_StillImage
 {
 	public:
-		EC_Cloud(gfxSprite *nspr, float nx, float ny, float nvelx);
-		~EC_Cloud(){;};
-		void draw();
+		EC_Cloud(gfxSprite *nspr, float nx, float ny, float nvelx, short srcx, short srcy, short w, short h);
+		~EC_Cloud() {}
 		void update();
 
 	private:
-		gfxSprite *spr;
-		float x, y;
+		float dx, dy;
 		float velx;
-		short w;
 };
 
-
-class EC_Ghost : public CEyecandy
+class EC_Ghost : public EC_Animated
 {
 	public:
-		EC_Ghost(gfxSprite *nspr, float nx, float ny, float nvelx, short ianimationspeed, short inumframes);
-		~EC_Ghost(){;};
-		void draw();
+		EC_Ghost(gfxSprite *nspr, float nx, float ny, float nvelx, short ianimationspeed, short inumframes, short srcx, short srcy, short w, short h);
+		~EC_Ghost() {}
 		void update();
 
 	private:
-		gfxSprite *spr;
-		float x, y;
+		float dx, dy;
 		float velx;
-		short w, h;
-
-		short animationoffset;
-		short animationspeed;
-		short animationtimer;
-		short animationframe;
-		short animationwidth;
-		short numframes;
 };
 
+class EC_Leaf : public EC_OscillatingAnimation
+{
+	public:
+		EC_Leaf(gfxSprite *nspr, float nx, float ny);
+		~EC_Leaf() {}
 
+		void update();
+
+	private:
+		void NextLeaf();
+
+		float dx, dy;
+		float velx, vely;
+};
+
+class EC_Snow : public EC_StillImage
+{
+	public:
+		EC_Snow(gfxSprite *nspr, float nx, float ny, short type);
+		~EC_Snow() {}
+
+		void update();
+
+	private:
+		float dx, dy;
+		float velx, vely;
+};
+
+class EC_Rain : public EC_StillImage
+{
+	public:
+		EC_Rain(gfxSprite *nspr, float nx, float ny);
+		~EC_Rain() {}
+
+		void update();
+
+	private:
+		void NextRainDrop();
+
+		float dx, dy;
+		float velx, vely;
+};
+
+class EC_Bubble : public EC_OscillatingAnimation
+{
+	public:
+		EC_Bubble(gfxSprite *nspr, float nx, float ny);
+		~EC_Bubble() {}
+
+		void update();
+
+	private:
+		void NextBubble();
+
+		float dx, dy;
+		float velx, vely;
+};
 
 class EC_GravText : public CEyecandy
 {
@@ -101,67 +192,60 @@ class EC_GravText : public CEyecandy
 		char *text;
 };
 
-class EC_FallingObject : public CEyecandy
+class EC_Announcement : public CEyecandy
 {
 	public:
-		EC_FallingObject(gfxSprite *nspr, short x, short y, float nvelx, float nvely, short numSprites, short animationRate, short srcOffsetX, short srcOffsetY, short w, short h);
-		EC_FallingObject(gfxSprite *nspr, short x, short y, float nvely, short srcOffsetX, short srcOffsetY, short w, short h);
-
+		EC_Announcement(gfxFont *nfont, gfxSprite *nsprite, const char *ntext, short icon, short time, short y);
+		~EC_Announcement();
 		void draw();
 		void update();
 
 	private:
-		gfxSprite *spr;
-		float fx, fy;
-		short iw, ih;
-		float vely, velx;
+		gfxFont *font;
+		gfxSprite *sprite;
 
-		short iSrcOffsetX;
-		short iSrcOffsetY;
+		short ix, iy;
+		char *text;
 
-		short iNumSprites;
-		short iAnimationRate;
-		short iDrawFrame;
-		short iAnimationTimer;
-		short iAnimationWidth;
+		short iTime, iTimer;
+		short iIcon;
+
+		short iFontY, iFontOffsetX;
+
+		SDL_Rect rSrcRect[4];
+		SDL_Rect rDstRect[4];
 };
 
-class EC_SingleAnimation : public CEyecandy
+class EC_FallingObject : public EC_Animated
+{
+	public:
+		EC_FallingObject(gfxSprite *nspr, short x, short y, float nvelx, float nvely, short animationframes, short animationspeed, short srcOffsetX, short srcOffsetY, short w, short h);
+
+		void update();
+
+	private:
+		float fx, fy;
+		float vely, velx;
+};
+
+class EC_SingleAnimation : public EC_Animated
 {
 	public:
 		EC_SingleAnimation(gfxSprite *nspr, short nx, short ny, short iframes, short irate);
-		void update();
-		void draw();
+		EC_SingleAnimation(gfxSprite *nspr, short nx, short ny, short iframes, short irate, short offsetx, short offsety, short w, short h);
 
-	protected:
-		gfxSprite *spr;
-		float x, y;
-		short frames, frame, counter;
-		short iw, ih;
-		short rate;
-		short iAnimationWidth;
+		void update();
 };
 
-class EC_LoopingAnimation : public CEyecandy
+class EC_LoopingAnimation : public EC_Animated
 {
 	public:
-		EC_LoopingAnimation(gfxSprite *nspr, short x, short y, short iframes, short irate, short iloops, short ioffsetx, short ioffsety, short istartoffsetx, short iwidth, short iheight);
+		EC_LoopingAnimation(gfxSprite *nspr, short x, short y, short iframes, short irate, short loops, short ioffsetx, short ioffsety, short w, short h);
 		void update();
-		void draw();
-
+	
 	private:
-		gfxSprite *spr;
-		short ix, iy;
-		short frame, counter;
-		short iw, ih;
-		short rate;
-		short iAnimationWidth;
-
-		short countloops;
-		short loops;
-
-		short iOffsetX, iOffsetY;
-
+		short iCountLoops;
+		short iLoops;
 };
 
 /*
@@ -170,7 +254,7 @@ class EC_Award : public EC_LoopingAnimation
 {
 	public:
 		EC_Award(gfxSprite *nspr, short ix, short iy, short destx, short desty, short iframes, short irate);
-		~EC_Award(){;};
+		~EC_Award() {}
 		void update();
 
 	private:
@@ -197,7 +281,7 @@ class EC_ExplodingAward : public CEyecandy
 class EC_SwirlingAward : public CEyecandy
 {
 	public:
-		EC_SwirlingAward(gfxSprite *nspr, short nx, short ny, float nangle, float nradius, float nvel, short timetolive, short awardID);
+		EC_SwirlingAward(gfxSprite *nspr, short nx, short ny, float nangle, float nradius, float nvel, short timetolive, short srcX, short srcY, short iw, short ih, short animationRate = 0, short animationFrames = 0);
 		void draw();
 		void update();
 
@@ -205,14 +289,18 @@ class EC_SwirlingAward : public CEyecandy
 		gfxSprite *spr;
 		short x, y;
 		short w, h;
-		short timer, ttl, id;
+		short timer, ttl;
+		short iSrcX, iSrcY;
 		float vel, angle, radius;
+
+		short iAnimationRate, iAnimationFrames;
+		short iAnimationTimer, iAnimationFrame, iAnimationEndFrame;
 };
 
 class EC_RocketAward : public CEyecandy
 {
 	public:
-		EC_RocketAward(gfxSprite *nspr, short nx, short ny, float nvelx, float nvely, short timetolive, short awardID, short numAwards);
+		EC_RocketAward(gfxSprite *nspr, short nx, short ny, float nvelx, float nvely, short timetolive, short srcX, short srcY, short iw, short ih, short animationRate = 0, short animationFrames = 0);
 		void draw();
 		void update();
 
@@ -221,7 +309,11 @@ class EC_RocketAward : public CEyecandy
 		float x, y;
 		short w, h;
 		float velx, vely;
-		short timer, ttl, id;
+		short timer, ttl;
+		short iSrcX, iSrcY;
+
+		short iAnimationRate, iAnimationFrames;
+		short iAnimationTimer, iAnimationFrame, iAnimationEndFrame;
 };
 
 class EC_FloatingObject : public CEyecandy
@@ -266,10 +358,10 @@ class EC_SoulsAward : public CEyecandy
 class EC_Door : public CEyecandy
 {
 	public:
-		EC_Door(gfxSprite *nspr, gfxSprite *mario, short nx, short ny, short irate, short iOffsetX);
+		EC_Door(gfxSprite *nspr, gfxSprite *mario, short nx, short ny, short irate, short iOffsetX, short iColor);
 		virtual void draw();
 		virtual void update();
-
+	
 	protected:
 		gfxSprite *spr;
 		gfxSprite *mariospr;
@@ -281,8 +373,10 @@ class EC_Door : public CEyecandy
 		short state;
 		short offsetx;
 		short offsety;
+		short colorOffset;
 };
 
+/*
 class EC_BossPeeker : public CEyecandy
 {
 	public:
@@ -298,7 +392,21 @@ class EC_BossPeeker : public CEyecandy
 		int state;
 		int ix, iy;
 };
+*/
 
+class EC_SuperStompExplosion : public CEyecandy
+{
+	public:
+		EC_SuperStompExplosion(gfxSprite *nspr, short x, short y, short irate);
+		void update();
+		void draw();
+
+	protected:
+		gfxSprite *spr;
+		short ix, iy;
+		short iAnimationFrame, iAnimationTimer;
+		short iRate;
+};
 
 //eyecandy container
 class CEyecandyContainer
@@ -329,6 +437,45 @@ class CEyecandyContainer
 		short		 list_end;
 
 		void remove(short i);
+};
+
+class Spotlight
+{
+	public:
+		Spotlight(short x, short y, short size);
+		~Spotlight() {}
+
+		void Update();
+		void UpdatePosition(short x, short y);
+		void Draw();
+		
+		bool IsDead() {return iState >= 3;}
+
+	private:
+		short ix, iy;
+		short iEndSize;
+		//short iTransparency;
+		short iState;
+		bool fUpdated;
+
+		short iSizeCounter;
+		short iSize;
+
+		short iHalfWidth;
+		short iWidth;
+		SDL_Rect rSrc;
+};
+
+class SpotlightManager
+{
+	public:
+		Spotlight * AddSpotlight(short ix, short iy, short iSize);
+		void DrawSpotlights();
+		void ClearSpotlights();
+
+	private:
+		std::vector<Spotlight*> spotlightList;
+
 };
 
 #endif
