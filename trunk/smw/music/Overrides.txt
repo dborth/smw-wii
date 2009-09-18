@@ -6,7 +6,7 @@
 #flexibility to put your music files anywhere under /smw.
 
 [maps]
-#0smw,music/game/Standard/smb3level1.ogg,music/game/Standard/M2_Level1.ogg
+#0smw,music/game/Standard/smb3level1.mp3,music/game/Standard/M2_Level1.mp3
 
 [worlds]
-#0smw,music/world/Standard/grassland.ogg
+#0smw,music/world/Standard/grassland.mp3

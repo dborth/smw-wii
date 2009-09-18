@@ -27,20 +27,20 @@ relative path from this directory to subdirectories if you wish.
 
 Another way to include tracks into music categories is to create
 category labeled subdirectories ("Land", "Underground", etc) in this
-directory.  Any .ogg files in the subdirectories will be automatically
+directory.  Any .mp3 files in the subdirectories will be automatically
 added to that music category.
 
 If you have a file in a category subdirectory and have a reference to
 the same file in your Music.txt file, then it will be added to that
 category's playlist twice.
 
-For example, if I have level1.ogg in the Land subdirectory and I also
+For example, if I have level1.mp3 in the Land subdirectory and I also
 have:
 
 [Land]
-Land/level1.ogg
+Land/level1.mp3
 
-in Music.txt, then level1.ogg will be added twice to the Land music
+in Music.txt, then level1.mp3 will be added twice to the Land music
 category, once for the reference in Music.txt and once for being in the
 Land subdirectory.
 
@@ -66,12 +66,12 @@ appears for that song, it has that much more chance it will be played.
 Example:
 
 [Land]
-Land/level1.ogg
-Land/level1.ogg
-Land/level2.ogg
+Land/level1.mp3
+Land/level1.mp3
+Land/level2.mp3
 
-When you pick a map that uses the Land category music, level1.ogg will
-play twice as often as level2.ogg.
+When you pick a map that uses the Land category music, level1.mp3 will
+play twice as often as level2.mp3.
 
 
 Default Music
