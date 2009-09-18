@@ -1063,8 +1063,6 @@ void SpinScreen()
 	y_shake = (short)(shakey);
 }
 
-#include <unistd.h>
-
 // ------ MAIN ------
 int main(int argc, char *argv[])
 {
@@ -1073,12 +1071,13 @@ int main(int argc, char *argv[])
 	printf("-------------------------------------------------------------------------------\n");
 	printf("\n---------------- startup ----------------\n");
 
-	if ( SDL_Init(SDL_INIT_AUDIO|SDL_INIT_VIDEO|SDL_INIT_TIMER|SDL_INIT_JOYSTICK) < 0 )
+	if ( SDL_Init(SDL_INIT_AUDIO|SDL_INIT_VIDEO|SDL_INIT_TIMER) < 0 )
 	{
 		printf("Can't init SDL %s",SDL_GetError());
-		sleep(5);
 		exit(0);
 	}
+	
+	SDL_ShowCursor(SDL_DISABLE);
 
 	gfx_init(640, 480, false);		//initialize the graphics (SDL)
 	blitdest = screen;
@@ -1086,10 +1085,6 @@ int main(int argc, char *argv[])
 #ifdef GEKKO
 	InitWii();
 #endif
-	
-	printf("Starting init\n");
-		
-	sleep(3);
 
 	g_tilesetmanager.init(convertPath("gfx/packs/Classic/tilesets/"));
 
@@ -1105,10 +1100,6 @@ int main(int argc, char *argv[])
 	soundpacklist.init(convertPath("sfx/packs/"));
 	tourlist.init(convertPath("tours/"), ".txt");
 	worldlist.init(convertPath("worlds/"), ".txt");
-	
-	printf("Finished init\n");
-	
-	sleep(3);
 
 	/*
 	//Comment this in to performance test the preview map loading
@@ -1126,7 +1117,6 @@ int main(int argc, char *argv[])
 
 	sfx_init();                     //init the sound system
 
-
 	//Joystick-Init
 	//SDL_InitSubSystem(SDL_INIT_JOYSTICK);
 	joystickcount = (short)SDL_NumJoysticks();
@@ -1142,7 +1132,6 @@ int main(int argc, char *argv[])
 	char title[128];
 	sprintf(title, "%s %s", TITLESTRING, VERSIONNUMBER);
 	SDL_WM_SetCaption(title, "smw.ico");
-	SDL_ShowCursor(SDL_DISABLE);
 
 	printf("\n---------------- loading ----------------\n");
 	
