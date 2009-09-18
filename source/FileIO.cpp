@@ -6,7 +6,7 @@ FILE * OpenFile(const char * filename, const char * options)
 	std::string optionsbin = std::string("D:\\") + std::string(filename);
 #else
 	#ifdef GEKKO
-	std::string optionsbin = std::string("sd:/smw") + std::string(filename);
+	std::string optionsbin = std::string("sd:/smw/") + std::string(filename);
 	#else	
 		#ifdef PREFIXPATH
 			char * folder=getenv("HOME");
