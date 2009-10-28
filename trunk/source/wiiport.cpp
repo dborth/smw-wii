@@ -7,7 +7,10 @@
 #include "global.h"
 
 extern short controlkeys[2][2][4][NUM_KEYS];
-extern const devoptab_t dotab_stdnull;
+
+extern "C" {
+extern void __exception_setreload(int t);
+}
 
 static u8 wiiButton = 0;
 static lwp_t wiieventthread = LWP_THREAD_NULL;
@@ -138,11 +141,64 @@ static void * CheckWiiEvents(void *arg)
 	return NULL;
 }
 
+/****************************************************************************
+ * USB Gecko Debugging
+ ***************************************************************************/
+
+static bool gecko = false;
+static mutex_t gecko_mutex = 0;
+
+static ssize_t __out_write(struct _reent *r, int fd, const char *ptr, size_t len)
+{
+	u32 level;
+
+	if (!ptr || len <= 0 || !gecko)
+		return -1;
+
+	LWP_MutexLock(gecko_mutex);
+	level = IRQ_Disable();
+	usb_sendbuffer(1, ptr, len);
+	IRQ_Restore(level);
+	LWP_MutexUnlock(gecko_mutex);
+	return len;
+}
+
+const devoptab_t gecko_out = {
+	"stdout",	// device name
+	0,			// size of file structure
+	NULL,		// device open
+	NULL,		// device close
+	__out_write,// device write
+	NULL,		// device read
+	NULL,		// device seek
+	NULL,		// device fstat
+	NULL,		// device stat
+	NULL,		// device link
+	NULL,		// device unlink
+	NULL,		// device chdir
+	NULL,		// device rename
+	NULL,		// device mkdir
+	0,			// dirStateSize
+	NULL,		// device diropen_r
+	NULL,		// device dirreset_r
+	NULL,		// device dirnext_r
+	NULL,		// device dirclose_r
+	NULL		// device statvfs_r
+};
+
+void USBGeckoOutput()
+{
+	LWP_MutexInit(&gecko_mutex, false);
+	gecko = usb_isgeckoalive(1);
+	
+	devoptab_list[STD_OUT] = &gecko_out;
+	devoptab_list[STD_ERR] = &gecko_out;
+}
+
 void InitWii()
 {
-	// disable console
-	devoptab_list[STD_OUT] = &dotab_stdnull;
-	devoptab_list[STD_ERR] = &dotab_stdnull;
+	__exception_setreload(8);
+	USBGeckoOutput(); // enable gecko output
 	
 	SYS_SetResetCallback(WiiReset);
 	SYS_SetPowerCallback(WiiPower);
