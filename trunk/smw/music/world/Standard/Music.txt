@@ -7,43 +7,43 @@
 #Special music
 #Bonus plays in bonus houses
 [Bonus]
-bonushouse.mp3
+bonushouse.ogg
 
 #Sleep plays when a music box world item is used
 [Sleep]
-sleep.mp3
+sleep.ogg
 
 #Standard world categories that are settable from the world editor
 [Grass]
-grassland.mp3
+grassland.ogg
 
 [Desert]
-desert.mp3
+desert.ogg
 
 [Water]
-water.mp3
+water.ogg
 
 [Giant]
-giant.mp3
+giant.ogg
 
 [Sky]
-sky.mp3
+sky.ogg
 
 [Ice]
-ice.mp3
+ice.ogg
 
 [Pipe]
-pipe.mp3
+pipe.ogg
 
 [Dark]
-bowser.mp3
+bowser.ogg
 
 [Space]
-space.mp3
+space.ogg
 
 #The section below is for selecting music for a specific world
 #The format is "WorldName,MusicFile".  Only one music file can be
 #specified for any given map.  The map name should be only the actual
 #name and no extension.  Capitalization should match the map exactly.
 [Worlds]
-SMB3,grassland.mp3
+SMB3,grassland.ogg
