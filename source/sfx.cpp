@@ -17,7 +17,7 @@ extern sfxSound * g_PlayingSoundChannels[NUM_SOUND_CHANNELS];
 
 bool sfx_init()
 {
-	Mix_OpenAudio(48000, AUDIO_S16MSB, 2, 2048);
+	Mix_OpenAudio(32000, AUDIO_S16MSB, 2, 2048);
 	Mix_AllocateChannels(NUM_SOUND_CHANNELS);
 
 	for(short iChannel = 0; iChannel < NUM_SOUND_CHANNELS; iChannel++)
