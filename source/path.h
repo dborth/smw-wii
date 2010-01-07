@@ -2,11 +2,11 @@
 #define SMW_PATH_HEADER
 #include <string>
 
-#define PREFIXPATH "sd:/smw"
-
 #ifndef PATH_MAX
 #define PATH_MAX 4096
 #endif
+
+extern char SMW_Root_Data_Dir[PATH_MAX + 2];
 
 /* Call Initialize_Paths() when your application launches */
 

@@ -221,7 +221,7 @@ void Menu::CreateMenu()
 	
 	mMainMenu.SetHeadControl(miMainStartButton);
 #ifndef _XBOX
-	mMainMenu.SetCancelCode(MENU_CODE_EXIT_APPLICATION);
+	//mMainMenu.SetCancelCode(MENU_CODE_EXIT_APPLICATION);
 #endif
 
 	mMainMenu.AddNonControl(miSMWTitle);

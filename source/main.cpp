@@ -1066,6 +1066,10 @@ void SpinScreen()
 // ------ MAIN ------
 int main(int argc, char *argv[])
 {
+#ifdef GEKKO
+	InitWiiFS();
+#endif
+
 	printf("-------------------------------------------------------------------------------\n");
 	printf(" %s %s\n", TITLESTRING, VERSIONNUMBER);
 	printf("-------------------------------------------------------------------------------\n");

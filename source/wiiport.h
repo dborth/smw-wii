@@ -6,5 +6,6 @@
 #define _stricmp stricmp
 
 void InitWii();
+void InitWiiFS();
 
 #endif

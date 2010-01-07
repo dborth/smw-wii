@@ -6,7 +6,7 @@ FILE * OpenFile(const char * filename, const char * options)
 	std::string optionsbin = std::string("D:\\") + std::string(filename);
 #else
 	#ifdef GEKKO
-	std::string optionsbin = std::string("sd:/smw/") + std::string(filename);
+	std::string optionsbin = std::string(SMW_Root_Data_Dir) + std::string("/") + std::string(filename);
 	#else	
 		#ifdef PREFIXPATH
 			char * folder=getenv("HOME");
@@ -133,13 +133,13 @@ void ReadString(char * szString, short size, FILE * inFile)
 
 void WriteByteFromShort(short out, FILE * outFile)
 {
-	char b = (char)out;
+	signed char b = (signed char)out;
 	fwrite(&b, sizeof(Uint8), 1, outFile);
 }
 
 short ReadByteAsShort(FILE * inFile)
 {
-	char b;
+	signed char b;
 	fread(&b, sizeof(Uint8), 1, inFile);
 
 	return (short)b;
