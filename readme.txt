@@ -27,7 +27,7 @@ Please report issues on Google Code (http://code.google.com/p/smw-wii/issues/).
 
 Changelog
 
-[1.3 - January 7, 2009]
+[1.3 - January 7, 2010]
 
 * Fresh port of Super Mario War 1.8 beta 2. This requires you to replace ALL
   old files. Enjoy!
