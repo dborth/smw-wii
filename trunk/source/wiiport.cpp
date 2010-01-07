@@ -213,7 +213,7 @@ void InitWiiFS()
 			smwFound = true;
 		}
 	}
-
+	/*
 	if(!smwFound && __io_usbstorage.startup() && __io_usbstorage.isInserted() && fatMountSimple("usb", &__io_usbstorage))
 	{
 		DIR_ITER* dp = diropen ("usb:/smw");
@@ -223,10 +223,10 @@ void InitWiiFS()
 			dirclose(dp);
 			smwFound = true;
 		}
-	}
+	}*/
 	if(!smwFound)
 	{
-		sprintf(msg, "SMW files not found in sd:/smw or usb:/smw. Press HOME to exit.\n");
+		sprintf(msg, "SMW files not found in sd:/smw. Press HOME to exit.\n");
 		goto quit;
 	}
 	return;
