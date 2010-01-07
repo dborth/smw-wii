@@ -1,7 +1,7 @@
 ¸,ø¤°`°¤ø,¸¸,ø¤°`°¤ø,¸,ø¤°`°¤ø,¸¸,ø¤°`°¤ø,¸,ø¤°`°¤ø,¸¸,ø¤°`°¤ø,¸,ø¤°`°¤ø,¸¸,ø¤
  
                               - Super Mario War Wii -
-                                   Version 1.2
+                                   Version 1.3
                          http://code.google.com/p/smw-wii   
                                (Under GPL License)
 
@@ -26,6 +26,12 @@ Issues
 Please report issues on Google Code (http://code.google.com/p/smw-wii/issues/).
 
 Changelog
+
+[1.3 - January 7, 2009]
+
+* Fresh port of Super Mario War 1.8 beta 2. This requires you to replace ALL
+  old files. Enjoy!
+* USB support
 
 [1.2 - June 4, 2009]
 
