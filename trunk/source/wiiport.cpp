@@ -2,6 +2,8 @@
 #include <wiiuse/wpad.h>
 #include <unistd.h>
 #include <sys/iosupport.h>
+#include <sdcard/wiisd_io.h>
+#include <ogc/usbstorage.h>
 
 #include "SDL.h"
 #include "global.h"
@@ -12,11 +14,7 @@ extern "C" {
 extern void __exception_setreload(int t);
 }
 
-static u8 wiiButton = 0;
 static lwp_t wiieventthread = LWP_THREAD_NULL;
-static void WiiReset() { wiiButton = SYS_RETURNTOMENU; }
-static void WiiPower() { wiiButton = SYS_POWEROFF_STANDBY; }
-static void WiiPowerButton(s32 chan) { wiiButton = SYS_POWEROFF_STANDBY; }
 
 /*
 GAME - left, right, jump, down, turbo, powerup, start, cancel
@@ -195,14 +193,67 @@ void USBGeckoOutput()
 	devoptab_list[STD_ERR] = &gecko_out;
 }
 
+extern "C" {
+extern void WII_ChangeSquare(int xscale, int yscale, int xshift, int yshift);
+}
+
+void InitWiiFS()
+{
+	char msg[1024];
+	bool smwFound = false;
+
+	// look for smw files, and exit if not present
+	if(__io_wiisd.startup() && __io_wiisd.isInserted() && fatMountSimple("sd", &__io_wiisd))
+	{
+		DIR_ITER* dp = diropen ("sd:/smw");
+		if(dp)
+		{
+			sprintf(SMW_Root_Data_Dir, "sd:/smw");
+			dirclose(dp);
+			smwFound = true;
+		}
+	}
+
+	if(!smwFound && __io_usbstorage.startup() && __io_usbstorage.isInserted() && fatMountSimple("usb", &__io_usbstorage))
+	{
+		DIR_ITER* dp = diropen ("usb:/smw");
+		if(dp)
+		{
+			sprintf(SMW_Root_Data_Dir, "usb:/smw");
+			dirclose(dp);
+			smwFound = true;
+		}
+	}
+	if(!smwFound)
+	{
+		sprintf(msg, "SMW files not found in sd:/smw or usb:/smw. Press HOME to exit.\n");
+		goto quit;
+	}
+	return;
+quit:
+	printf("\n\n\n");
+	printf(msg);
+	while(1)
+	{
+		VIDEO_WaitVSync();
+		WPAD_ScanPads();
+		
+		if((WPAD_ButtonsHeld(0) & WPAD_BUTTON_HOME) || 
+		   (WPAD_ButtonsHeld(0) & WPAD_CLASSIC_BUTTON_HOME))
+			break;
+	}
+	exit(0);
+}
+
 void InitWii()
 {
+	// kill console output
+	extern const devoptab_t dotab_stdnull;
+	devoptab_list[STD_OUT] = &dotab_stdnull;
+	devoptab_list[STD_ERR] = &dotab_stdnull;
+
 	__exception_setreload(8);
-	USBGeckoOutput(); // enable gecko output
-	
-	SYS_SetResetCallback(WiiReset);
-	SYS_SetPowerCallback(WiiPower);
-	WPAD_SetPowerButtonCallback(WiiPowerButton);
-	fatInitDefault();
+	//USBGeckoOutput(); // enable gecko output
+	WII_ChangeSquare(304, 228, 0, 0); // add some padding
 	LWP_CreateThread (&wiieventthread, CheckWiiEvents, NULL, NULL, 0, 78);
 }
