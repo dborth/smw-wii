@@ -31,7 +31,6 @@ Changelog
 
 * Fresh port of Super Mario War 1.8 beta 2. This requires you to replace ALL
   old files. Enjoy!
-* USB support
 
 [1.2 - June 4, 2009]
 
