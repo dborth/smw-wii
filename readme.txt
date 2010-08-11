@@ -1,7 +1,7 @@
 ¸,ø¤°`°¤ø,¸¸,ø¤°`°¤ø,¸,ø¤°`°¤ø,¸¸,ø¤°`°¤ø,¸,ø¤°`°¤ø,¸¸,ø¤°`°¤ø,¸,ø¤°`°¤ø,¸¸,ø¤
  
                               - Super Mario War Wii -
-                                   Version 1.3
+                                   Version 1.4
                          http://code.google.com/p/smw-wii   
                                (Under GPL License)
 
@@ -10,8 +10,7 @@
 ¸,ø¤°`°¤ø,¸¸,ø¤°`°¤ø,¸,ø¤°`°¤ø,¸¸,ø¤°`°¤ø,¸,ø¤°`°¤ø,¸¸,ø¤°`°¤ø,¸,ø¤°`°¤ø,¸¸,ø¤
 
 This is a port of Super Mario War to the Wii, using SDL Wii 
-(http://code.google.com/p/sdl-wii/). It should be fully functional (with the 
-exception of netplay - which requires someone (hint) to port SDL_Net). To make
+(http://code.google.com/p/sdl-wii/). It should be fully functional. To make
 this port possible, I've had to rewrite significant portions of SDL Wii, 
 particularly a complete re-write of the file, video, and sound systems. 
 However, I'm hoping this work will encourage other developers to port more 
@@ -26,6 +25,11 @@ Issues
 Please report issues on Google Code (http://code.google.com/p/smw-wii/issues/).
 
 Changelog
+
+[1.4 - August 11, 2010]
+
+* Fresh compile with latest libogc improvements
+* USB 2.0 via IOS58 support. Requires that IOS58 be pre-installed.
 
 [1.3 - January 7, 2010]
 
