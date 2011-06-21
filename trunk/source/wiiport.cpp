@@ -2,6 +2,7 @@
 #include <wiiuse/wpad.h>
 #include <unistd.h>
 #include <sys/iosupport.h>
+#include <dirent.h>
 #include <sdcard/wiisd_io.h>
 #include <ogc/usbstorage.h>
 
@@ -205,22 +206,22 @@ void InitWiiFS()
 	// look for smw files, and exit if not present
 	if(__io_wiisd.startup() && __io_wiisd.isInserted() && fatMountSimple("sd", &__io_wiisd))
 	{
-		DIR_ITER* dp = diropen ("sd:/smw");
-		if(dp)
+		DIR *dir = opendir("sd:/smw");
+		if(dir)
 		{
 			sprintf(SMW_Root_Data_Dir, "sd:/smw");
-			dirclose(dp);
+			closedir(dir);
 			smwFound = true;
 		}
 	}
 
 	if(!smwFound && __io_usbstorage.startup() && __io_usbstorage.isInserted() && fatMountSimple("usb", &__io_usbstorage))
 	{
-		DIR_ITER* dp = diropen ("usb:/smw");
-		if(dp)
+		DIR *dir = opendir("usb:/smw");
+		if(dir)
 		{
 			sprintf(SMW_Root_Data_Dir, "usb:/smw");
-			dirclose(dp);
+			closedir(dir);
 			smwFound = true;
 		}
 	}
