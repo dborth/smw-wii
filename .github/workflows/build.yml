@@ -25,6 +25,18 @@ jobs:
           cmake --build build-sdl -j$(nproc)
           cmake --install build-sdl
 
+      # Netplay: BSD sockets for the Wii (ENet is fetched and built by upstream's CMake).
+      # Installs into the same prefix as SDL3 above. Falls back to building it from source if the
+      # package isn't available in the container's pacman repo.
+      - name: Install libwiisocket
+        run: |
+          dkp-pacman -S --noconfirm libogc2-libwiisocket || {
+            git clone --depth 1 https://github.com/extremscorner/libwiisocket.git
+            make -C libwiisocket -j$(nproc)
+            make -C libwiisocket install
+          }
+          ls ${DEVKITPRO}/libogc2/wii/lib | grep -i wiisocket
+
       - name: Configure
         run: |
           cmake -S . -B build \
