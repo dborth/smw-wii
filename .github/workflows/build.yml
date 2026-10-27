@@ -42,7 +42,8 @@ jobs:
           mkdir -p $D
           cp build/boot.dol $D/
           cp hbc/meta.xml hbc/icon.png $D/ || true
-          cp -r supermariowar/data $D/data && rm -rf $D/data/.git
+          mkdir -p dist/smw
+          cp -r supermariowar/data dist/smw/data && rm -rf dist/smw/data/.git
 
       - uses: actions/upload-artifact@v4
         with:
