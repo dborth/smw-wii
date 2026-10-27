@@ -110,8 +110,9 @@ target_sources(smw PRIVATE $<TARGET_OBJECTS:wii_input>)
 add_library(wii_net OBJECT src/wii_net.cpp)
 target_include_directories(wii_net PRIVATE "${SMW_SDL3_PREFIX}/include")   # wiisocket.h
 target_sources(smw PRIVATE $<TARGET_OBJECTS:wii_net>)
-# wiisocket must come before libogc on the link line (its README); CMake puts it after smw's own objects.
-target_link_libraries(smw PRIVATE "${WIISOCKET_LIB}")
+# wiisocket must come before libogc on the link line (its README). Upstream links smw with the plain
+# target_link_libraries() signature, so this must be plain too (mixing with PRIVATE is a CMake error).
+target_link_libraries(smw "${WIISOCKET_LIB}")
 
 target_link_options(smw PRIVATE
     -Wl,--wrap=enet_initialize
