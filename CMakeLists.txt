@@ -80,6 +80,10 @@ get_target_property(_enet_imported enet IMPORTED)
 if(TARGET enet AND NOT _enet_imported)
     target_sources(enet PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/wii_sockshim.c")
     target_compile_options(enet PRIVATE "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/src/wii_sockshim.h")
+    # Static archives are scanned once, left to right: enet is what references socket()/htons()/..., so
+    # wiisocket has to be a dependency of enet (CMake then emits it after libenet.a), not just of smw.
+    # Plain signature to match how upstream links its targets. Needs CMP0079 NEW (3.13+, we require 3.25).
+    target_link_libraries(enet "${WIISOCKET_LIB}")
 else()
     message(FATAL_ERROR "Built-from-source ENet target not found (NO_NETWORK must be OFF, and no system ENet may be picked up)")
 endif()
