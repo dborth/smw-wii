@@ -1,0 +1,50 @@
+name: build
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  wii:
+    runs-on: ubuntu-latest
+    # devkitPPC + libogc2 + libogc2-cmake + the libogc2 portlibs
+    # (devkitpro/devkitppc + `wii-dev` is plain libogc, whose portlibs are not ABI compatible.)
+    container: ghcr.io/extremscorner/libogc2:latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive   # supermariowar (+ its data) and SDL3-libogc2
+
+      # The wrapper CMakeLists does find_package(SDL3 REQUIRED), so SDL3 has to be installed first.
+      # Default install prefix with this toolchain is ${DEVKITPRO}/libogc2/wii, which is already
+      # on the toolchain's search path.
+      - name: Build and install SDL3 (libogc2 fork)
+        run: |
+          cmake -S SDL3-libogc2 -B build-sdl \
+            -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/cmake/Wii.cmake \
+            -DDKP_OGC_PLATFORM_LIBRARY=libogc2 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF
+          cmake --build build-sdl -j$(nproc)
+          cmake --install build-sdl
+
+      - name: Configure
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/cmake/Wii.cmake \
+            -DDKP_OGC_PLATFORM_LIBRARY=libogc2 \
+            -DCMAKE_BUILD_TYPE=Release
+
+      # boot.dol is produced by the smw_dol target, not by smw
+      - name: Build
+        run: cmake --build build --target smw_dol -j$(nproc)
+
+      - name: Package
+        run: |
+          D=dist/apps/smw
+          mkdir -p $D
+          cp build/boot.dol $D/
+          cp hbc/meta.xml hbc/icon.png $D/ || true
+          cp -r supermariowar/data $D/data && rm -rf $D/data/.git
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: smw-wii
+          path: dist/

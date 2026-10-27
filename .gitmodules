@@ -1,0 +1,7 @@
+[submodule "supermariowar"]
+	path = supermariowar
+	url = https://github.com/dborth/supermariowar.git
+[submodule "SDL3-libogc2"]
+	path = SDL3-libogc2
+	url = https://github.com/dborth/SDL.git
+	branch = ogc-port
