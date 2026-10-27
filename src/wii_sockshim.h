@@ -4,11 +4,18 @@
 #pragma once
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/uio.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+// devkitPPC's newlib has no <sys/uio.h>, and nothing in libogc2/libwiisocket defines struct iovec.
+// ENet casts its ENetBuffer { void* data; size_t dataLength; } to this, so the layout must match.
+struct iovec {
+    void*  iov_base;
+    size_t iov_len;
+};
 
 // libwiisocket doesn't define MSG_TRUNC; ENet tests it against msg_flags, which recvmsg() below always clears.
 #ifndef MSG_TRUNC
