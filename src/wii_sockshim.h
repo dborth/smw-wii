@@ -22,6 +22,11 @@ struct iovec {
 #define MSG_TRUNC 0x20
 #endif
 
+// Nor SOMAXCONN (enet_socket_listen, used by upstream's netplay server). Kept small: this is a console.
+#ifndef SOMAXCONN
+#define SOMAXCONN 5
+#endif
+
 struct msghdr {
     void*         msg_name;
     socklen_t     msg_namelen;
