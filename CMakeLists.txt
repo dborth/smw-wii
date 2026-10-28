@@ -66,15 +66,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/supermariowar/cmake")
 # EXCLUDE_FROM_ALL: we only want the `smw` target, not the editors/server
 add_subdirectory(supermariowar EXCLUDE_FROM_ALL)
 
-# ---- source-level shims without touching upstream --------------------------------
-# Game.cpp only includes <sys/types.h>/<sys/stat.h>/<unistd.h> under `#if defined(unix) || __unix__ ||
-# __APPLE__`, none of which devkitPPC defines (stat/mkdir/S_ISDIR then fail to compile).
-# Force-include exactly what that block would have. (Defining __unix__ instead could flip other code paths.)
-target_compile_options(CommonFiles PRIVATE
-    "SHELL:-include sys/types.h"
-    "SHELL:-include sys/stat.h"
-    "SHELL:-include unistd.h")
-
 # ENet needs sendmsg()/recvmsg(), which libwiisocket lacks: build the shim into the enet target itself.
 get_target_property(_enet_imported enet IMPORTED)
 if(TARGET enet AND NOT _enet_imported)
@@ -91,6 +82,11 @@ endif()
 # ---- where files live on the SD card (hard-coded; see src/wii_hooks.cpp) --------------
 set(SMW_WII_ROOT "sd:/smw/" CACHE STRING "SD card folder: data in <root>data/, settings and log.txt in <root>")
 option(SMW_WII_LOG "Write stdout/stderr to <root>log.txt" ON)
+
+add_library(wii_boot OBJECT src/wii_boot.cpp)
+target_compile_definitions(wii_boot PRIVATE "SMW_WII_ROOT=\"${SMW_WII_ROOT}\"")
+target_link_libraries(wii_boot PRIVATE SDL3::SDL3)
+target_sources(smw PRIVATE $<TARGET_OBJECTS:wii_boot>)
 
 add_library(wii_hooks OBJECT src/wii_hooks.cpp)
 target_compile_definitions(wii_hooks PRIVATE "SMW_WII_ROOT=\"${SMW_WII_ROOT}\"")
@@ -121,6 +117,9 @@ target_link_libraries(smw "${WIISOCKET_LIB}")
 target_link_options(smw PRIVATE
     -Wl,--wrap=enet_initialize
     -Wl,--wrap=enet_deinitialize
+    -Wl,--wrap=SDL_RunApp
+	-Wl,--wrap=exit
+	-Wl,--wrap=abort
     -Wl,--wrap=SDL_GetBasePath
     -Wl,--wrap=SDL_GetPrefPath
     -Wl,--wrap=SDL_PollEvent
