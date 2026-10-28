@@ -63,6 +63,21 @@ endforeach()
 # Upstream assumes it is the top-level project (CMAKE_SOURCE_DIR/cmake)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/supermariowar/cmake")
 
+# libogc2 has no TLS (r2 is the SDA2 base, not a thread pointer), but toml11 v4.4.0 builds its
+# grammar caches as `static thread_local`. That corrupts .sdata2/.rodata and crashes in
+# toml::parse. Same pin as upstream, minus thread_local. Must come BEFORE add_subdirectory(supermariowar):
+# FetchContent keeps the first declaration it sees.
+include(FetchContent)
+FetchContent_Declare(
+    toml11
+    GIT_REPOSITORY https://github.com/ToruNiina/toml11.git
+    GIT_TAG v4.4.0
+    GIT_SHALLOW TRUE
+    GIT_SUBMODULES ""
+    PATCH_COMMAND sed -i "s/static thread_local/static/" include/toml11/impl/syntax_impl.hpp
+    SYSTEM
+)
+
 # EXCLUDE_FROM_ALL: we only want the `smw` target, not the editors/server
 add_subdirectory(supermariowar EXCLUDE_FROM_ALL)
 
