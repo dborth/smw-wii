@@ -94,13 +94,6 @@ struct Diagnostics {
 // For src/wii_input.cpp, which includes upstream's headers and so must stay clear of the libogc ones.
 extern "C" void smw_log_str(const char* s) { smw_log("%s", s); }
 
-extern "C" SDL_Surface* __real_IMG_Load(const char* file);
-extern "C" SDL_Surface* __wrap_IMG_Load(const char* file)
-{
-    SDL_Surface* surf = __real_IMG_Load(file);
-    return surf;
-}
-
 // Called at static-init time (RootDataDirectory is initialized from it), before SDL_RunApp mounts the
 // SD card, so this must only return a string.
 extern "C" const char* __wrap_SDL_GetBasePath(void)

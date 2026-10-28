@@ -96,7 +96,7 @@ endif()
 
 # ---- where files live on the SD card (hard-coded; see src/wii_hooks.cpp) --------------
 set(SMW_WII_ROOT "sd:/smw/" CACHE STRING "SD card folder: data in <root>data/, settings and log.txt in <root>")
-option(SMW_WII_LOG "Write stdout/stderr to <root>log.txt" ON)
+option(SMW_WII_LOG "Write diagnostics to <root>log.txt (opens/appends/closes the file per line: for bug-report builds only)" OFF)
 
 add_library(wii_boot OBJECT src/wii_boot.cpp)
 target_compile_definitions(wii_boot PRIVATE "SMW_WII_ROOT=\"${SMW_WII_ROOT}\"")
@@ -141,7 +141,7 @@ target_link_options(smw PRIVATE
     -Wl,--wrap=SDL_WaitEvent
 	-Wl,--wrap=SDL_GetJoystickNameForID
     -Wl,--wrap=SDL_GetJoystickFromPlayerIndex
-    -Wl,--wrap=IMG_Load
+    -Wl,--wrap=SDL_ShowSimpleMessageBox
     # Upstream strips the ELF (-s) in non-Debug builds, so addr2line/nm are useless. A link map still
     # records every function's address: python3 tools/addr2map.py build-wii/smw.map <addr>...
     -Wl,-Map=${CMAKE_BINARY_DIR}/smw.map)

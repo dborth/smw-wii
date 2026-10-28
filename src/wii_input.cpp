@@ -42,13 +42,10 @@ extern CGameValues game_values;       // upstream, common/global.cpp
 extern SDL_Joystick** joysticks;      // upstream, common/global.cpp (used by the controls menu)
 extern int joystickcount;
 
-extern "C" void smw_log_str(const char* s);   // src/wii_paths.cpp
-extern "C" void smw_log_mem(const char* tag);  // src/wii_paths.cpp
+extern "C" void smw_log_str(const char* s);   // src/wii_hooks.cpp
+extern "C" void smw_fatal(const char* why);   // src/wii_boot.cpp (on-screen error report)
 
 namespace {
-	
-void dump_sdl_state(const char* tag);
-void dump_bindings(const char* tag);
 
 constexpr int kMaxPads = 8;   // 4 GameCube + 4 Wiimotes
 
@@ -202,8 +199,6 @@ void on_joystick_added(SDL_JoystickID id)
          SDL_GetNumJoystickHats(js), layout_name(layout),
          pad.player >= 0 ? "player slot assigned" : "no free player slot");
     if (pad.player >= 0) logf("[input]   bound to player %d", pad.player + 1);
-    dump_sdl_state("added");
-    dump_bindings("added");
 }
 
 void on_joystick_removed(SDL_JoystickID id)
@@ -242,113 +237,6 @@ void initial_scan()
 }
 
 
-// ---- bring-up diagnostics (remove once input works) ---------------------------------------------------
-unsigned g_ev_counts[4];       // joystick button/hat/axis/other seen by the wrapper
-unsigned g_polls = 0;
-int g_axis_logged = 0;
-
-void dump_bindings(const char* tag)
-{
-    for (int p = 0; p < 4; ++p) {
-        const CInputPlayerControl* c = game_values.playerInput.inputControls[p];
-        if (!c) { logf("[diag:%s] player %d: inputControls = NULL", tag, p + 1); continue; }
-        logf("[diag:%s] player %d: iDevice=%d menu keys=%d,%d,%d,%d,%d,%d,%d,%d", tag, p + 1, (int)c->iDevice,
-             c->inputGameControls[1].keys[0], c->inputGameControls[1].keys[1], c->inputGameControls[1].keys[2],
-             c->inputGameControls[1].keys[3], c->inputGameControls[1].keys[4], c->inputGameControls[1].keys[5],
-             c->inputGameControls[1].keys[6], c->inputGameControls[1].keys[7]);
-    }
-}
-
-void dump_sdl_state(const char* tag)
-{
-    int nwin = 0;
-    SDL_Window** wins = SDL_GetWindows(&nwin);
-    SDL_free(wins);
-    logf("[diag:%s] windows=%d keyboardFocus=%s joystickEventsEnabled=%d BTN_DOWN enabled=%d HAT enabled=%d "
-         "AXIS enabled=%d joystickcount=%d", tag, nwin, SDL_GetKeyboardFocus() ? "YES" : "NO (SDL drops button-down!)",
-         (int)SDL_JoystickEventsEnabled(), (int)SDL_EventEnabled(SDL_EVENT_JOYSTICK_BUTTON_DOWN),
-         (int)SDL_EventEnabled(SDL_EVENT_JOYSTICK_HAT_MOTION), (int)SDL_EventEnabled(SDL_EVENT_JOYSTICK_AXIS_MOTION),
-         joystickcount);
-}
-
-// Logs what upstream's CPlayerInput::Update(event, 1) will do with this event.
-void diag_event(const SDL_Event& e)
-{
-    if (e.type == SDL_EVENT_QUIT) {
-        logf("[diag] SDL_EVENT_QUIT received (power/reset request or window close) -> game will shut down");
-        return;
-    }
-    {   // the first few non-joystick events, to see what else arrives around a key press
-        static int other = 0;
-        const bool joy = e.type >= SDL_EVENT_JOYSTICK_AXIS_MOTION && e.type <= SDL_EVENT_JOYSTICK_UPDATE_COMPLETE;
-        if (!joy && other < 60) { ++other; logf("[diag] event type=0x%x", (unsigned)e.type); }
-    }
-    const bool btn = e.type == SDL_EVENT_JOYSTICK_BUTTON_DOWN || e.type == SDL_EVENT_JOYSTICK_BUTTON_UP;
-    const bool hat = e.type == SDL_EVENT_JOYSTICK_HAT_MOTION;
-    const bool axis = e.type == SDL_EVENT_JOYSTICK_AXIS_MOTION;
-    if (e.type >= SDL_EVENT_GAMEPAD_AXIS_MOTION && e.type <= SDL_EVENT_GAMEPAD_STEAM_HANDLE_UPDATED) {
-        static int n = 0;
-        if (n++ < 20) logf("[diag] GAMEPAD event type=0x%x (a gamepad is open somewhere)", (unsigned)e.type);
-        return;
-    }
-    if (!btn && !hat && !axis) return;
-
-    if (axis) {
-        if (std::abs(e.jaxis.value) < 16384 || g_axis_logged >= 40) return;   // only deadzone-crossing, capped
-        ++g_axis_logged;
-    }
-    ++g_ev_counts[btn ? 0 : hat ? 1 : 2];
-
-    const SDL_JoystickID which = btn ? e.jbutton.which : hat ? e.jhat.which : e.jaxis.which;
-    int matches = 0;
-    int matched_players[4] = {0, 0, 0, 0};
-    for (int p = 0; p < 4; ++p) {
-        const CInputPlayerControl* c = game_values.playerInput.inputControls[p];
-        if (!c || (SDL_JoystickID)c->iDevice != which) continue;
-        for (int k = 0; k < NUM_KEYS; ++k) {
-            const int key = c->inputGameControls[1].keys[k];
-            bool m = false;
-            if (btn) m = key == e.jbutton.button + JOY_BUTTON_START;
-            else if (hat) m = (key == JOY_HAT_UP && (e.jhat.value & SDL_HAT_UP)) || (key == JOY_HAT_DOWN && (e.jhat.value & SDL_HAT_DOWN)) ||
-                              (key == JOY_HAT_LEFT && (e.jhat.value & SDL_HAT_LEFT)) || (key == JOY_HAT_RIGHT && (e.jhat.value & SDL_HAT_RIGHT));
-            else m = e.jaxis.axis < 2;
-            if (m) { ++matches; matched_players[p] = 1; }
-        }
-    }
-    if (btn)
-        logf("[diag] BUTTON %s which=%u button=%d -> %d menu-key match(es) (players %d%d%d%d)",
-             e.jbutton.down ? "DOWN" : "UP", (unsigned)which, (int)e.jbutton.button, matches,
-             matched_players[0], matched_players[1], matched_players[2], matched_players[3]);
-    else if (hat)
-        logf("[diag] HAT which=%u value=0x%x -> %d match(es)", (unsigned)which, (unsigned)e.jhat.value, matches);
-    else
-        logf("[diag] AXIS which=%u axis=%d value=%d", (unsigned)which, (int)e.jaxis.axis, (int)e.jaxis.value);
-}
-
-// Every ~10 s of polling: are events arriving at all, and does SDL's own joystick state change?
-void diag_heartbeat()
-{
-    ++g_polls;
-    static Uint64 last_ms = 0;
-    const Uint64 now = SDL_GetTicks();
-    if (g_polls <= 3) logf("[diag] poll #%u at t=%llu ms", g_polls, (unsigned long long)now);   // first few calls
-    if (now - last_ms < 2000) return;   // then every 2 s of wall time, however slow the frame rate
-    last_ms = now;
-    logf("[diag] heartbeat t=%llu ms: polls=%u events seen: button=%u hat=%u axis(>deadzone)=%u pads=%d",
-         (unsigned long long)now, g_polls,
-         g_ev_counts[0], g_ev_counts[1], g_ev_counts[2], g_num_pads);
-    dump_sdl_state("hb");
-    for (int i = 0; i < g_num_pads; ++i) {
-        if (!g_pads[i].js) continue;
-        char b[64]; int n = 0;
-        const int nb = SDL_GetNumJoystickButtons(g_pads[i].js);
-        for (int k = 0; k < nb && n < 60; ++k) b[n++] = SDL_GetJoystickButton(g_pads[i].js, k) ? '1' : '0';
-        b[n] = 0;
-        logf("[diag]   pad id=%u polled button state: %s hat0=0x%x", (unsigned)g_pads[i].id, b,
-             (unsigned)SDL_GetJoystickHat(g_pads[i].js, 0));
-    }
-}
-
 // Joystick input events carry SDL's instance id; upstream wants the device index (see "Device ids" above).
 void remap_which(SDL_Event& e)
 {
@@ -367,7 +255,6 @@ void remap_which(SDL_Event& e)
 
 void observe(const SDL_Event& e)
 {
-    diag_event(e);
     if (e.type == SDL_EVENT_JOYSTICK_ADDED) on_joystick_added(e.jdevice.which);
     else if (e.type == SDL_EVENT_JOYSTICK_REMOVED) on_joystick_removed(e.jdevice.which);
 }
@@ -380,7 +267,6 @@ extern "C" bool __real_SDL_WaitEvent(SDL_Event* event);
 extern "C" bool __wrap_SDL_PollEvent(SDL_Event* event)
 {
     initial_scan();
-    diag_heartbeat();
     const bool got = __real_SDL_PollEvent(event);
     if (got && event) { remap_which(*event); observe(*event); }
     return got;
@@ -394,27 +280,17 @@ extern "C" bool __wrap_SDL_WaitEvent(SDL_Event* event)
     return got;
 }
 
-// Logs the text of every message box (upstream shows its "unexpectedly crashed" box, including the error
-// message, from main()'s catch handlers), then lets SDL handle it as before.
-extern "C" bool __real_SDL_ShowSimpleMessageBox(SDL_MessageBoxFlags flags, const char* title, const char* message,
-                                                SDL_Window* window);
-extern "C" bool __wrap_SDL_ShowSimpleMessageBox(SDL_MessageBoxFlags flags, const char* title, const char* message,
-                                                SDL_Window* window)
+// SDL has no message-box backend on the Wii. Upstream shows its "unexpectedly crashed" box, including the error
+// message, from main()'s catch handlers; put that text on the crash screen (src/wii_boot.cpp) and in the log instead.
+// Linked in with -Wl,--wrap=SDL_ShowSimpleMessageBox.
+extern "C" bool __wrap_SDL_ShowSimpleMessageBox(SDL_MessageBoxFlags /*flags*/, const char* title, const char* message,
+                                                SDL_Window* /*window*/)
 {
-    smw_log_mem("at error box");
-    logf("[diag] SDL_ShowSimpleMessageBox title='%s'", title ? title : "");
     const char* p = message ? std::strstr(message, "The error message:") : nullptr;
-    if (!p) p = message;
-    while (p && *p) {
-        char chunk[201];
-        size_t n = std::strlen(p);
-        if (n > 200) n = 200;
-        std::memcpy(chunk, p, n);
-        chunk[n] = 0;
-        logf("[diag]   %s", chunk);
-        p += n;
-    }
-    return __real_SDL_ShowSimpleMessageBox(flags, title, message, window);
+    if (!p) p = message ? message : title;
+    logf("[error] %s: %.300s", title ? title : "", p ? p : "");
+    smw_fatal(p ? p : "unknown error");
+    return true;
 }
 
 // Upstream's controls menu passes device INDICES (0..joystickcount-1) to this and builds a std::string from the
