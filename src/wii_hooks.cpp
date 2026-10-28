@@ -24,15 +24,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <fat.h>
-#include <ogc/system.h>
-#include <ogc/usbmouse.h>
-#include <wiikeyboard/keyboard.h>
-#include <wiiuse/wpad.h>
-#include <machine/malloc.h>   // mem1_*/mem2_* (libogc2 split heap)
-
-#include "wii_mem2_alloc.h"
-
 #ifndef SMW_WII_ROOT
 #define SMW_WII_ROOT "sd:/smw/"   // must end in '/'
 #endif
@@ -49,8 +40,6 @@ void smw_log(const char* fmt, ...)
     va_start(ap, fmt);
     std::vsnprintf(buf, sizeof buf, fmt, ap);
     va_end(ap);
-
-    SYS_Report("[smw] %s\n", buf);
 #ifdef SMW_WII_LOG
     if (FILE* f = std::fopen(kLogPath, "a")) {
         std::fputs(buf, f);
@@ -105,65 +94,10 @@ struct Diagnostics {
 // For src/wii_input.cpp, which includes upstream's headers and so must stay clear of the libogc ones.
 extern "C" void smw_log_str(const char* s) { smw_log("%s", s); }
 
-// "MEM1 used/free | MEM2 used/free | arena2 left". Per libogc2's malloc_wii.c: malloc()/new = the fixed MEM1 pool,
-// mem2_*() (and, via the routing below, SDL's allocations) = the growable MEM2 pool. MEM2's "free" only counts what the
-// pool has already claimed from the arena, so the arena's remaining size is the real headroom.
-static void format_heaps(char* out, size_t n)
-{
-    const struct mallinfo m1 = mem1_mallinfo();
-    const struct mallinfo m2 = mem2_mallinfo();
-    std::snprintf(out, n, "MEM1 %d used/%d free KB | MEM2 %d used/%d free, arena2 left %u KB",
-                  (int)(m1.uordblks / 1024), (int)(m1.fordblks / 1024),
-                  (int)(m2.uordblks / 1024), (int)(m2.fordblks / 1024),
-                  (unsigned)(SYS_GetArena2Size() / 1024));
-}
-
-// Call from anywhere (also used by src/wii_input.cpp).
-extern "C" void smw_log_mem(const char* tag)
-{
-    char heaps[200];
-    format_heaps(heaps, sizeof heaps);
-    smw_log("[mem:%s] %s", tag, heaps);
-}
-
-// Route SDL's allocator to MEM2 (see wii_mem2_alloc.h for why). Priority 101: after libogc2's own init_malloc
-// (constructor(0), which creates the MEM1/MEM2 pools) and before every default-priority static initializer, so before
-// the first SDL call.
-static void __attribute__((constructor(101))) route_sdl_allocator_to_mem2()
-{
-    void* probe = mem2_malloc(64);
-    if (!probe) {
-        SYS_Report("[smw] MEM2 heap unavailable (MALLOC_MEM2 == 0?); SDL stays on the MEM1 heap\n");
-        return;
-    }
-    mem2_free(probe);
-    const bool ok = SDL_SetMemoryFunctions(smw_mem::malloc, smw_mem::calloc, smw_mem::realloc, smw_mem::free);
-    SYS_Report("[smw] SDL allocator -> MEM2: %s\n", ok ? "ok" : "SDL_SetMemoryFunctions FAILED");
-}
-
-// Logs every image SMW loads (size, running total, both heaps) so we can see what the game actually costs.
-// Linked in with -Wl,--wrap=IMG_Load; SDL_image's header isn't needed, only SDL3's SDL_Surface.
 extern "C" SDL_Surface* __real_IMG_Load(const char* file);
 extern "C" SDL_Surface* __wrap_IMG_Load(const char* file)
 {
-    static unsigned count = 0;
-    static unsigned total_kb = 0;
-
     SDL_Surface* surf = __real_IMG_Load(file);
-
-    const char* base = file ? std::strrchr(file, '/') : nullptr;
-    base = base ? base + 1 : (file ? file : "?");
-    char heaps[200];
-    format_heaps(heaps, sizeof heaps);
-
-    if (surf) {
-        const unsigned kb = (unsigned)(((size_t)surf->pitch * (size_t)surf->h) / 1024);
-        total_kb += kb;
-        ++count;
-        smw_log("[img #%u] %u KB %dx%d %s | total %u KB | %s", count, kb, surf->w, surf->h, base, total_kb, heaps);
-    } else {
-        smw_log("[img] FAILED %s: %s | %s", file ? file : "?", SDL_GetError(), heaps);
-    }
     return surf;
 }
 

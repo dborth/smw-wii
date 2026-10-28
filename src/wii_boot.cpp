@@ -66,8 +66,6 @@ void boot_log(const char* fmt, ...)
     const unsigned ms = (unsigned)ticks_to_millisecs(gettime());
     const int n = std::snprintf(line, sizeof line, "[boot %u.%03u] %s\n", ms / 1000, ms % 1000, msg);
 
-    SYS_Report("%s", line);   // Dolphin's OSREPORT log / USB Gecko
-
     // in-memory ring: when full, drop the oldest half
     const size_t len = n > 0 ? (size_t)n : 0;
     if (g_ring_len + len >= sizeof g_ring) {
@@ -88,7 +86,6 @@ void open_boot_file()
     mkdir("sd:/smw", 0777);   // harmless if it exists (matches SMW_WII_ROOT's default)
     FILE* f = std::fopen(kBootFile, "w");   // truncate: boot.txt describes only the latest run
     if (!f) {
-        SYS_Report("[boot] cannot create %s (SD not mounted or read-only?)\n", kBootFile);
         return;
     }
     std::fwrite(g_ring, 1, g_ring_len, f);
