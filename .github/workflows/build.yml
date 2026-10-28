@@ -21,7 +21,7 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/cmake/Wii.cmake \
             -DDKP_OGC_PLATFORM_LIBRARY=libogc2 \
             -DCMAKE_BUILD_TYPE=Release \
-            -DSDL_LIBICONV=OFF -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF
+            -DSDL_LIBICONV=OFF -DSDL_SYSTEM_ICONV=OFF -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF
           cmake --build build-sdl -j$(nproc)
           cmake --install build-sdl
 
