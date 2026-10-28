@@ -45,14 +45,14 @@ jobs:
             echo "== packages ==";  (dkp-pacman -Q devkitPPC libogc2 || pacman -Q devkitPPC libogc2) 2>&1
             echo "== sources ==";   echo "SDL3-libogc2 $(git -C SDL3-libogc2 rev-parse HEAD)"
                                     echo "supermariowar $(git -C supermariowar rev-parse HEAD)"
-                                    echo "smw-wii $(git rev-parse HEAD)"
+                                    echo "smw-wii ${GITHUB_SHA}"
           } | tee debug/versions.txt
 
       - name: Collect link map and ELF
         if: always()
         run: |
           cp build/smw.map debug/ || true
-          find build -type f -name smw -exec cp {} debug/smw.elf \; || true
+          find build -type f -name smw.elf -exec cp {} debug/smw.elf \; || true
           ${DEVKITPPC}/bin/powerpc-eabi-size -A debug/smw.elf > debug/sections.txt 2>&1 || true
 
       - uses: actions/upload-artifact@v4
