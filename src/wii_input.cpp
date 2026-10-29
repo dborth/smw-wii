@@ -1,4 +1,5 @@
 // Controller support for the Wii port, without modifying upstream (hooked in with -Wl,--wrap, see CMakeLists.txt).
+// SMW_WII_ROOT comes from CMakeLists.txt.
 //
 // Why this is needed (all in upstream's input code, nothing wrong with SDL here):
 //  * init_joysticks() runs once at startup, ignores the instance IDs SDL3 returns and calls
@@ -28,22 +29,12 @@
 
 #include "GameValues.h"   // CGameValues, CInputPlayerControl, JOY_* constants (upstream src/common)
 
-#include <cstdarg>
-#include <cstdlib>
-#include <cstdio>
 #include <cstring>
 #include <sys/stat.h>
-
-#ifndef SMW_WII_ROOT
-#define SMW_WII_ROOT "sd:/smw/"
-#endif
 
 extern CGameValues game_values;       // upstream, common/global.cpp
 extern SDL_Joystick** joysticks;      // upstream, common/global.cpp (used by the controls menu)
 extern int joystickcount;
-
-extern "C" void smw_log_str(const char* s);   // src/wii_hooks.cpp
-extern "C" void smw_fatal(const char* why);   // src/wii_boot.cpp (on-screen error report)
 
 namespace {
 
@@ -60,17 +51,6 @@ struct Pad {
 Pad g_pads[kMaxPads];
 int g_num_pads = 0;
 bool g_initial_scan_done = false;
-
-void logf(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
-void logf(const char* fmt, ...)
-{
-    char buf[320];
-    va_list ap;
-    va_start(ap, fmt);
-    std::vsnprintf(buf, sizeof buf, fmt, ap);
-    va_end(ap);
-    smw_log_str(buf);
-}
 
 constexpr int B(int n) { return JOY_BUTTON_START + n; }
 
@@ -164,7 +144,6 @@ void on_joystick_added(SDL_JoystickID id)
 
     SDL_Joystick* js = SDL_OpenJoystick(id);
     if (!js) {
-        logf("[input] SDL_OpenJoystick(%u) failed: %s", (unsigned)id, SDL_GetError());
         return;
     }
 
@@ -194,11 +173,6 @@ void on_joystick_added(SDL_JoystickID id)
     }
 
     publish_joystick_array();
-    logf("[input] joystick added: id=%u '%s' (%d buttons, %d axes, %d hats) -> %s, %s", (unsigned)id,
-         name ? name : "?", SDL_GetNumJoystickButtons(js), SDL_GetNumJoystickAxes(js),
-         SDL_GetNumJoystickHats(js), layout_name(layout),
-         pad.player >= 0 ? "player slot assigned" : "no free player slot");
-    if (pad.player >= 0) logf("[input]   bound to player %d", pad.player + 1);
 }
 
 void on_joystick_removed(SDL_JoystickID id)
@@ -220,7 +194,6 @@ void on_joystick_removed(SDL_JoystickID id)
         if (g_pads[j].player >= 0)
             game_values.inputConfiguration[g_pads[j].player][1].iDevice = static_cast<short>(j);
     publish_joystick_array();
-    logf("[input] joystick removed: id=%u (was player %d)", (unsigned)id, player + 1);
 }
 
 // Pick up pads that already existed before the first event was read.
@@ -231,11 +204,9 @@ void initial_scan()
 
     int n = 0;
     SDL_JoystickID* ids = SDL_GetJoysticks(&n);
-    logf("[input] initial scan: %d joystick(s)", n);
     for (int i = 0; i < n; ++i) on_joystick_added(ids[i]);
     SDL_free(ids);
 }
-
 
 // Joystick input events carry SDL's instance id; upstream wants the device index (see "Device ids" above).
 void remap_which(SDL_Event& e)
@@ -278,19 +249,6 @@ extern "C" bool __wrap_SDL_WaitEvent(SDL_Event* event)
     const bool got = __real_SDL_WaitEvent(event);
     if (got && event) { remap_which(*event); observe(*event); }
     return got;
-}
-
-// SDL has no message-box backend on the Wii. Upstream shows its "unexpectedly crashed" box, including the error
-// message, from main()'s catch handlers; put that text on the crash screen (src/wii_boot.cpp) and in the log instead.
-// Linked in with -Wl,--wrap=SDL_ShowSimpleMessageBox.
-extern "C" bool __wrap_SDL_ShowSimpleMessageBox(SDL_MessageBoxFlags /*flags*/, const char* title, const char* message,
-                                                SDL_Window* /*window*/)
-{
-    const char* p = message ? std::strstr(message, "The error message:") : nullptr;
-    if (!p) p = message ? message : title;
-    logf("[error] %s: %.300s", title ? title : "", p ? p : "");
-    smw_fatal(p ? p : "unknown error");
-    return true;
 }
 
 // Upstream's controls menu passes device INDICES (0..joystickcount-1) to this and builds a std::string from the

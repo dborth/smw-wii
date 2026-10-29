@@ -171,7 +171,7 @@ after copying settings from another device or from Dolphin.
 | `sd:/smw/options.toml` | Game options, saved when you start a match and when you exit from the menu |
 | `sd:/smw/options.bin` | Old options format; read only if `options.toml` does not exist |
 | `sd:/smw/controls.sdl2.bin` | Controller bindings |
-| `sd:/smw/boot.txt` | Start-up report, rewritten on every launch (see Troubleshooting) |
+| `sd:/smw/smw-log.txt` | Crash log. Only written if the game stops because of an error, and replaced each time that happens (see Troubleshooting) |
 
 To reset the game options, delete `options.toml` (and `options.bin`, if you have it).
 The `sd:/smw` folder is created automatically if it does not exist, even if you forgot to copy `data` into it.
@@ -181,30 +181,29 @@ Settings cannot be saved if the SD card's write-protect switch is on.
 
 ## Troubleshooting
 
-### The game goes straight back to the Homebrew Channel
+### The game stops with an error
 
-Something stopped the game during start-up. Look for `sd:/smw/boot.txt`: the game rewrites it on every launch, and it
-lists the stages reached (for example `main() entered`) and why it quit.
+If it stops because of an error, it shows a screen titled **Super Mario War (Wii) stopped** with the reason and the last lines of the log, and saves the full log to
+`sd:/smw/smw-log.txt`. Press any button to return to the Homebrew Channel.
 
-- **No `boot.txt` at all:** the game did not get as far as starting, or it cannot write to the SD card. Check that the
-  card is not write-protected, re-copy `apps/smw/boot.dol`, and try another SD card.
-- **`boot.txt` exists:** attach it when you report the problem (see [Reporting issues](#reporting-issues)).
-
-### The error screen
-
-If the game stops because of an error, it shows a screen titled **Super Mario War (Wii) stopped**, with the reason and
-the last lines of the start-up report. Press any button to return to the Homebrew Channel (it returns by itself after
-two minutes).
+If the screen says it **could not write** the log, the SD card is missing or write-protected. The reason is still on screen.
 
 | Message | Meaning | What to do |
 |---|---|---|
-| `Couldn't load sd:/smw/data/...` | A graphics file is missing or damaged | Check the [folder layout](#installation) and re-copy `sd:/smw/data` |
-| `Failed to load sd:/smw/data/...` | A sound or music file is missing or damaged | Same as above |
-| `Could not load any map music!` / `Could not load any world music!` | The `music` folder is missing or empty | Copy the complete `data` folder, including `music` |
-| `exit(N) before main() started` | The program quit while starting up | Re-copy `boot.dol`, and send `boot.txt` if it happens again |
-| `uncaught exception: ...` / `exception escaped main(): ...` | The game hit an unexpected error | Send the text on screen and `boot.txt` |
-| `abort()` | The game stopped itself after a serious error | Send `boot.txt` |
-| `main() returned a non-zero exit code` | The game ended with an error but gave no details | Send `boot.txt` |
+| `the SD card cannot be read` | No SD card, or the Wii could not read it | Insert the card (try another one, or a re-formatted one) |
+| `game folder sd:/smw/ not found` | The `smw` folder is not on the card | Copy the `smw` folder to the root of the SD card |
+| `game data not found: sd:/smw/data` | There is no `data` folder in `sd:/smw` | Copy `smw/data` into `sd:/smw/`. The log lists what is in `sd:/smw/`, which shows when it ended up one level too deep |
+| `game data incomplete: N expected folder(s) missing` | Some of `gfx`, `maps`, `music`, `sfx` are missing | Delete `sd:/smw/data` and copy it again. The log names the missing folders |
+| `the game stopped with an error: Couldn't load sd:/smw/data/...` | A graphics file is missing or damaged | Check the [folder layout](#installation) and re-copy `sd:/smw/data` |
+| `the game stopped with an error: Failed to load sd:/smw/data/...` | A sound or music file is missing or damaged | Same as above |
+| `the game stopped with an error: Could not load any map music!` (or `world music`) | The `music` folder is missing or empty | Copy the complete `data` folder, including `music` |
+| `exit(N) before the game started` | The program quit while starting up | Re-copy `boot.dol`, and send `smw-log.txt` if it happens again |
+| `std::terminate(): ...` / `exception escaped main(): ...` | The game hit an unexpected error | Send the text on screen and `smw-log.txt` |
+| `abort()` | The game stopped itself after a serious error | Send `smw-log.txt` |
+| `main() returned N` / `exit(N)` | The game ended with an error but gave no details | Send `smw-log.txt` |
+
+If the game instead freezes, or shows a screen about a CPU exception with register values, it did not get to write a
+log: tell us what you were doing, and include a photo of the screen.
 
 ### Stuck on "Press Any Key To Continue"
 
@@ -233,7 +232,7 @@ Please report problems at <https://github.com/dborth/smw-wii/issues> and include
 
 - What you were doing and what you expected
 - The text on the error screen, if there was one
-- `sd:/smw/boot.txt`
+- `sd:/smw/smw-log.txt`, if the game wrote one
 - Your controller type, and whether you are on a Wii or in Dolphin
 
 Problems that also occur in the Windows, Linux or macOS versions of the game belong in the main project:
@@ -254,8 +253,6 @@ Problems that also occur in the Windows, Linux or macOS versions of the game bel
   Controls menu and are saved to `controls.sdl2.bin`.
 * 16-bit (RGB565) video, for full speed on the Wii.
 * Netplay over the Wii's network connection (untested).
-* Errors now appear on screen (with a start-up report in `sd:/smw/boot.txt`) instead of dropping back to the
-  Homebrew Channel with no explanation.
 * SD card only.
 
 ### [1.4 - August 11, 2010]
