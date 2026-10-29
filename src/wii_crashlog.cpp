@@ -30,6 +30,7 @@
 #include <dirent.h>
 #include <malloc.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include <ogcsys.h>
 #include <ogc/consol.h>
@@ -137,7 +138,31 @@ void log_dir_contents(const char* path)
         smw_log("%s", line);
 }
 
-// Prints the last `n` lines of the ring to stdout.
+// Everything on the failure screen is written to file descriptor 1, not through printf()/stdout: SDL_RunApp
+// calls SYS_STDIO_Report(true), which points the C `stdout` at the debug port, and CON_Init() only re-points
+// fd 1 at the screen. (Using printf here is what made the failure screen stay blank.)
+void screen_write(const char* text, size_t len)
+{
+    while (len > 0) {
+        const ssize_t n = write(STDOUT_FILENO, text, len);
+        if (n <= 0) return;
+        text += n;
+        len -= (size_t)n;
+    }
+}
+
+void screen_printf(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
+void screen_printf(const char* fmt, ...)
+{
+    char buf[400];
+    va_list ap;
+    va_start(ap, fmt);
+    const int n = std::vsnprintf(buf, sizeof buf, fmt, ap);
+    va_end(ap);
+    if (n > 0) screen_write(buf, (size_t)n < sizeof buf ? (size_t)n : sizeof buf - 1);
+}
+
+// Writes the last `n` lines of the ring to the screen.
 void print_tail(int n)
 {
     size_t start = g_ring_len;
@@ -149,7 +174,7 @@ void print_tail(int n)
             break;
         }
     }
-    std::fwrite(g_ring + start, 1, g_ring_len - start, stdout);
+    screen_write(g_ring + start, g_ring_len - start);
 }
 
 // Best effort. Returns true if the file was written.
@@ -186,26 +211,30 @@ bool write_log_file(const char* why)
 }
 
 // Own framebuffer + libogc console (the game's video may be gone or never started), then wait for a button.
+// Same sequence as libogc's console examples.
 void show_failure_screen(const char* why, bool saved)
 {
     VIDEO_Init();
     GXRModeObj* rmode = VIDEO_GetPreferredMode(nullptr);
-    void* xfb = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rmode));
+    void* fb = SYS_AllocateFramebuffer(rmode);
+    if (!fb) return;   // out of memory: the log file is all we can offer
+    void* xfb = MEM_K0_TO_K1(fb);
+    CON_Init(xfb, 16, 16, rmode->fbWidth, rmode->xfbHeight, rmode->fbWidth * VI_DISPLAY_PIX_SZ);
     VIDEO_Configure(rmode);
     VIDEO_SetNextFramebuffer(xfb);
-    CON_Init(xfb, 16, 16, rmode->fbWidth, rmode->xfbHeight, rmode->fbWidth * VI_DISPLAY_PIX_SZ);
     VIDEO_SetBlack(false);
     VIDEO_Flush();
     VIDEO_WaitVSync();
+    if (rmode->viTVMode & VI_NON_INTERLACE)
+        VIDEO_WaitVSync();
 
-    std::printf("\n Super Mario War (Wii) stopped: %s\n\n", why);
+    screen_printf("\n Super Mario War (Wii) stopped: %s\n\n", why);
     print_tail(kScreenLines);
     if (saved)
-        std::printf("\n Details saved to %s\n", kLogPath);
+        screen_printf("\n Details saved to %s\n", kLogPath);
     else
-        std::printf("\n Could not write %s (no SD card, or it is read-only)\n", kLogPath);
-    std::printf(" Press any button to return to the loader (auto-exit after 2 min).\n");
-    std::fflush(stdout);
+        screen_printf("\n Could not write %s (no SD card, or it is read-only)\n", kLogPath);
+    screen_printf(" Press any button to return to the loader (auto-exit after 2 min).\n");
 
     WPAD_Init();    // normally already done by SDL_RunApp; harmless if repeated
     PAD_Init();
