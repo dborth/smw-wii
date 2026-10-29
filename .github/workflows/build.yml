@@ -148,8 +148,8 @@ jobs:
         run: |
           D=dist/wiiu/apps/smw
           mkdir -p $D
-		  cp build/smw.wuhb $D/
-		  mkdir -p dist/smw
+          cp build/smw.wuhb $D/
+          mkdir -p dist/smw
           cp -r supermariowar/data dist/smw/data && rm -rf dist/smw/data/.git
 
       - uses: actions/upload-artifact@v4
