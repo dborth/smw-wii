@@ -144,8 +144,8 @@ target_compile_features(wii_input PRIVATE cxx_std_20)
 target_include_directories(wii_input PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/supermariowar/src/common")
 target_link_libraries(wii_input PRIVATE SDL3::SDL3)   # headers only (OBJECT library)
 
-# Network bring-up is lazy: wiisocket_init() (IOS network + DHCP) runs only when upstream first calls
-# enet_initialize(), i.e. when the player enters netplay, not at boot. (Doesn't use SMW_WII_ROOT.)
+# Network bring-up (src/wii_net.cpp): started in the background at boot, re-checked each time the player enters
+# netplay or hosts a game. Never blocks startup. (Doesn't use SMW_WII_ROOT.)
 smw_wii_glue(wii_net src/wii_net.cpp)
 target_include_directories(wii_net PRIVATE "${SMW_SDL3_PREFIX}/include")   # wiisocket.h
 
@@ -169,9 +169,11 @@ set(SMW_WRAPPED_SYMBOLS
     SDL_WaitEvent
     SDL_GetJoystickNameForID
     SDL_GetJoystickFromPlayerIndex
-    # lazy network bring-up: src/wii_net.cpp
+    # network bring-up: src/wii_net.cpp
     enet_initialize
-    enet_deinitialize)
+    enet_deinitialize
+    enet_host_create
+    enet_host_connect)
 foreach(sym IN LISTS SMW_WRAPPED_SYMBOLS)
     target_link_options(smw PRIVATE "-Wl,--wrap=${sym}")
 endforeach()
