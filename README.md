@@ -2,11 +2,11 @@
   <img src="Super%20Mario%20War.png" alt="Super Mario War" width="300">
 </p>
 
-<h1 align="center">Super Mario War Wii</h1>
+<h1 align="center">Super Mario War Wii / Wii U</h1>
 
 <p align="center">
   <b>Version 2.0 (unreleased)</b><br>
-  A Wii port of <a href="https://github.com/mmatyas/supermariowar">Super Mario War</a><br>
+  A Wii and Wii U port of <a href="https://github.com/mmatyas/supermariowar">Super Mario War</a><br>
   <a href="https://github.com/dborth/smw-wii">github.com/dborth/smw-wii</a> &middot; GPL licensed<br>
   Port author: Tantric (Daryl Borth)
 </p>
@@ -22,12 +22,19 @@ Version 2.0 is a **fresh port** of Super Mario War, built from the continued, ac
 [mmatyas/supermariowar](https://github.com/mmatyas/supermariowar). It replaces the old 1.x port, which was based on
 Super Mario War 1.8 beta.
 
-It is built on **SDL3**, using the Wii/GameCube (libogc2) fork at
-[dborth/SDL, branch `ogc-port`](https://github.com/dborth/SDL/tree/ogc-port).
+It is built on **SDL3**, using two forks of SDL:
+
+- **Wii:** the Wii/GameCube (libogc2) fork, [dborth/SDL, branch `ogc-port`](https://github.com/dborth/SDL/tree/ogc-port)
+- **Wii U:** the Wii U (wut) fork, [dborth/SDL, branch `wut-port`](https://github.com/dborth/SDL/tree/wut-port)
+
+The two versions are separate builds with separate installation steps. Sections below are marked **Wii** or **Wii U**
+where they differ, and apply to both where they are not.
 
 ---
 
 ## Requirements
+
+### Wii
 
 - A Wii with the [Homebrew Channel](https://wiibrew.org/wiki/Homebrew_Channel) installed
 - An SD card (about 55 MB free for the game files)
@@ -35,15 +42,26 @@ It is built on **SDL3**, using the Wii/GameCube (libogc2) fork at
 
 The game reads its files **from the SD card only**. Loading from a USB drive is not supported.
 
+### Wii U
+
+- A Wii U with [Aroma](https://aroma.foryour.cafe/)
+- An SD card (for the `.wuhb`, and for your settings)
+- At least one controller: the GamePad, a Wii U Pro Controller, or a Wiimote (optionally with a Nunchuk or Classic
+  Controller)
+
+The game files are **bundled inside the `.wuhb`**. There is no separate `data` folder to copy.
+
 ---
 
 ## Installation
+
+### Wii
 
 Copy two folders to the **root of your SD card**:
 
 | From the download | Copy to | What it is |
 |---|---|---|
-| `apps/smw/` | `sd:/apps/smw/` | The game itself (`boot.dol`, `meta.xml`, `icon.png`) |
+| `apps/SuperMarioWar-Wii/` | `sd:/apps/SuperMarioWar-Wii/` | The game itself (`boot.dol`, `meta.xml`, `icon.png`) |
 | `smw/data/` | `sd:/smw/data/` | All game assets: graphics, sounds, music, maps |
 
 When you are done, your SD card should look like this:
@@ -71,7 +89,7 @@ sd:/
 > **The game assets must be in `sd:/smw/data`.** This location is built into the program; it does not look next to
 > the `.dol` and it cannot be changed in a settings file.
 
-If you are upgrading from an older 1.x version, delete your old `sd:/apps/smw` and `sd:/smw` folders first and copy the
+If you are upgrading from an older 1.x version, delete your old `sd:/apps/SuperMarioWar-Wii` and `sd:/smw` folders first and copy the
 new ones fresh.
 
 ### Common mistakes
@@ -85,11 +103,42 @@ new ones fresh.
 | Running from USB, or putting the files on a USB drive | Files not found | Use an SD card. All paths start with `sd:/` |
 | Pointing the Homebrew Channel at a different folder | Works, because the data path does not depend on where the `.dol` lives | Nothing to fix, but the data must still be in `sd:/smw/data/` |
 
+### Wii U
+
+Copy one file to your SD card:
+
+| From the download | Copy to | What it is |
+|---|---|---|
+| `wiiu/apps/SuperMarioWar-WiiU.wuhb` | `sd:/wiiu/apps/SuperMarioWar-WiiU.wuhb` | The game and all of its assets (graphics, sounds, music, maps) |
+
+When you are done, your SD card should look like this:
+
+```
+sd:/
+└── wiiu/
+    └── apps/
+        └── SuperMarioWar-WiiU.wuhb
+```
+
+Settings are created on the SD card the first time the game saves them (see [Files and settings](#files-and-settings)).
+You do not have to create anything.
+
+If you are upgrading, replace `SuperMarioWar-WiiU.wuhb` with the new one. Your settings in `sd:/smw/` are kept.
+
+#### Common mistakes (Wii U)
+
+| Mistake | What happens | Fix |
+|---|---|---|
+| Copying a `data` folder next to the `.wuhb`, or to `sd:/smw/data/` | Nothing: the game does not read it. It always uses the files inside the `.wuhb` | Delete the extra folder |
+| Running a bare `.rpx` instead of the `.wuhb` | `game data not found: fs:/vol/content/data`, because only a `.wuhb` carries the game files | Start `SuperMarioWar-WiiU.wuhb` from the Wii U menu |
+| An interrupted copy of `SuperMarioWar-WiiU.wuhb` | The game fails to start, or reports that its game data is incomplete | Copy the file again |
+
 ---
 
 ## Starting the game
 
-1. Start the Homebrew Channel and choose **Super Mario War Wii**.
+1. **Wii:** start the Homebrew Channel and choose **Super Mario War Wii**.
+   **Wii U:** start **Super Mario War Wii U** from the Wii U menu (with Aroma, it is listed with your other homebrew).
 2. Wait for the title screen (**Press Any Key To Continue**).
 3. Press a button on a connected controller (see [Controllers](#controllers)).
 
@@ -102,8 +151,18 @@ after the title screen has appeared.
 
 ### Supported controllers
 
+**Wii**
+
 - GameCube controllers (all four ports)
 - Wiimote held **sideways** (NES style: D-pad on the left, buttons 1 and 2 under your right thumb)
+- Wiimote + **Nunchuk**
+- Wiimote + **Classic Controller**
+
+**Wii U**
+
+- The **GamePad**
+- Wii U **Pro Controller**
+- Wiimote held **sideways**
 - Wiimote + **Nunchuk**
 - Wiimote + **Classic Controller**
 
@@ -111,6 +170,7 @@ after the title screen has appeared.
 
 - When a controller connects, it is bound automatically to the **first player that has no controller yet**.
   Plug in or wake controllers in the order you want players to be numbered.
+- On the Wii U, the GamePad counts as a controller like any other. It is player 1.
 - If a controller disconnects (dead batteries, out of range), that player goes back to the keyboard setup. When the
   controller reconnects, it is bound to the first player without a controller.
 - Up to four players can play, even though more than four controllers can be connected.
@@ -146,12 +206,30 @@ Sideways Wiimote: press the D-pad in the direction you want to go on screen.
 The GameCube and Classic D-pads, and the Wiimote's own D-pad when a Nunchuk is attached, are not bound by default.
 You can bind them yourself, see below.
 
+**Wii U: GamePad and Pro Controller**
+
+The GamePad and the Pro Controller use the same buttons as the Classic Controller column above (the Wii U Classic
+Controller layout is identical on the Wii). The Wiimote, Nunchuk and Classic columns above also apply on the Wii U.
+
+| Action | In a match | In the menus |
+|---|---|---|
+| Move | Left stick | Left stick |
+| Down | Left stick down | Left stick down |
+| Jump / Select | A | A |
+| Turbo (run / fire) / Cancel | B | B |
+| Use power-up / Random | X | X |
+| Pause (start) | + | |
+| Cancel (in a match) | - | |
+| Fast scroll | | Y |
+
+The D-pad is not bound by default.
+
 ### Changing bindings
 
 Open **Controls** on the main menu to reach the **Player Controls Menu**, where you can rebind every button for every
 player.
 
-Your bindings are saved to `sd:/smw/controls.sdl2.bin` when you start a match and when you exit from the menu.
+Your bindings are saved to `sd:/smw/controls.sdl2.bin` (on both consoles) when you start a match and when you exit from the menu.
 Once that file exists, **it is used as it is**: the defaults above are not applied again.
 
 ### Resetting controls
@@ -165,23 +243,46 @@ after copying settings from another device or from Dolphin.
 
 ## Files and settings
 
+On the Wii U, `sd:/smw/` is a folder on the SD card, just like on the Wii. The game assets are not there: they are
+inside `SuperMarioWar-WiiU.wuhb`.
+
 | Path | What it is |
 |---|---|
-| `sd:/smw/data/` | Game assets (read only) |
+| `sd:/smw/data/` | Game assets (read only). **Wii only**; on the Wii U they are inside `SuperMarioWar-WiiU.wuhb` |
 | `sd:/smw/options.toml` | Game options, saved when you start a match and when you exit from the menu |
 | `sd:/smw/options.bin` | Old options format; read only if `options.toml` does not exist |
 | `sd:/smw/controls.sdl2.bin` | Controller bindings |
 | `sd:/smw/smw-log.txt` | Crash log. Only written if the game stops because of an error, and replaced each time that happens (see Troubleshooting) |
 
 To reset the game options, delete `options.toml` (and `options.bin`, if you have it).
-The `sd:/smw` folder is created automatically if it does not exist, even if you forgot to copy `data` into it.
+The `sd:/smw` folder is created automatically if it does not exist, even if you forgot to copy `data` into it (Wii).
 Settings cannot be saved if the SD card's write-protect switch is on.
 
 ---
 
 ## Troubleshooting
 
-### The game stops with an error
+### The game stops with an error (Wii U)
+
+If the game stops because of an error, it saves a log to `sd:/smw/smw-log.txt`. The **`Reason:`** line at the top
+says what went wrong. Each failure replaces the previous log. If the log cannot be written, the SD card is missing or
+write-protected.
+
+| Reason | Meaning | What to do |
+|---|---|---|
+| `game data not found: fs:/vol/content/data` | The game was started without its bundled files, for example as a bare `.rpx` | Start `SuperMarioWar-WiiU.wuhb` from the Wii U menu |
+| `game data incomplete: N expected folder(s) missing` | The `.wuhb` is damaged or incomplete. The log names the missing folders | Copy `SuperMarioWar-WiiU.wuhb` to the SD card again, or download it again |
+| `the game stopped with an error: Couldn't load ...` / `Failed to load ...` | A graphics, sound or music file in the `.wuhb` is missing or damaged | Same as above |
+| `the game stopped with an error: Could not load any map music!` (or `world music`) | The music files are missing from the `.wuhb` | Same as above |
+| `std::terminate(): ...` / `exception escaped main(): ...` / `abort()` / `main() returned N` | The game hit an unexpected error | Send `smw-log.txt` |
+
+A warning line `SD card cannot be read: settings will not be saved` in the log is not an error: the game still runs,
+but your options and controls will not be kept. Check that the SD card is inserted and not write-protected.
+
+If the game instead freezes, or the console shows a crash screen, it did not get to write a log: tell us what you were
+doing.
+
+### The game stops with an error (Wii)
 
 If it stops because of an error, it shows a screen titled **Super Mario War (Wii) stopped** with the reason and the last lines of the log, and saves the full log to
 `sd:/smw/smw-log.txt`. Press any button to return to the Homebrew Channel.
@@ -220,9 +321,16 @@ Delete `sd:/smw/controls.sdl2.bin`. See [Resetting controls](#resetting-controls
 
 ### Netplay
 
-The Wii's network connection is started only when you enter netplay, not when the game starts. It uses your Wii's
+**Wii:** the network connection is started only when you enter netplay, not when the game starts. It uses your Wii's
 saved network settings and needs a working connection (DHCP). If it fails to start, the game reports that netplay is
-unavailable. This feature has been compiled in - but note that it's totally untested.
+unavailable.
+
+**Wii U:** the console connects to your network by itself. When you enter netplay or host a game, the game waits up
+to 10 seconds for the connection, and then reports that netplay is unavailable if there is none. It uses the
+connection configured in the Wii U's System Settings (Wi-Fi or Ethernet adapter) and needs DHCP. The log in
+`sd:/smw/smw-log.txt` records the network state, but only if the game stopped with an error.
+
+Netplay has been compiled in on both consoles, but note that it's totally untested.
 
 ---
 
@@ -233,7 +341,7 @@ Please report problems at <https://github.com/dborth/smw-wii/issues> and include
 - What you were doing and what you expected
 - The text on the error screen, if there was one
 - `sd:/smw/smw-log.txt`, if the game wrote one
-- Your controller type, and whether you are on a Wii or in Dolphin
+- Your controller type, and whether you are on a Wii or a Wii U
 
 Problems that also occur in the Windows, Linux or macOS versions of the game belong in the main project:
 <https://github.com/mmatyas/supermariowar/issues>.
@@ -254,6 +362,10 @@ Problems that also occur in the Windows, Linux or macOS versions of the game bel
 * 16-bit (RGB565) video, for full speed on the Wii.
 * Netplay over the Wii's network connection (untested).
 * SD card only.
+* **Wii U version:** new, built on the Wii U SDL3 fork ([dborth/SDL, branch `wut-port`](https://github.com/dborth/SDL/tree/wut-port)).
+  Distributed as a single `SuperMarioWar-WiiU.wuhb` with all game files bundled; settings are saved in `sd:/smw` on the SD card.
+  Controllers: GamePad, Pro Controller, sideways Wiimote, Wiimote + Nunchuk, Wiimote + Classic Controller.
+  Netplay over the Wii U's network connection (untested).
 
 ### [1.4 - August 11, 2010]
 
@@ -284,5 +396,5 @@ Problems that also occur in the Windows, Linux or macOS versions of the game bel
 - **Super Mario War** was created by Florian Hufsky, building on the original *Mario War* by Samuele Poletto, and
   developed further by Two52, Jared and many others (see the `CREDITS` file in the main project). The continued
   project is maintained at [mmatyas/supermariowar](https://github.com/mmatyas/supermariowar).
-- **Wii port:** Tantric (Daryl Borth), using SDL3 and libogc2.
+- **Wii and Wii U ports:** Tantric (Daryl Borth), using SDL3 with libogc2 (Wii) and wut (Wii U).
 - Distributed under the GPL.
