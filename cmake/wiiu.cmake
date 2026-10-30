@@ -3,7 +3,7 @@
 # Upstream (supermariowar/) and the Wii U SDL3 fork (SDL3-wut/, dborth/SDL branch wut-port) are git submodules.
 # The Wii U code in src/wiiu_*.cpp is linked into upstream's `smw` target; upstream itself is not modified.
 #
-# Prerequisites: devkitPPC + `dkp-pacman -S wiiu-dev`, and the SDL3 fork already BUILT AND INSTALLED
+# Prerequisites: devkitPPC + wut (`dkp-pacman -S wiiu-dev`; already in the libogc2 CI image), and the SDL3 fork already BUILT AND INSTALLED
 # (.github/workflows/build.yml has the exact commands).
 #
 #   cmake -S . -B build-wiiu --toolchain $DEVKITPRO/cmake/WiiU.cmake -DCMAKE_BUILD_TYPE=Release
@@ -12,9 +12,9 @@
 # ==== Settings =====================================================================================
 
 # Where everything lives on the SD card (wut mounts it as fs:/vol/external01):
-#   <root>data/   game data (the contents of supermariowar/data)
-#   <root>        settings
-set(SMW_WIIU_ROOT "fs:/vol/external01/wiiu/apps/smw/" CACHE STRING "SD card folder for data and settings (must end in '/')")
+#   /smw/data/   game data (the contents of supermariowar/data)
+#   /smw/        settings
+set(SMW_WIIU_ROOT "fs:/vol/external01/smw/" CACHE STRING "SD card folder for data and settings (must end in '/')")
 if(NOT SMW_WIIU_ROOT MATCHES "/$")
     message(FATAL_ERROR "SMW_WIIU_ROOT must end in '/' (got '${SMW_WIIU_ROOT}')")
 endif()
@@ -109,12 +109,7 @@ endforeach()
 # Upstream strips the ELF (-s) in non-Debug builds; a link map still records every function's address.
 target_link_options(smw PRIVATE "-Wl,-Map=${CMAKE_BINARY_DIR}/smw.map")
 
-# upstream/Game.cpp only includes <sys/stat.h> and <unistd.h> (stat/mkdir in ensureSettingsDir) for unix,
-# __APPLE__, __wii__ and __gamecube__. Force them in here instead of editing upstream.
-# TODO: drop once a Wii U build has shown whether it is needed.
-target_compile_options(smw PRIVATE "SHELL:-include sys/stat.h" "SHELL:-include unistd.h")
-
-# ==== smw.rpx / smw.wuhb ===========================================================================
+# ==== smw.wuhb ===========================================================================
 # `smw` is created in upstream's directory, so POST_BUILD can't be attached to it from here (this is also why
 # wut's wut_create_rpx() can't be used: it is a POST_BUILD wrapper); use separate targets that depend on it.
 # WUT_ELF2RPL_EXE / WUT_WUHBTOOL_EXE are found by WiiU.cmake (package wut-tools).
@@ -128,13 +123,15 @@ add_custom_target(smw_rpx ALL
     COMMENT "Creating smw.rpx"
     VERBATIM)
 
-# Optional .wuhb bundle (Aroma). Same arguments as wut's wut_create_wuhb(). No --content: the game data is read
-# from the SD card, it is far too big to bundle. No --icon yet: wuhbtool wants a different size than the
-# Homebrew Launcher's 128x48 wiiu/icon.png.
+# .wuhb bundle (Aroma)
+# No --content yet: the game data is read from the SD card for now, we're put it into the bundle later
 if(WUT_WUHBTOOL_EXE)
     add_custom_target(smw_wuhb ALL
         COMMAND ${WUT_WUHBTOOL_EXE} ${CMAKE_BINARY_DIR}/smw.rpx ${CMAKE_BINARY_DIR}/smw.wuhb
                 --name "Super Mario War Wii U" --short-name "Super Mario War" --author "Tantric (Daryl Borth)"
+                --icon ${CMAKE_CURRENT_SOURCE_DIR}/meta/icon.png
+                --tv-image ${CMAKE_CURRENT_SOURCE_DIR}/meta/tv_splash.png
+                --drc-image ${CMAKE_CURRENT_SOURCE_DIR}/meta/drc_splash.png
         BYPRODUCTS ${CMAKE_BINARY_DIR}/smw.wuhb
         DEPENDS smw_rpx
         COMMENT "Creating smw.wuhb"

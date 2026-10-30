@@ -79,19 +79,11 @@ jobs:
   wiiu:
     runs-on: ubuntu-latest
     continue-on-error: true # ignore the failure for now - the SDL3 Wii U port is still being written
-    # devkitPPC only; the Wii U pieces (wut, wut-tools, wiiu-cmake) are installed below.
-    container: devkitpro/devkitppc:latest
+    container: ghcr.io/extremscorner/libogc2:latest
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive   # supermariowar (+ its data). SDL3-wut is `update = none`: fetched below.
-
-      - name: Install Wii U toolchain
-        run: |
-          # The image is Debian-based and has dkp-pacman; wiiu-dev = wut, wut-tools, wiiu-cmake, pkg-config, ...
-          (apt-get update && apt-get install -y --no-install-recommends git cmake ninja-build) >/dev/null
-          dkp-pacman -Syu --noconfirm wiiu-dev
-          cmake --version | head -1
 
       - name: Fetch SDL3 (Wii U fork)
         run: |
@@ -146,19 +138,11 @@ jobs:
 
       - name: Package
         run: |
-          D=dist/wiiu/apps/smw
-          mkdir -p $D
-          cp build/smw.wuhb $D/
-          mkdir -p dist/smw
+          mkdir -p dist/wiiu/apps dist/smw
+          cp build/smw.wuhb dist/wiiu/apps/
           cp -r supermariowar/data dist/smw/data && rm -rf dist/smw/data/.git
 
       - uses: actions/upload-artifact@v4
         with:
           name: smw-wiiu
           path: dist/
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: smw-wiiu-wuhb
-          path: dist-extra/
-          if-no-files-found: ignore

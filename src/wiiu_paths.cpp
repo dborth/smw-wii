@@ -2,8 +2,8 @@
 // Hooked in with -Wl,--wrap=SDL_GetBasePath / -Wl,--wrap=SDL_GetPrefPath (see cmake/wiiu.cmake).
 // SMW_ROOT comes from cmake/wiiu.cmake.
 //
-//     game data -> <SMW_ROOT>data/      e.g. fs:/vol/external01/wiiu/apps/smw/data/   (contents of supermariowar/data)
-//     settings  -> <SMW_ROOT>           e.g. fs:/vol/external01/wiiu/apps/smw/
+//     game data -> <SMW_ROOT>data/      e.g. fs:/vol/external01/smw/data/   (contents of supermariowar/data)
+//     settings  -> <SMW_ROOT>           e.g. fs:/vol/external01/smw/
 #include <SDL3/SDL.h>
 
 namespace {

@@ -20,14 +20,12 @@
 // the pad's position in g_pads, joystick events are rewritten to carry that index in `which`, and
 // SDL_GetJoystickNameForID / SDL_GetJoystickFromPlayerIndex are wrapped to take an index too.
 //
-// Controller layouts: PROVISIONAL. They have to match what the SDL3 Wii U (wut) joystick driver (SDL3 port
-// piece P3) actually reports, which does not exist yet. Assumptions, to be corrected against the driver:
-//   GamePad / Pro Controller: buttons A,B,X,Y,L,R,ZL,ZR,-,+ = 0..9 | axes 0/1 = left stick
-//   Wiimote layouts: the same as the Wii's OGC driver (same hardware):
-//     Wiimote   : buttons A,B,1,2,-,+,Home (0-6)    | hat 0 = D-pad
-//     + Classic : adds X=9, Y=10, L=11, R=12, ZL=13, ZR=14  | axes 0/1 = left stick
-//     + Nunchuk : adds Z=7, C=8                             | axes 0/1 = nunchuk stick
-// Device names matched by classify(): "GamePad", "Pro Controller", "Classic", "Nunchuk", else a plain Wiimote.
+// Controller layouts: these follow the SDL3 Wii U (wut) joystick driver (src/joystick/wiiu/SDL_sysjoystick.c in
+// dborth/SDL, branch wut-port). Every device type uses the same raw button numbering, the one of the libogc driver:
+//   A=0 B=1 1=2 2=3 -=4 +=5 Home=6 Z=7 C=8 X=9 Y=10 L=11 R=12 ZL=13 ZR=14 L3=15 R3=16 | hat 0 = D-pad
+//   axes 0/1 = left stick, 2/3 = right stick (Y positive down) | no analog trigger axes: ZL/ZR/L/R are buttons
+// Device names matched by classify(): "GamePad", "Pro Controller", "Classic", "Nunchuk", else a plain Wiimote
+// ("Wii U GamePad", "Wii U Pro Controller N", "Wii Classic Controller N", "Wii Remote N + Nunchuk", "Wii Remote N").
 // See docs/wiiu-notes.md.
 #include <SDL3/SDL.h>
 
@@ -65,10 +63,7 @@ struct Keys { int game[NUM_KEYS]; int menu[NUM_KEYS]; };
 Keys keys_for(Layout l)
 {
     switch (l) {
-    case Layout::WiiUPad:
-        // PROVISIONAL (see top of file). TODO(P3): replace with the real order once the wut joystick driver exists.
-        return { { JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, B(0) /*A*/, JOY_STICK_1_DOWN, B(1) /*B*/, B(2) /*X*/, B(9) /*+*/, B(8) /*-*/ },
-                 { JOY_STICK_1_UP, JOY_STICK_1_DOWN, JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, B(0) /*A*/, B(1) /*B*/, B(2) /*X*/, B(3) /*Y*/ } };
+    case Layout::WiiUPad:   // GamePad and Pro Controller: same buttons as the Classic Controller
     case Layout::Classic:
         return { { JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, B(0) /*A*/, JOY_STICK_1_DOWN, B(1) /*B*/, B(9) /*X*/, B(5) /*+*/, B(4) /*-*/ },
                  { JOY_STICK_1_UP, JOY_STICK_1_DOWN, JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, B(0) /*A*/, B(1) /*B*/, B(9) /*X*/, B(10) /*Y*/ } };
@@ -95,7 +90,6 @@ const char* layout_name(Layout l)
     }
 }
 
-// Names are guesses at the wut driver's (see the top of the file).
 Layout classify(const char* name)
 {
     if (!name) return Layout::WiimoteSideways;

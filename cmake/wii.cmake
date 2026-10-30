@@ -13,10 +13,10 @@
 # ==== Settings =====================================================================================
 
 # Where everything lives on the SD card (see src/wii_paths.cpp and src/wii_crashlog.cpp):
-#   <root>data/         game data (the contents of supermariowar/data)
-#   <root>              settings
-#   <root>smw-log.txt   crash log, written only when the game ends abnormally
-#   <root>log.txt       live log, only in SMW_WII_LOG builds (below)
+#   /smw/data/         game data (the contents of supermariowar/data)
+#   /smw/              settings
+#   /smw/smw-log.txt   crash log, written only when the game ends abnormally
+#   /smw/log.txt       live log, only in SMW_WII_LOG builds (below)
 set(SMW_WII_ROOT "sd:/smw/" CACHE STRING "SD card folder for data, settings and the crash log (must end in '/')")
 if(NOT SMW_WII_ROOT MATCHES "/$")
     message(FATAL_ERROR "SMW_WII_ROOT must end in '/' (got '${SMW_WII_ROOT}')")
