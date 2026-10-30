@@ -3,7 +3,7 @@
 // buffers and receives into a single buffer, so a copy through sendto()/recvfrom() suffices.
 //
 // cmake/wiiu.cmake probes the toolchain's <sys/socket.h> and defines SMW_SHIM_TYPES when it has no struct
-// msghdr / struct iovec; the types, MSG_TRUNC and SOMAXCONN below are only provided when they are missing.
+// msghdr / struct iovec; the types below are only provided then. The macros are each guarded by #ifndef.
 #pragma once
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -34,6 +34,16 @@ struct msghdr {
 // ENet tests MSG_TRUNC against msg_flags, which recvmsg() below always clears.
 #ifndef MSG_TRUNC
 #define MSG_TRUNC 0x20
+#endif
+
+// wut's <sys/socket.h> has no SO_RCVTIMEO/SO_SNDTIMEO, and nsysnet has no such options. ENet only references
+// them in enet_socket_set_option(), and nothing calls it with ENET_SOCKOPT_RCVTIMEO/SNDTIMEO, so these
+// BSD values exist only to make unix.c compile (setsockopt would just fail if it were ever called).
+#ifndef SO_RCVTIMEO
+#define SO_RCVTIMEO 0x1006
+#endif
+#ifndef SO_SNDTIMEO
+#define SO_SNDTIMEO 0x1005
 #endif
 
 // Used by enet_socket_listen (upstream's netplay server). Kept small: this is a console.
