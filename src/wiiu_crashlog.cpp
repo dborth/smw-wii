@@ -236,7 +236,7 @@ bool install_ok()
     if (!dir_exists(path)) {
         log_dir_contents(kContentDir);
         log_dir_contents("fs:/vol/");   // which mounts exist at all
-        smw_log("HOW TO FIX: the game data is bundled in smw.wuhb: start it from the Wii U menu (Aroma). "
+        smw_log("HOW TO FIX: the game data is bundled in SuperMarioWar-WiiU.wuhb: start it from the Wii U menu (Aroma). "
                 "A bare .rpx has no /vol/content.");
         report_failure("game data not found: %s", path);
         return false;

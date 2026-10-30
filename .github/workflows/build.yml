@@ -69,7 +69,7 @@ jobs:
 
       - name: Package
         run: |
-          D=dist/apps/smw
+          D=dist/apps/SuperMarioWar-Wii
           mkdir -p $D
           cp build/boot.dol $D/
           cp hbc/meta.xml hbc/icon.png $D/ || true
@@ -138,11 +138,11 @@ jobs:
           path: debug/
           if-no-files-found: warn
 
-      # smw.wuhb already holds the game data (as its content), so it is the whole release
+      # SuperMarioWar-WiiU.wuhb already holds the game data (as its content), so it is the whole release
       - name: Package
         run: |
           mkdir -p dist/wiiu/apps
-          cp build/smw.wuhb dist/wiiu/apps/
+          cp build/SuperMarioWar-WiiU.wuhb dist/wiiu/apps/
 
       - uses: actions/upload-artifact@v4
         with:

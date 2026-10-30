@@ -7,12 +7,12 @@
 # (.github/workflows/build.yml has the exact commands).
 #
 #   cmake -S . -B build-wiiu --toolchain $DEVKITPRO/cmake/WiiU.cmake -DCMAKE_BUILD_TYPE=Release
-#   cmake --build build-wiiu       # -> build-wiiu/smw.wuhb (game data bundled as its /vol/content)
+#   cmake --build build-wiiu       # -> build-wiiu/SuperMarioWar-WiiU.wuhb (game data bundled as its /vol/content)
 
 # ==== Settings =====================================================================================
 
 # Where the files live (wut mounts the SD card as fs:/vol/external01; a .wuhb's content as fs:/vol/content):
-#   <content dir>data/   game data: the contents of supermariowar/data, bundled into smw.wuhb (read-only)
+#   <content dir>data/   game data: the contents of supermariowar/data, bundled into SuperMarioWar-WiiU.wuhb (read-only)
 #   <save dir>           settings and controls, on the SD card (writable); smw-log.txt after a crash
 set(SMW_WIIU_CONTENT_DIR "fs:/vol/content/" CACHE STRING "where the .wuhb's bundled content is mounted (must end in '/')")
 set(SMW_WIIU_SAVE_DIR "fs:/vol/external01/smw/" CACHE STRING "SD card folder for settings and the crash log (must end in '/')")
@@ -54,7 +54,8 @@ endforeach()
 set(HAVE_HAS_SOCKLEN_T 1 CACHE INTERNAL "")
 set(HAS_SOCKLEN_T 4 CACHE INTERNAL "")
 
-# Does the toolchain's <sys/socket.h> already define struct msghdr / struct iovec? If not, the shim header provides them.
+# Does the toolchain's <sys/socket.h> already define struct msghdr / struct iovec? (The Wii's newlib doesn't;
+# unverified for the Wii U.) If not, the shim header provides them.
 include(CheckCSourceCompiles)
 check_c_source_compiles("
 #include <sys/types.h>
@@ -170,7 +171,7 @@ endforeach()
 # Link map: records every function's address (look up the "called from 0x..." addresses in smw-log.txt).
 target_link_options(smw PRIVATE "-Wl,-Map=${CMAKE_BINARY_DIR}/smw.map")
 
-# ==== smw.wuhb =====================================================================================
+# ==== SuperMarioWar-WiiU.wuhb ======================================================================
 # `smw` is created in upstream's directory, so POST_BUILD can't be attached to it from here (this is also why
 # wut's wut_create_rpx()/wut_create_wuhb() can't be used); use separate targets that depend on it.
 # smw.rpx is only an intermediate for wuhbtool.
@@ -194,13 +195,13 @@ add_custom_target(smw_content ALL
     VERBATIM)
 
 add_custom_target(smw_wuhb ALL
-    COMMAND ${WUT_WUHBTOOL_EXE} ${CMAKE_BINARY_DIR}/smw.rpx ${CMAKE_BINARY_DIR}/smw.wuhb
+    COMMAND ${WUT_WUHBTOOL_EXE} ${CMAKE_BINARY_DIR}/smw.rpx ${CMAKE_BINARY_DIR}/SuperMarioWar-WiiU.wuhb
             --content ${SMW_WIIU_CONTENT_STAGE}
             --name "Super Mario War Wii U" --short-name "Super Mario War" --author "Tantric (Daryl Borth)"
             --icon ${CMAKE_CURRENT_SOURCE_DIR}/meta/icon.png
             --tv-image ${CMAKE_CURRENT_SOURCE_DIR}/meta/tv_splash.png
             --drc-image ${CMAKE_CURRENT_SOURCE_DIR}/meta/drc_splash.png
-    BYPRODUCTS ${CMAKE_BINARY_DIR}/smw.wuhb
+    BYPRODUCTS ${CMAKE_BINARY_DIR}/SuperMarioWar-WiiU.wuhb
     DEPENDS smw_rpx smw_content
-    COMMENT "Creating smw.wuhb"
+    COMMENT "Creating SuperMarioWar-WiiU.wuhb"
     VERBATIM)

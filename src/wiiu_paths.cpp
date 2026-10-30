@@ -2,7 +2,7 @@
 // Hooked in with -Wl,--wrap=SDL_GetBasePath / -Wl,--wrap=SDL_GetPrefPath (see cmake/wiiu.cmake).
 // SMW_CONTENT_DIR and SMW_SAVE_DIR come from cmake/wiiu.cmake.
 //
-//     game data -> <SMW_CONTENT_DIR>data/   e.g. fs:/vol/content/data/   (read-only: bundled in smw.wuhb)
+//     game data -> <SMW_CONTENT_DIR>data/   e.g. fs:/vol/content/data/   (read-only: bundled in SuperMarioWar-WiiU.wuhb)
 //     settings  -> <SMW_SAVE_DIR>           e.g. fs:/vol/external01/smw/ (SD card, writable)
 //
 // Upstream appends "data" to SDL_GetBasePath() for the game data, and keeps everything it writes (options,
