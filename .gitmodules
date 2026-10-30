@@ -5,11 +5,9 @@
 	path = SDL3-libogc2
 	url = https://github.com/dborth/SDL.git
 	branch = ogc-port
+	update = none
 [submodule "SDL3-wut"]
 	path = SDL3-wut
 	url = https://github.com/dborth/SDL.git
 	branch = wut-port
-	# Not fetched by `git submodule update --init --recursive` (nor by actions/checkout), so the Wii build never
-	# depends on this branch. The Wii U build asks for it explicitly:
-	#   git submodule update --init --checkout SDL3-wut
 	update = none

@@ -12,6 +12,11 @@ jobs:
         with:
           submodules: recursive   # supermariowar (+ its data) and SDL3-libogc2
 
+      - name: Fetch SDL3 (libogc2 fork)
+        run: |
+          git config --global --add safe.directory '*'
+          git submodule update --init --checkout --depth 1 SDL3-libogc2
+
       # The wrapper CMakeLists does find_package(SDL3 REQUIRED), so SDL3 has to be installed first.
       # Default install prefix with this toolchain is ${DEVKITPRO}/libogc2/wii, which is already
       # on the toolchain's search path.
@@ -85,14 +90,14 @@ jobs:
         with:
           submodules: recursive   # supermariowar (+ its data). SDL3-wut is `update = none`: fetched below.
 
-      - name: Fetch SDL3 (Wii U fork)
+      - name: Fetch SDL3 (WUT fork)
         run: |
           git config --global --add safe.directory '*'
           git submodule update --init --checkout --depth 1 SDL3-wut
 
       # The wrapper CMakeLists does find_package(SDL3 REQUIRED), so SDL3 has to be installed first.
       # WiiU.cmake's install prefix is ${DEVKITPRO}/portlibs/wiiu, which is on the toolchain's search path.
-      - name: Build and install SDL3 (Wii U fork)
+      - name: Build and install SDL3 (WUT fork)
         run: |
           cmake -S SDL3-wut -B build-sdl \
             -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/cmake/WiiU.cmake \
