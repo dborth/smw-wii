@@ -25,7 +25,7 @@ endforeach()
 option(SMW_WIIU_LOG "Also append every log line to <save dir>log.txt as it happens (opens/appends/closes the file per line: for bug-report builds only)" OFF)
 
 # Options of upstream's own CMake project.
-set(NO_NETWORK ON CACHE BOOL "" FORCE)             # netplay not ported yet (ENet on wut sockets is untested)
+set(NO_NETWORK OFF CACHE BOOL "" FORCE)            # netplay via ENet over wut's BSD sockets (see src/wiiu_net.cpp)
 set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(SMW_INSTALL_PORTABLE ON CACHE BOOL "" FORCE)   # data dir = ./data next to the rpx
 
@@ -39,6 +39,29 @@ list(APPEND CMAKE_PREFIX_PATH "${SMW_SDL3_PREFIX}")
 list(APPEND CMAKE_FIND_ROOT_PATH "${SMW_SDL3_PREFIX}")
 find_package(SDL3 REQUIRED CONFIG)   # fail early, with a clear message, if it isn't found
 message(STATUS "Using installed SDL3 ${SDL3_VERSION} from ${SDL3_DIR}")
+
+# ---- Networking: ENet (fetched by upstream) on wut's sockets.
+# libwut implements BSD sockets on top of nsysnet and brings them up at startup (__init_wut_socket), so there
+# is nothing to link or initialise here. It has fcntl, poll, getaddrinfo, getnameinfo, inet_pton/ntop and the
+# non-reentrant gethostby*() only (so HAS_GETHOSTBY*_R stay unset), but no sendmsg/recvmsg: src/wiiu_sockshim.*
+# supply them.
+#
+# ENet's configure checks probe for functions by linking a test program; seed the results instead so they
+# don't depend on how the toolchain links try_compile projects.
+foreach(v HAS_FCNTL HAS_POLL HAS_GETADDRINFO HAS_GETNAMEINFO HAS_INET_PTON HAS_INET_NTOP HAS_MSGHDR_FLAGS)
+    set(${v} 1 CACHE INTERNAL "")
+endforeach()
+set(HAVE_HAS_SOCKLEN_T 1 CACHE INTERNAL "")
+set(HAS_SOCKLEN_T 4 CACHE INTERNAL "")
+
+# Does the toolchain's <sys/socket.h> already define struct msghdr / struct iovec? If not, the shim header provides them.
+include(CheckCSourceCompiles)
+check_c_source_compiles("
+#include <sys/types.h>
+#include <sys/socket.h>
+int main(void) { struct msghdr m; struct iovec v; m.msg_iov = &v; m.msg_iovlen = 1; m.msg_flags = 0; return m.msg_iovlen; }
+" SMW_WIIU_HAS_MSGHDR)
+message(STATUS "Wii U toolchain has struct msghdr/iovec: ${SMW_WIIU_HAS_MSGHDR}")
 
 # ---- SDL3_image / SDL3_mixer: built from source (vendored by upstream). Keep them minimal.
 # They assume every platform but a short hardcoded list can build shared libs and run
@@ -78,6 +101,18 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/supermariowar/cmake")
 # EXCLUDE_FROM_ALL: we only want the `smw` target, not the editors/server
 add_subdirectory(supermariowar EXCLUDE_FROM_ALL)
 
+# ENet needs sendmsg()/recvmsg(), which libwut lacks: build the shim into the enet target itself.
+get_target_property(_enet_imported enet IMPORTED)
+if(TARGET enet AND NOT _enet_imported)
+    target_sources(enet PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/wiiu_sockshim.c")
+    target_compile_options(enet PRIVATE "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/src/wiiu_sockshim.h")
+    if(NOT SMW_WIIU_HAS_MSGHDR)
+        target_compile_definitions(enet PRIVATE SMW_SHIM_TYPES)
+    endif()
+else()
+    message(FATAL_ERROR "Built-from-source ENet target not found (NO_NETWORK must be OFF, and no system ENet may be picked up)")
+endif()
+
 # ==== Wii U glue (src/) ============================================================================
 # Each file is its own OBJECT library; the objects are linked into upstream's `smw`.
 
@@ -104,6 +139,10 @@ smw_wiiu_glue(wiiu_input src/wiiu_input.cpp)
 target_compile_features(wiiu_input PRIVATE cxx_std_20)
 target_include_directories(wiiu_input PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/supermariowar/src/common")
 
+# Network readiness (src/wiiu_net.cpp): logs the state at boot, waits for the connection when the player
+# enters netplay or hosts a game. Never blocks startup. No SDL or upstream headers.
+smw_wiiu_glue(wiiu_net src/wiiu_net.cpp)
+
 # ---- Hooks into upstream. For each symbol below the linker sends every call to __wrap_<symbol>
 # (our code in src/); the original stays reachable as __real_<symbol>.
 set(SMW_WRAPPED_SYMBOLS
@@ -119,7 +158,11 @@ set(SMW_WRAPPED_SYMBOLS
     SDL_PollEvent
     SDL_WaitEvent
     SDL_GetJoystickNameForID
-    SDL_GetJoystickFromPlayerIndex)
+    SDL_GetJoystickFromPlayerIndex
+    # network readiness: src/wiiu_net.cpp
+    enet_initialize
+    enet_host_create
+    enet_host_connect)
 foreach(sym IN LISTS SMW_WRAPPED_SYMBOLS)
     target_link_options(smw PRIVATE "-Wl,--wrap=${sym}")
 endforeach()
