@@ -1,5 +1,5 @@
 // Controller support for the Wii U port, without modifying upstream (hooked in with -Wl,--wrap, see cmake/wiiu.cmake).
-// SMW_ROOT comes from cmake/wiiu.cmake. Copied from wii_input.cpp on purpose: the two consoles share no code.
+// SMW_SAVE_DIR comes from cmake/wiiu.cmake. Copied from wii_input.cpp on purpose: the two consoles share no code.
 //
 // Why this is needed (all in upstream's input code, nothing wrong with SDL here):
 //  * init_joysticks() runs once at startup, ignores the instance IDs SDL3 returns and calls
@@ -102,7 +102,7 @@ Layout classify(const char* name)
 bool controls_file_exists()
 {
     struct stat st;
-    return stat(SMW_ROOT "controls.sdl2.bin", &st) == 0;
+    return stat(SMW_SAVE_DIR "controls.sdl2.bin", &st) == 0;
 }
 
 // The controls menu and the "saved device is still connected?" check both read these globals.

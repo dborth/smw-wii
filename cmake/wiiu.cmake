@@ -7,17 +7,22 @@
 # (.github/workflows/build.yml has the exact commands).
 #
 #   cmake -S . -B build-wiiu --toolchain $DEVKITPRO/cmake/WiiU.cmake -DCMAKE_BUILD_TYPE=Release
-#   cmake --build build-wiiu       # -> build-wiiu/smw.wuhb
+#   cmake --build build-wiiu       # -> build-wiiu/smw.wuhb (game data bundled as its /vol/content)
 
 # ==== Settings =====================================================================================
 
-# Where everything lives on the SD card (wut mounts it as fs:/vol/external01):
-#   /smw/data/   game data (the contents of supermariowar/data)
-#   /smw/        settings
-set(SMW_WIIU_ROOT "fs:/vol/external01/smw/" CACHE STRING "SD card folder for data and settings (must end in '/')")
-if(NOT SMW_WIIU_ROOT MATCHES "/$")
-    message(FATAL_ERROR "SMW_WIIU_ROOT must end in '/' (got '${SMW_WIIU_ROOT}')")
-endif()
+# Where the files live (wut mounts the SD card as fs:/vol/external01; a .wuhb's content as fs:/vol/content):
+#   <content dir>data/   game data: the contents of supermariowar/data, bundled into smw.wuhb (read-only)
+#   <save dir>           settings and controls, on the SD card (writable); smw-log.txt after a crash
+set(SMW_WIIU_CONTENT_DIR "fs:/vol/content/" CACHE STRING "where the .wuhb's bundled content is mounted (must end in '/')")
+set(SMW_WIIU_SAVE_DIR "fs:/vol/external01/smw/" CACHE STRING "SD card folder for settings and the crash log (must end in '/')")
+foreach(v SMW_WIIU_CONTENT_DIR SMW_WIIU_SAVE_DIR)
+    if(NOT ${v} MATCHES "/$")
+        message(FATAL_ERROR "${v} must end in '/' (got '${${v}}')")
+    endif()
+endforeach()
+
+option(SMW_WIIU_LOG "Also append every log line to <save dir>log.txt as it happens (opens/appends/closes the file per line: for bug-report builds only)" OFF)
 
 # Options of upstream's own CMake project.
 set(NO_NETWORK ON CACHE BOOL "" FORCE)             # netplay not ported yet (ENet on wut sockets is untested)
@@ -78,12 +83,20 @@ add_subdirectory(supermariowar EXCLUDE_FROM_ALL)
 
 function(smw_wiiu_glue name source)
     add_library(${name} OBJECT ${source})
-    target_compile_definitions(${name} PRIVATE "SMW_ROOT=\"${SMW_WIIU_ROOT}\"")
+    target_compile_definitions(${name} PRIVATE
+        "SMW_CONTENT_DIR=\"${SMW_WIIU_CONTENT_DIR}\""
+        "SMW_SAVE_DIR=\"${SMW_WIIU_SAVE_DIR}\"")
     target_link_libraries(${name} PRIVATE SDL3::SDL3)   # headers only (OBJECT library)
     target_sources(smw PRIVATE $<TARGET_OBJECTS:${name}>)
 endfunction()
 
-# SD card locations.
+# Crash log + boot checks. No SDL or upstream headers.
+smw_wiiu_glue(wiiu_crashlog src/wiiu_crashlog.cpp)
+if(SMW_WIIU_LOG)
+    target_compile_definitions(wiiu_crashlog PRIVATE SMW_WIIU_LOG)
+endif()
+
+# Content and SD card locations.
 smw_wiiu_glue(wiiu_paths src/wiiu_paths.cpp)
 
 # Controller hotplug + default bindings. Needs upstream's headers (GameValues.h, input.h).
@@ -94,7 +107,12 @@ target_include_directories(wiiu_input PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/super
 # ---- Hooks into upstream. For each symbol below the linker sends every call to __wrap_<symbol>
 # (our code in src/); the original stays reachable as __real_<symbol>.
 set(SMW_WRAPPED_SYMBOLS
-    # SD card locations: src/wiiu_paths.cpp
+    # crash log and boot checks: src/wiiu_crashlog.cpp
+    SDL_RunApp
+    SDL_ShowSimpleMessageBox
+    exit
+    abort
+    # content and SD card locations: src/wiiu_paths.cpp
     SDL_GetBasePath
     SDL_GetPrefPath
     # controllers: src/wiiu_input.cpp
@@ -106,16 +124,14 @@ foreach(sym IN LISTS SMW_WRAPPED_SYMBOLS)
     target_link_options(smw PRIVATE "-Wl,--wrap=${sym}")
 endforeach()
 
-# Upstream strips the ELF (-s) in non-Debug builds; a link map still records every function's address.
+# Link map: records every function's address (look up the "called from 0x..." addresses in smw-log.txt).
 target_link_options(smw PRIVATE "-Wl,-Map=${CMAKE_BINARY_DIR}/smw.map")
 
-# ==== smw.wuhb ===========================================================================
+# ==== smw.wuhb =====================================================================================
 # `smw` is created in upstream's directory, so POST_BUILD can't be attached to it from here (this is also why
-# wut's wut_create_rpx() can't be used: it is a POST_BUILD wrapper); use separate targets that depend on it.
-# WUT_ELF2RPL_EXE / WUT_WUHBTOOL_EXE are found by WiiU.cmake (package wut-tools).
-if(NOT WUT_ELF2RPL_EXE)
-    message(FATAL_ERROR "elf2rpl not found: install wut-tools (dkp-pacman -S wiiu-dev)")
-endif()
+# wut's wut_create_rpx()/wut_create_wuhb() can't be used); use separate targets that depend on it.
+# smw.rpx is only an intermediate for wuhbtool.
+# WUT_ELF2RPL_EXE / WUT_WUHBTOOL_EXE are set by WiiU.cmake.
 add_custom_target(smw_rpx ALL
     COMMAND ${WUT_ELF2RPL_EXE} $<TARGET_FILE:smw> ${CMAKE_BINARY_DIR}/smw.rpx
     BYPRODUCTS ${CMAKE_BINARY_DIR}/smw.rpx
@@ -123,17 +139,25 @@ add_custom_target(smw_rpx ALL
     COMMENT "Creating smw.rpx"
     VERBATIM)
 
-# .wuhb bundle (Aroma)
-# No --content yet: the game data is read from the SD card for now, we're put it into the bundle later
-if(WUT_WUHBTOOL_EXE)
-    add_custom_target(smw_wuhb ALL
-        COMMAND ${WUT_WUHBTOOL_EXE} ${CMAKE_BINARY_DIR}/smw.rpx ${CMAKE_BINARY_DIR}/smw.wuhb
-                --name "Super Mario War Wii U" --short-name "Super Mario War" --author "Tantric (Daryl Borth)"
-                --icon ${CMAKE_CURRENT_SOURCE_DIR}/meta/icon.png
-                --tv-image ${CMAKE_CURRENT_SOURCE_DIR}/meta/tv_splash.png
-                --drc-image ${CMAKE_CURRENT_SOURCE_DIR}/meta/drc_splash.png
-        BYPRODUCTS ${CMAKE_BINARY_DIR}/smw.wuhb
-        DEPENDS smw_rpx
-        COMMENT "Creating smw.wuhb"
-        VERBATIM)
-endif()
+# The game data becomes the .wuhb's /vol/content. Upstream looks for "data/" under the base path (see
+# src/wiiu_paths.cpp), so the content folder holds a data/ folder rather than being the data folder itself.
+# Staged as a copy (wuhbtool is not known to follow symlinks); a `.git` file in the submodule is not content.
+set(SMW_WIIU_CONTENT_STAGE "${CMAKE_BINARY_DIR}/content")
+add_custom_target(smw_content ALL
+    COMMAND ${CMAKE_COMMAND} -E rm -rf "${SMW_WIIU_CONTENT_STAGE}"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/supermariowar/data" "${SMW_WIIU_CONTENT_STAGE}/data"
+    COMMAND ${CMAKE_COMMAND} -E rm -rf "${SMW_WIIU_CONTENT_STAGE}/data/.git"
+    COMMENT "Staging game data for the wuhb"
+    VERBATIM)
+
+add_custom_target(smw_wuhb ALL
+    COMMAND ${WUT_WUHBTOOL_EXE} ${CMAKE_BINARY_DIR}/smw.rpx ${CMAKE_BINARY_DIR}/smw.wuhb
+            --content ${SMW_WIIU_CONTENT_STAGE}
+            --name "Super Mario War Wii U" --short-name "Super Mario War" --author "Tantric (Daryl Borth)"
+            --icon ${CMAKE_CURRENT_SOURCE_DIR}/meta/icon.png
+            --tv-image ${CMAKE_CURRENT_SOURCE_DIR}/meta/tv_splash.png
+            --drc-image ${CMAKE_CURRENT_SOURCE_DIR}/meta/drc_splash.png
+    BYPRODUCTS ${CMAKE_BINARY_DIR}/smw.wuhb
+    DEPENDS smw_rpx smw_content
+    COMMENT "Creating smw.wuhb"
+    VERBATIM)

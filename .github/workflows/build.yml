@@ -122,12 +122,9 @@ jobs:
                                     echo "smw-wii ${GITHUB_SHA}"
           } | tee debug/versions.txt
 
-      - name: Collect link map and ELF
+      - name: Collect link map
         if: always()
-        run: |
-          cp build/smw.map debug/ || true
-          find build -type f -name smw.elf -exec cp {} debug/smw.elf \; || true
-          ${DEVKITPPC}/bin/powerpc-eabi-size -A debug/smw.elf > debug/sections.txt 2>&1 || true
+        run: cp build/smw.map debug/ || true
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -136,11 +133,11 @@ jobs:
           path: debug/
           if-no-files-found: warn
 
+      # smw.wuhb already holds the game data (as its content), so it is the whole release
       - name: Package
         run: |
-          mkdir -p dist/wiiu/apps dist/smw
+          mkdir -p dist/wiiu/apps
           cp build/smw.wuhb dist/wiiu/apps/
-          cp -r supermariowar/data dist/smw/data && rm -rf dist/smw/data/.git
 
       - uses: actions/upload-artifact@v4
         with:
