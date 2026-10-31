@@ -170,7 +170,8 @@ after the title screen has appeared.
 
 - When a controller connects, it is bound automatically to the **first player that has no controller yet**.
   Plug in or wake controllers in the order you want players to be numbered.
-- On the Wii U, the GamePad counts as a controller like any other. It is player 1.
+- On the Wii U, a controller keeps the player number the Wii U gives it: the GamePad and the Wiimote on channel 1 are
+  player 1, the other Wiimotes and Pro Controllers are players 2 to 4.
 - If a controller disconnects (dead batteries, out of range), that player goes back to the keyboard setup. When the
   controller reconnects, it is bound to the first player without a controller.
 - Up to four players can play, even though more than four controllers can be connected.
@@ -206,23 +207,24 @@ Sideways Wiimote: press the D-pad in the direction you want to go on screen.
 The GameCube and Classic D-pads, and the Wiimote's own D-pad when a Nunchuk is attached, are not bound by default.
 You can bind them yourself, see below.
 
-**Wii U: GamePad and Pro Controller**
+**Wii U: all controllers**
 
-The GamePad and the Pro Controller use the same buttons as the Classic Controller column above (the Wii U Classic
-Controller layout is identical on the Wii). The Wiimote, Nunchuk and Classic columns above also apply on the Wii U.
+On the Wii U every controller has the same default bindings, whatever it is (GamePad, Pro Controller, Wiimote held
+sideways, Wiimote + Nunchuk, Wiimote + Classic Controller). The system software and SDL already present them all
+in one layout, so the Wiimote, Nunchuk and Classic columns above do not apply here. A Wiimote held sideways is
+rotated for you: press the D-pad in the direction you want to go on screen.
 
 | Action | In a match | In the menus |
 |---|---|---|
-| Move | Left stick | Left stick |
-| Down | Left stick down | Left stick down |
-| Jump / Select | A | A |
-| Turbo (run / fire) / Cancel | B | B |
-| Use power-up / Random | X | X |
+| Move / Down (Up in menus) | D-pad | D-pad |
+| Jump / Select | A (Wiimote: 2) | A (Wiimote: 2) |
+| Turbo (run / fire) / Cancel | B (Wiimote: 1) | B (Wiimote: 1) |
+| Use power-up / Random | X (Wiimote: A, Nunchuk: C) | X (Wiimote: A, Nunchuk: C) |
 | Pause (start) | + | |
 | Cancel (in a match) | - | |
-| Fast scroll | | Y |
+| Fast scroll | | Y (Wiimote: B, Nunchuk: Z) |
 
-The D-pad is not bound by default.
+The sticks are not bound by default, because a Wiimote has none. Bind them in the controls menu if you prefer them.
 
 ### Changing bindings
 
